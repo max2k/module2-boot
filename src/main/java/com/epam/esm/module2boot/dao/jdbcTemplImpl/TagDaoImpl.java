@@ -5,10 +5,13 @@ import com.epam.esm.module2boot.model.Tag;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.namedparam.MapSqlParameterSource;
+import org.springframework.jdbc.core.namedparam.NamedParameterJdbcTemplate;
 import org.springframework.jdbc.core.namedparam.SqlParameterSource;
 import org.springframework.jdbc.support.GeneratedKeyHolder;
 import org.springframework.stereotype.Repository;
 
+import java.sql.Statement;
+import java.sql.Types;
 import java.util.Objects;
 
 @Repository
@@ -23,14 +26,17 @@ public class TagDaoImpl implements TagDAO {
 
     @Override
     public Tag createTag(String name) {
+        NamedParameterJdbcTemplate namedParameterJdbcTemplate=new NamedParameterJdbcTemplate(jdbcTemplate);
+
         GeneratedKeyHolder holder = new GeneratedKeyHolder();
 
         SqlParameterSource parameters = new MapSqlParameterSource()
-                .addValue("name", name);
+                .addValue("name1", name, Types.VARCHAR);
 
-        jdbcTemplate.update("INSERT INTO tags (name) VALUES (:name)"
+        namedParameterJdbcTemplate.update("INSERT INTO tag (name) VALUES (:name1);"
                 ,parameters
                 ,holder);
+
 
         Tag res=new Tag();
         res.setName(name);
@@ -41,11 +47,11 @@ public class TagDaoImpl implements TagDAO {
 
     @Override
     public Tag getTagById(int id) {
-        return jdbcTemplate.queryForObject("SELECT * FROM tags WHERE id=?",new TagRowMapper(),id);
+        return jdbcTemplate.queryForObject("SELECT * FROM tag WHERE id=?",new TagRowMapper(),id);
     }
 
     @Override
     public void deleteTag(int id) {
-        jdbcTemplate.update("DELETE from tags WHERE id=?",id);
+        jdbcTemplate.update("DELETE from tag WHERE id=?",id);
     }
 }

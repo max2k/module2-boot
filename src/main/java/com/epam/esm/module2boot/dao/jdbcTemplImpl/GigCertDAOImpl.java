@@ -14,10 +14,7 @@ import org.springframework.jdbc.support.GeneratedKeyHolder;
 import org.springframework.jdbc.support.KeyHolder;
 import org.springframework.stereotype.Repository;
 
-import java.util.HashSet;
-import java.util.Map;
-import java.util.Objects;
-import java.util.Set;
+import java.util.*;
 import java.util.stream.Collectors;
 
 @Repository
@@ -97,5 +94,42 @@ public class GigCertDAOImpl implements GiftCertDAO {
     @Override
     public void getGiftCert(int id) {
         jdbcTemplate.queryForObject("select * from gift_certificates where id=?",new CertRowMapper(),id);
+    }
+
+    @Override
+    public List<GiftCertificate> getAllByParam(Map<String, Object> params, Map<String, String> sortingMap) {
+        String sortSubStr=getSortingSubStr(sortingMap);
+
+        String whereStr=getWhereStr(params);
+
+
+        return null;
+    }
+
+    private static String getWhereStr(Map<String, Object> params) {
+        return params.entrySet().stream()
+                .map(stringObjectEntry ->
+                        String.format(
+                                stringObjectEntry.getKey() == "tag.name" ?
+                                "%s = :%s" :
+                                "%s like :%s"
+                        ))
+                .collect(Collectors.joining(" AND "));
+    }
+
+    private static String getSortingSubStr(Map<String, String> sortingMap) {
+        String sortString="";
+        if (sortingMap !=null && sortingMap.keySet().size()>0){
+            sortString="ORDER BY "+ sortingMap
+                    .entrySet()
+                    .stream()
+                    .map( stringStringEntry ->
+                            String.format("%s %s"
+                                    ,stringStringEntry.getKey()
+                            ,stringStringEntry.getValue())
+                    )
+                    .collect(Collectors.joining(", 0"));
+        }
+        return sortString;
     }
 }
