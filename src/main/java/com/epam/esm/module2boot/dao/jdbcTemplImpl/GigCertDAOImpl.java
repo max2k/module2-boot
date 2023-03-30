@@ -87,23 +87,26 @@ public class GigCertDAOImpl implements GiftCertDAO {
     }
 
     @Override
-    public void updateGiftCert(int id, Map<String,Objects> fieldsToUpdate) {
+    public void updateGiftCert(int id, Map<String,Object> fieldsToUpdate) {
         String fields=fieldsToUpdate
                 .keySet()
                 .stream()
-                .map(s -> String.format("%s=:%s",s))
+                .map(s -> String.format("%1$s=:%1$s",s))
                 .collect(Collectors.joining(", "));
 
         SqlParameterSource sqlParameterSource=new MapSqlParameterSource()
                 .addValues(fieldsToUpdate)
                 .addValue("id",id);
 
-        jdbcTemplate.update("UPDATE gift_certificate SET " + fields +" WHERE id=:id",sqlParameterSource);
+        NamedParameterJdbcTemplate namedParameterJdbcTemplate=new NamedParameterJdbcTemplate(jdbcTemplate);
+
+        namedParameterJdbcTemplate.update("UPDATE gift_certificate SET " + fields +" WHERE id=:id",sqlParameterSource);
     }
 
     @Override
-    public void getGiftCert(int id) {
-        jdbcTemplate.queryForObject("select * from gift_certificate where id=?",new CertRowMapper(),id);
+    public GiftCertificate getGiftCert(int id) {
+        return jdbcTemplate.queryForObject("select * from gift_certificate where id=?",new CertRowMapper(),id);
+
     }
 
     @Override

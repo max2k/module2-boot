@@ -15,12 +15,10 @@ import org.springframework.jdbc.datasource.embedded.EmbeddedDatabaseBuilder;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
 
 import java.math.BigDecimal;
+import java.sql.Timestamp;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
-import java.util.Date;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Set;
+import java.util.*;
 import java.util.stream.Collectors;
 
 import static org.junit.jupiter.api.Assertions.*;
@@ -105,11 +103,30 @@ class GigCertDAOImplTest {
     }
 
     @Test
-    void updateGiftCert() {
+    void updateGiftCert() throws ParseException {
+
+        Map<String, Object> paramToUpdate=new HashMap<>();
+        paramToUpdate.put("name","New name");
+        paramToUpdate.put("description","New description");
+        paramToUpdate.put("create_date", new Timestamp(
+                parseISO8601("2020-10-10T10:10:10").getTime())
+        );
+
+        giftCertDAO.updateGiftCert(1, paramToUpdate);
+
+        GiftCertificate giftCertificate=giftCertDAO.getGiftCert(1);
+
+        assertEquals("New name",giftCertificate.getName() );
+        assertEquals("New description",giftCertificate.getDescription() );
+        assertEquals( parseISO8601("2020-10-10T10:10:10"),giftCertificate.getCreateDate());
     }
 
     @Test
     void getGiftCert() {
+        GiftCertificate giftCertificate=
+                giftCertDAO.getGiftCert(1);
+        assertNotNull(giftCertificate);
+        assertEquals("name1",giftCertificate.getName());
     }
 
     @Test
