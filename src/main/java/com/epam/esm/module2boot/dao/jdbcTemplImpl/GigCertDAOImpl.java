@@ -129,7 +129,7 @@ public class GigCertDAOImpl implements GiftCertDAO {
         giftCertificates.forEach(giftCertificate ->
                 giftCertificate.setTags(tagDAO.getTagsForCertID(giftCertificate.getId()))
         );
-        
+
         return giftCertificates;
     }
 
