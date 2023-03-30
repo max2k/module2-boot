@@ -12,5 +12,5 @@ public interface GiftCertDAO {
     void updateGiftCert(int id, Map<String, Object> fieldsToUpdate);
     GiftCertificate getGiftCert(int id);
 
-    List<GiftCertificate> getAllByParam(Map<String,Object> params, Map<String,String> sorting);
+    List<GiftCertificate> getAllByParam(Map<String,Object> params, List<String> sorting);
 }

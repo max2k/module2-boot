@@ -21,12 +21,14 @@ import java.util.stream.Collectors;
 public class GigCertDAOImpl implements GiftCertDAO {
 
     private final JdbcTemplate jdbcTemplate;
+    private final NamedParameterJdbcTemplate namedParameterJdbcTemplate;
     private final TagDAO tagDAO;
 
     @Autowired
     public GigCertDAOImpl(JdbcTemplate jdbcTemplate, TagDAO tagDAO) {
         this.jdbcTemplate = jdbcTemplate;
         this.tagDAO = tagDAO;
+        this.namedParameterJdbcTemplate = new NamedParameterJdbcTemplate(jdbcTemplate);
     }
 
     @Override
@@ -44,8 +46,6 @@ public class GigCertDAOImpl implements GiftCertDAO {
         SqlParameterSource parameters = createParametesMap(giftCertificate);
 
         GeneratedKeyHolder holder = new GeneratedKeyHolder();
-
-        NamedParameterJdbcTemplate namedParameterJdbcTemplate=new NamedParameterJdbcTemplate(jdbcTemplate);
 
         namedParameterJdbcTemplate.update(
                 """
@@ -98,50 +98,59 @@ public class GigCertDAOImpl implements GiftCertDAO {
                 .addValues(fieldsToUpdate)
                 .addValue("id",id);
 
-        NamedParameterJdbcTemplate namedParameterJdbcTemplate=new NamedParameterJdbcTemplate(jdbcTemplate);
-
         namedParameterJdbcTemplate.update("UPDATE gift_certificate SET " + fields +" WHERE id=:id",sqlParameterSource);
     }
 
     @Override
     public GiftCertificate getGiftCert(int id) {
-        return jdbcTemplate.queryForObject("select * from gift_certificate where id=?",new CertRowMapper(),id);
-
+        GiftCertificate giftCertificate=
+                jdbcTemplate.queryForObject("select * from gift_certificate where id=?",new CertRowMapper(),id);
+        if (giftCertificate!=null)
+            giftCertificate.setTags( tagDAO.getTagsForCertID(giftCertificate.getId()) );
+        return giftCertificate;
     }
 
     @Override
-    public List<GiftCertificate> getAllByParam(Map<String, Object> params, Map<String, String> sortingMap) {
-        String sortSubStr=getSortingSubStr(sortingMap);
+    public List<GiftCertificate> getAllByParam(Map<String, Object> params, List<String> sortingMap) {
+        if ( params==null || sortingMap==null ) throw new IllegalArgumentException("Input params should be not null");
 
+        String sortSubStr=getSortingSubStr(sortingMap);
         String whereStr=getWhereStr(params);
 
+        SqlParameterSource parameterSource=new MapSqlParameterSource().addValues(params);
 
-        return null;
+        List<GiftCertificate> giftCertificates=namedParameterJdbcTemplate.query(
+                """
+                      SELECT DISTINCT gift_certificate.* FROM gift_certificate 
+                        LEFT OUTER JOIN  cert_tag ON cert_tag.cert_id=gift_certificate.id
+                        LEFT OUTER JOIN tag ON cert_tag.tag_id=tag.id
+                    """+whereStr+" "+sortSubStr, parameterSource,new CertRowMapper());
+
+        giftCertificates.forEach(giftCertificate ->
+                giftCertificate.setTags(tagDAO.getTagsForCertID(giftCertificate.getId()))
+        );
+        
+        return giftCertificates;
     }
 
     private static String getWhereStr(Map<String, Object> params) {
-        return params.entrySet().stream()
+        if (params==null || params.isEmpty() ) return "";
+        Set<String> likeFields=Set.of("gift_certificate.name","description");
+
+        return "WHERE "+params.entrySet().stream()
                 .map(stringObjectEntry ->
                         String.format(
-                                stringObjectEntry.getKey() == "tag.name" ?
-                                "%s = :%s" :
-                                "%s like :%s"
+                                likeFields.contains( stringObjectEntry.getKey() )?
+                                        "%1$s like :%1$s" : "%1$s = :%1$s"
+                                ,stringObjectEntry.getKey()
                         ))
                 .collect(Collectors.joining(" AND "));
     }
 
-    private static String getSortingSubStr(Map<String, String> sortingMap) {
+    private static String getSortingSubStr(List<String> sortingFieldsList) {
         String sortString="";
-        if (sortingMap !=null && sortingMap.keySet().size()>0){
-            sortString="ORDER BY "+ sortingMap
-                    .entrySet()
-                    .stream()
-                    .map( stringStringEntry ->
-                            String.format("%s %s"
-                                    ,stringStringEntry.getKey()
-                            ,stringStringEntry.getValue())
-                    )
-                    .collect(Collectors.joining(", 0"));
+        if (sortingFieldsList !=null && sortingFieldsList.size()>0){
+            sortString="ORDER BY "+ String.join(", ", sortingFieldsList);
         }
         return sortString;
     }

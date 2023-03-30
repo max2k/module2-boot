@@ -7,6 +7,9 @@ import com.epam.esm.module2boot.model.Tag;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.Arguments;
+import org.junit.jupiter.params.provider.MethodSource;
 import org.springframework.boot.test.autoconfigure.jdbc.JdbcTest;
 import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.jdbc.core.JdbcTemplate;
@@ -20,6 +23,7 @@ import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.*;
 import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 import static org.junit.jupiter.api.Assertions.*;
 import static org.springframework.jdbc.datasource.embedded.EmbeddedDatabaseType.H2;
@@ -31,6 +35,86 @@ class GigCertDAOImplTest {
     private JdbcTemplate jdbcTemplate;
     private GiftCertDAO giftCertDAO;
     private TagDAO tagDAO;
+
+
+    public static Arguments getUnsortedArgs(Map<String,Object> params,List<Integer> expected){
+        return Arguments.of(params,new LinkedList<>(),expected,false);
+    }
+
+    public static Stream<Arguments> queryMaps() {
+        List<Arguments> args=new LinkedList<>();
+        //
+
+        args.add(
+                Arguments.of(
+                        Map.of("gift_certificate.name","%name%",
+                                "description","description%"),
+                        List.of("create_date desc","gift_certificate.name asc"),
+                        List.of(1 ,3 , 2, 4, 5, 6 ),
+                        true
+                ));
+
+        args.add(
+                Arguments.of(
+                        Map.of("gift_certificate.name","%name%",
+                                "description","description%",
+                                "tag.name","tag1"),
+                        List.of("create_date desc","gift_certificate.name asc"),
+                        List.of(1,2),
+                        true
+                ));
+
+        //empty arguments no ordering
+        args.add(getUnsortedArgs( new HashMap<>(), List.of(1,2,3,4,5,6)) );
+        // one by full name
+
+        args.add(getUnsortedArgs(
+               Map.of("gift_certificate.name","name1"),
+               List.of(1)
+        ));
+
+        args.add(getUnsortedArgs(
+                Map.of("gift_certificate.name","%name%"),
+                List.of(1,2,3,4,5,6)
+        ));
+
+        args.add(getUnsortedArgs(
+                Map.of("gift_certificate.name","%name%",
+                        "description","description2"),
+                List.of(2,4,5,6)
+        ));
+
+        args.add(getUnsortedArgs(
+                Map.of("gift_certificate.name","%name%",
+                        "description","description%",
+                        "tag.name","tag1"),
+                List.of(1,2)
+        ));
+
+        args.add(
+                Arguments.of(
+                Map.of("gift_certificate.name","%name%",
+                        "description","description%",
+                        "tag.name","tag1"),
+                List.of("name desc"),
+                List.of(2,1),
+                true
+        ));
+
+        args.add(
+                Arguments.of(
+                        Map.of("gift_certificate.name","%name%",
+                                "description","description%",
+                                "tag.name","tag1"),
+                        List.of("create_date"),
+                        List.of(2,1),
+                        true
+                ));
+
+
+
+        return args.stream();
+    }
 
     @BeforeEach
     void setUp() {
@@ -129,8 +213,32 @@ class GigCertDAOImplTest {
         assertEquals("name1",giftCertificate.getName());
     }
 
+    @ParameterizedTest
+    @MethodSource("queryMaps")
+    void getAllByParam(Map<String,Object> params,
+                       List<String> sorting,
+                       List<Integer> expected,
+                       boolean ordered) {
+
+        List<GiftCertificate> result=giftCertDAO.getAllByParam(params,sorting);
+
+        assertEquals(expected.size(),result.size());
+        if (ordered){
+            for(int i=0;i<expected.size();i++)
+                assertEquals(expected.get(i),result.get(i).getId());
+        }else{
+            assertTrue(
+                    result.stream()
+                            .allMatch(giftCertificate -> expected.contains(giftCertificate.getId()))
+            );
+        }
+    }
+
     @Test
-    void getAllByParam() {
+    void getAllByParamNullArgs() {
+        assertThrows(IllegalArgumentException.class,() ->
+                giftCertDAO.getAllByParam(null,null)
+        );
     }
 
     Set<Tag> getTags(String name,int count){
