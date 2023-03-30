@@ -63,9 +63,11 @@ class TagDaoImplTest {
 
     @Test
     void deleteTag() {
-        tagDao.deleteTag(1);
+        Tag tstTag=tagDao.createTag("delete test");
+
+        tagDao.deleteTag(tstTag.getId());
         assertThrows(EmptyResultDataAccessException.class, () ->
-                jdbcTemplate.queryForObject("select * from tag where id=?",new TagRowMapper(),1)
+                jdbcTemplate.queryForObject("select * from tag where id=?",new TagRowMapper(),tstTag.getId())
         );
 
     }

@@ -6,14 +6,14 @@ import com.epam.esm.module2boot.model.GiftCertificate;
 import com.epam.esm.module2boot.model.Tag;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.jdbc.core.JdbcTemplate;
-import org.springframework.jdbc.core.SqlParameter;
 import org.springframework.jdbc.core.namedparam.MapSqlParameterSource;
 import org.springframework.jdbc.core.namedparam.NamedParameterJdbcTemplate;
 import org.springframework.jdbc.core.namedparam.SqlParameterSource;
 import org.springframework.jdbc.support.GeneratedKeyHolder;
-import org.springframework.jdbc.support.KeyHolder;
 import org.springframework.stereotype.Repository;
+import org.springframework.transaction.annotation.Transactional;
 
+import java.sql.Timestamp;
 import java.util.*;
 import java.util.stream.Collectors;
 
@@ -30,31 +30,37 @@ public class GigCertDAOImpl implements GiftCertDAO {
     }
 
     @Override
+    @Transactional
     public void createGiftCert(GiftCertificate giftCertificate) {
         Set<Tag> tagSet = new HashSet<>();
-        for (Tag tag1 : giftCertificate.getTags()) {
-            tagSet.add(tag1.isNoId() ?
-                    tagDAO.createTag(tag1.getName())
-                    : tag1);
+        if (giftCertificate.getTags()!=null) {
+            for (Tag tag1 : giftCertificate.getTags()) {
+                tagSet.add(tag1.isNoId() ?
+                        tagDAO.createTag(tag1.getName())
+                        : tag1);
+            }
         }
 
         SqlParameterSource parameters = createParametesMap(giftCertificate);
 
         GeneratedKeyHolder holder = new GeneratedKeyHolder();
 
-        jdbcTemplate.update(
+        NamedParameterJdbcTemplate namedParameterJdbcTemplate=new NamedParameterJdbcTemplate(jdbcTemplate);
+
+        namedParameterJdbcTemplate.update(
                 """
-                    INSERT INTO gift_certificates (name,description, price, duration, create_date, last_update_date)
+                    INSERT INTO gift_certificate (name,description, price, duration, create_date, last_update_date)
                     VALUES (:name,:description,:price,:duration,:create_date,:last_update_date)
                     """,parameters,holder);
+        int id =  Objects.requireNonNull(holder.getKey()).intValue();
+        addLinks2Tags(tagSet,id);
 
-        addLinks2Tags(tagSet, Objects.requireNonNull(holder.getKey()).intValue());
     }
 
     private void addLinks2Tags(Set<Tag> tagSet,final int id) {
         tagSet.stream().forEach(
                 tag -> jdbcTemplate.update(
-                        "INSERT INTO cert_tags (cert_id,tag_id) VALUES (?,?)"
+                        "INSERT INTO cert_tag (cert_id,tag_id) VALUES (?,?)"
                         ,id
                         ,tag.getId())
         );
@@ -62,18 +68,22 @@ public class GigCertDAOImpl implements GiftCertDAO {
 
     private static SqlParameterSource createParametesMap(GiftCertificate giftCertificate) {
         SqlParameterSource parameters = new MapSqlParameterSource()
-                    .addValue(":name", giftCertificate.getName())
-                    .addValue(":description", giftCertificate.getDescription())
-                    .addValue(":price", giftCertificate.getPrice())
-                    .addValue(":create_date", giftCertificate.getCreateDate())
-                    .addValue(":last_update_date", giftCertificate.getLastUpDateTime());
+                    .addValue("name", giftCertificate.getName())
+                    .addValue("description", giftCertificate.getDescription())
+                    .addValue("duration",giftCertificate.getDuration())
+                    .addValue("price", giftCertificate.getPrice() )
+                    .addValue("create_date",
+                            new Timestamp( giftCertificate.getCreateDate().getTime() ))
+                    .addValue("last_update_date",
+                            new Timestamp( giftCertificate.getLastUpdateDate().getTime() )
+                    );
         return parameters;
     }
 
     @Override
     public void deleteGiftCert(int id) {
-        jdbcTemplate.update("DELETE FROM gift_certificates where id=?",id);
-        jdbcTemplate.update("DELETE FROM cert_tags WHERE cert_id=?",id);
+        jdbcTemplate.update("DELETE FROM gift_certificate where id=?",id);
+        jdbcTemplate.update("DELETE FROM cert_tag WHERE cert_id=?",id);
     }
 
     @Override
@@ -88,12 +98,12 @@ public class GigCertDAOImpl implements GiftCertDAO {
                 .addValues(fieldsToUpdate)
                 .addValue("id",id);
 
-        jdbcTemplate.update("UPDATE gift_certificates SET " + fields +" WHERE id=:id",sqlParameterSource);
+        jdbcTemplate.update("UPDATE gift_certificate SET " + fields +" WHERE id=:id",sqlParameterSource);
     }
 
     @Override
     public void getGiftCert(int id) {
-        jdbcTemplate.queryForObject("select * from gift_certificates where id=?",new CertRowMapper(),id);
+        jdbcTemplate.queryForObject("select * from gift_certificate where id=?",new CertRowMapper(),id);
     }
 
     @Override

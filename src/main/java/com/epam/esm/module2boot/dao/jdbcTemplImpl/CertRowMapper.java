@@ -12,11 +12,12 @@ public class CertRowMapper implements RowMapper<GiftCertificate> {
 
         GiftCertificate gs=new GiftCertificate();
         gs.setId(rs.getInt("id"));
+        gs.setDescription(rs.getString("description"));
         gs.setName(rs.getString("name"));
         gs.setDuration(rs.getInt("duration"));
         gs.setPrice(rs.getBigDecimal("price"));
         gs.setCreateDate(rs.getTimestamp("create_date"));
-        gs.setLastUpDateTime(rs.getTimestamp("last_update_date"));
+        gs.setLastUpdateDate(rs.getTimestamp("last_update_date"));
 
         return gs;
     }

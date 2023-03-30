@@ -18,7 +18,7 @@ public class GiftCertificate {
     int duration = INT_NO_VAL;
 
     Date createDate;
-    Date lastUpDateTime;
+    Date lastUpdateDate;
 
     Set<Tag> tags;
 
