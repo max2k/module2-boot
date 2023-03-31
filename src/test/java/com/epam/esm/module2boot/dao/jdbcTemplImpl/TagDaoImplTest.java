@@ -6,6 +6,7 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.test.autoconfigure.jdbc.AutoConfigureTestDatabase;
 import org.springframework.boot.test.autoconfigure.jdbc.JdbcTest;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.context.annotation.Bean;
@@ -22,24 +23,15 @@ import javax.sql.DataSource;
 import static org.junit.jupiter.api.Assertions.*;
 import static org.springframework.jdbc.datasource.embedded.EmbeddedDatabaseType.H2;
 
-@JdbcTest
-@ExtendWith(SpringExtension.class)
+@SpringBootTest
+@AutoConfigureTestDatabase(replace = AutoConfigureTestDatabase.Replace.NONE)
 class TagDaoImplTest {
 
+    @Autowired
     private TagDAO tagDao;
-    private JdbcTemplate jdbcTemplate;
 
-    @BeforeEach
-    void setUp() {
-        EmbeddedDatabase db = new EmbeddedDatabaseBuilder()
-                .generateUniqueName(true)
-                .setType(H2)
-                .setScriptEncoding("UTF-8")
-                .addDefaultScripts()
-                .build();
-        jdbcTemplate = new JdbcTemplate(db);
-        tagDao = new TagDaoImpl(jdbcTemplate);
-    }
+    @Autowired
+    private JdbcTemplate jdbcTemplate;
 
     @Test
     void createTag() {
