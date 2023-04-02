@@ -1,6 +1,8 @@
 package com.epam.esm.module2boot.controller;
 
+import com.epam.esm.module2boot.dao.TagDAO;
 import com.epam.esm.module2boot.model.Tag;
+import com.epam.esm.module2boot.model.dto.TagDTO;
 import com.epam.esm.module2boot.service.TagService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -29,9 +31,9 @@ public class TagController {
         }
     }
 
-    @PostMapping
-    public ResponseEntity<Tag> createTag(@RequestBody String name) {
-        Tag createdTag = tagService.createTag(name);
+    @PostMapping("/new")
+    public ResponseEntity<Tag> createTag(@RequestBody TagDTO tagDTO) {
+        Tag createdTag = tagService.createTag(tagDTO.getName());
         return ResponseEntity.status(HttpStatus.CREATED).body(createdTag);
     }
 
