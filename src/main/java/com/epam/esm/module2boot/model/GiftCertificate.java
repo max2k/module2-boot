@@ -10,8 +10,10 @@ import java.util.Set;
 @Getter
 @Setter
 public class GiftCertificate {
-    private final int INT_NO_VAL = -1;
+
+    private static final int INT_NO_VAL = -1;
     int id = INT_NO_VAL;
+
     String description;
     String name;
     BigDecimal price;
