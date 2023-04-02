@@ -35,7 +35,7 @@ public class TagController {
         return ResponseEntity.status(HttpStatus.CREATED).body(createdTag);
     }
 
-    @DeleteMapping("/{id}")
+    @DeleteMapping("/delete/{id}")
     public ResponseEntity<Void> deleteTag(@PathVariable Integer id) {
         boolean deleted = tagService.deleteTag(id);
         if (deleted) {

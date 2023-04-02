@@ -6,7 +6,7 @@ import lombok.Setter;
 @Getter
 @Setter
 public class Tag {
-    public final int NO_ID=-1;
+    public static final int NO_ID=-1;
     int id = NO_ID;
     String name;
 
