@@ -7,6 +7,7 @@ import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.jdbc.AutoConfigureTestDatabase;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.dao.DuplicateKeyException;
 
 import static org.junit.jupiter.api.Assertions.*;
 @SpringBootTest
@@ -30,6 +31,8 @@ class TagServiceImplTest {
 
         assertEquals(tagName,tstTag.getName());
         assertFalse(tstTag.isNoId());
+
+        assertThrows(DuplicateKeyException.class,() -> tagService.createTag(tagName) );
     }
 
     @Test
