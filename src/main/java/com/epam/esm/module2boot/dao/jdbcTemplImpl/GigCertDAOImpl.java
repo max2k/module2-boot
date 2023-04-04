@@ -33,17 +33,17 @@ public class GigCertDAOImpl implements GiftCertDAO {
 
     @Override
     @Transactional
-    public void createGiftCert(GiftCertificate giftCertificate) {
-        Set<Tag> tagSet = new HashSet<>();
+    public GiftCertificate createGiftCert(GiftCertificate giftCertificate) {
+        Set<Tag> tagSet=new HashSet<>();
+
         if (giftCertificate.getTags()!=null) {
-            for (Tag tag1 : giftCertificate.getTags()) {
-                tagSet.add(tag1.isNoId() ?
-                        tagDAO.createTag(tag1.getName())
-                        : tag1);
-            }
+            tagSet= giftCertificate.getTags().stream()
+                    .map(tag -> tag.isNoId()? tagDAO.createTag(tag.getName()): tag)
+                    .collect(Collectors.toSet());
         }
 
-        SqlParameterSource parameters = createParametesMap(giftCertificate);
+
+        SqlParameterSource parameters = createParametersMap(giftCertificate);
 
         GeneratedKeyHolder holder = new GeneratedKeyHolder();
 
@@ -53,8 +53,13 @@ public class GigCertDAOImpl implements GiftCertDAO {
                     VALUES (:name,:description,:price,:duration,:create_date,:last_update_date)
                     """,parameters,holder);
         int id =  Objects.requireNonNull(holder.getKey()).intValue();
+
         addLinks2Tags(tagSet,id);
 
+        return giftCertificate.toBuilder()
+                .id(id)
+                .tags(tagSet)
+                .build();
     }
 
     private void addLinks2Tags(Set<Tag> tagSet,final int id) {
@@ -66,7 +71,7 @@ public class GigCertDAOImpl implements GiftCertDAO {
         );
     }
 
-    private static SqlParameterSource createParametesMap(GiftCertificate giftCertificate) {
+    private static SqlParameterSource createParametersMap(GiftCertificate giftCertificate) {
         SqlParameterSource parameters = new MapSqlParameterSource()
                     .addValue("name", giftCertificate.getName())
                     .addValue("description", giftCertificate.getDescription())

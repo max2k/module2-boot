@@ -6,7 +6,7 @@ import java.util.List;
 import java.util.Map;
 
 public interface GiftCertDAO {
-    void createGiftCert(GiftCertificate giftCertificate);
+    GiftCertificate createGiftCert(GiftCertificate giftCertificate);
     void deleteGiftCert(int id);
 
     void updateGiftCert(int id, Map<String, Object> fieldsToUpdate);

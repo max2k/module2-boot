@@ -1,5 +1,6 @@
 package com.epam.esm.module2boot.dao.jdbcTemplImpl;
 
+import com.epam.esm.module2boot.Util;
 import com.epam.esm.module2boot.dao.GiftCertDAO;
 import com.epam.esm.module2boot.dao.TagDAO;
 import com.epam.esm.module2boot.model.GiftCertificate;
@@ -131,7 +132,7 @@ class GigCertDAOImplTest {
 
     @Test
     void createGiftCert() throws ParseException {
-        GiftCertificate giftCertificate=new GiftCertificate();
+        GiftCertificate giftCertificate=GiftCertificate.builder().build();
 
         String daoTestName = "DAO test name1";
 
@@ -139,8 +140,8 @@ class GigCertDAOImplTest {
         giftCertificate.setDescription("DAO test description");
         giftCertificate.setPrice(new BigDecimal("11.2"));
         giftCertificate.setDuration(200);
-        giftCertificate.setCreateDate( parseISO8601("2020-10-01T16:40:11")  );
-        giftCertificate.setLastUpdateDate(parseISO8601("2020-10-01T16:40:11"));
+        giftCertificate.setCreateDate( Util.parseISO8601("2020-10-01T16:40:11")  );
+        giftCertificate.setLastUpdateDate(Util.parseISO8601("2020-10-01T16:40:11"));
 
         Set<Tag> tags=getTags("DAO test tag",3); // new tags
         tags.add(tagDAO.getTagById(1));  // existing tag from database
@@ -193,7 +194,7 @@ class GigCertDAOImplTest {
         paramToUpdate.put("name","New name");
         paramToUpdate.put("description","New description");
         paramToUpdate.put("create_date", new Timestamp(
-                parseISO8601("2020-10-10T10:10:10").getTime())
+                Util.parseISO8601("2020-10-10T10:10:10").getTime())
         );
 
         giftCertDAO.updateGiftCert(1, paramToUpdate);
@@ -202,7 +203,7 @@ class GigCertDAOImplTest {
 
         assertEquals("New name",giftCertificate.getName() );
         assertEquals("New description",giftCertificate.getDescription() );
-        assertEquals( parseISO8601("2020-10-10T10:10:10"),giftCertificate.getCreateDate());
+        assertEquals( Util.parseISO8601("2020-10-10T10:10:10"),giftCertificate.getCreateDate());
     }
 
     @Test
@@ -251,8 +252,5 @@ class GigCertDAOImplTest {
         return res;
     }
 
-    public static Date parseISO8601(String iso8601string) throws ParseException {
-        SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss");
-        return dateFormat.parse(iso8601string);
-    }
+
 }

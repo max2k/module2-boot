@@ -7,6 +7,7 @@ import com.epam.esm.module2boot.model.dto.GiftCertificateQueryDTO;
 import com.epam.esm.module2boot.model.dto.GiftCertificateSortingDTO;
 import com.epam.esm.module2boot.model.dto.GiftCertificateUpdateDTO;
 import com.epam.esm.module2boot.service.GiftCertificateService;
+import org.modelmapper.ModelMapper;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -15,15 +16,17 @@ import java.util.List;
 public class GiftCertificateServiceImpl implements GiftCertificateService {
 
     private final GiftCertDAO giftCertDAO;
+    private final ModelMapper modelMapper;
 
-    public GiftCertificateServiceImpl(GiftCertDAO giftCertDAO) {
+    public GiftCertificateServiceImpl(GiftCertDAO giftCertDAO, ModelMapper modelMapper) {
         this.giftCertDAO = giftCertDAO;
+        this.modelMapper = modelMapper;
     }
 
     @Override
     public GiftCertificate createGiftCertificate(GiftCertificateDTO giftCertificateDTO) {
-
-        return null;
+        GiftCertificate giftCertificate=modelMapper.map(giftCertificateDTO,GiftCertificate.class);
+        return giftCertDAO.createGiftCert(giftCertificate);
     }
 
     @Override
