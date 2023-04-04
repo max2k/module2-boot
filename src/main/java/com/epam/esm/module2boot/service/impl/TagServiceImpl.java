@@ -32,4 +32,14 @@ public class TagServiceImpl implements TagService {
          return  tagDAO.deleteTag(id);
     }
 
+    @Override
+    public Tag ensureTag(Tag tag) {
+        return tagDAO.ensureTag(tag);
+    }
+
+    @Override
+    public Tag getTagByName(String name) {
+        return tagDAO.getTagByName(name);
+    }
+
 }

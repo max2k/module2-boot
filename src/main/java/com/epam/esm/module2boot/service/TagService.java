@@ -7,4 +7,7 @@ public interface TagService {
     Tag createTag(String name);
     boolean deleteTag(int id);
 
+    Tag ensureTag(Tag tag);
+
+    Tag getTagByName(String name);
 }

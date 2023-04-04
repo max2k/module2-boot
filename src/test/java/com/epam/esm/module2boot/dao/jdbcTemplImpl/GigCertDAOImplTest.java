@@ -143,10 +143,12 @@ class GigCertDAOImplTest {
         giftCertificate.setCreateDate( Util.parseISO8601("2020-10-01T16:40:11")  );
         giftCertificate.setLastUpdateDate(Util.parseISO8601("2020-10-01T16:40:11"));
 
-        Set<Tag> tags=getTags("DAO test tag",3); // new tags
+        Set<Tag> tags=new HashSet<>();
+                //getTags("DAO test tag",3); // new tags
         tags.add(tagDAO.getTagById(1));  // existing tag from database
 
         giftCertificate.setTags(tags);
+
         giftCertDAO.createGiftCert(giftCertificate);
 
         GiftCertificate giftCertificate2=jdbcTemplate.queryForObject("select * from gift_certificate where name =?"

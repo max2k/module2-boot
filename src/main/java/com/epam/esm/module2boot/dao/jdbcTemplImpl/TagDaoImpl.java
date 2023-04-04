@@ -11,7 +11,6 @@ import org.springframework.jdbc.core.namedparam.SqlParameterSource;
 import org.springframework.jdbc.support.GeneratedKeyHolder;
 import org.springframework.stereotype.Repository;
 
-import java.sql.Statement;
 import java.sql.Types;
 import java.util.HashSet;
 import java.util.List;
@@ -71,5 +70,20 @@ public class TagDaoImpl implements TagDAO {
             return new HashSet<>();
         }
 
+    }
+
+    @Override
+    public Tag ensureTag(Tag tag) {
+        try {
+            return getTagByName(tag.getName());
+        }catch (EmptyResultDataAccessException e){
+            return createTag(tag.getName());
+        }
+
+    }
+
+    @Override
+    public Tag getTagByName(String name) {
+        return jdbcTemplate.queryForObject("SELECT * FROM tag WHERE name=?",new TagRowMapper(),name);
     }
 }

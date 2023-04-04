@@ -34,13 +34,6 @@ public class GigCertDAOImpl implements GiftCertDAO {
     @Override
     @Transactional
     public GiftCertificate createGiftCert(GiftCertificate giftCertificate) {
-        Set<Tag> tagSet=new HashSet<>();
-
-        if (giftCertificate.getTags()!=null) {
-            tagSet= giftCertificate.getTags().stream()
-                    .map(tag -> tag.isNoId()? tagDAO.createTag(tag.getName()): tag)
-                    .collect(Collectors.toSet());
-        }
 
 
         SqlParameterSource parameters = createParametersMap(giftCertificate);
@@ -54,21 +47,22 @@ public class GigCertDAOImpl implements GiftCertDAO {
                     """,parameters,holder);
         int id =  Objects.requireNonNull(holder.getKey()).intValue();
 
-        addLinks2Tags(tagSet,id);
+        addLinks2Tags(giftCertificate.getTags(),id);
 
         return giftCertificate.toBuilder()
                 .id(id)
-                .tags(tagSet)
                 .build();
     }
 
     private void addLinks2Tags(Set<Tag> tagSet,final int id) {
-        tagSet.stream().forEach(
-                tag -> jdbcTemplate.update(
-                        "INSERT INTO cert_tag (cert_id,tag_id) VALUES (?,?)"
-                        ,id
-                        ,tag.getId())
-        );
+        if (tagSet!=null && tagSet.size()>0) {
+            tagSet.stream().forEach(
+                    tag -> jdbcTemplate.update(
+                            "INSERT INTO cert_tag (cert_id,tag_id) VALUES (?,?)"
+                            , id
+                            , tag.getId())
+            );
+        }
     }
 
     private static SqlParameterSource createParametersMap(GiftCertificate giftCertificate) {

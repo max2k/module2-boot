@@ -11,4 +11,8 @@ public interface TagDAO {
     boolean deleteTag(int id);
 
     Set<Tag> getTagsForCertID(int id);
+
+    Tag ensureTag(Tag tag);
+
+    Tag getTagByName(String name);
 }
