@@ -1,6 +1,5 @@
 package com.epam.esm.module2boot.model.dto;
 
-import com.epam.esm.module2boot.model.Tag;
 import lombok.Data;
 
 import java.math.BigDecimal;
@@ -19,6 +18,6 @@ public class GiftCertificateDTO {
     Date createDate;
     Date lastUpdateDate;
 
-    Set<Tag> tags;
+    Set<TagDTO> tagsDTO;
 
 }

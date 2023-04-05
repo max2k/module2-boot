@@ -60,4 +60,9 @@ public class GiftCertificateServiceImpl implements GiftCertificateService {
     public boolean deleteGiftCertificateById(int id) {
         return false;
     }
+
+    @Override
+    public GiftCertificate getGiftCertificateById(int id) {
+        return giftCertDAO.getGiftCert(id);
+    }
 }
