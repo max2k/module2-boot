@@ -17,4 +17,5 @@ public interface GiftCertificateService {
     boolean updateGiftCertificate(int id, GiftCertificateUpdateDTO giftCertificateUpdateDTO);
     boolean deleteGiftCertificateById(int id);
 
+    GiftCertificate getGiftCertificateById(int id);
 }
