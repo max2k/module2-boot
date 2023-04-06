@@ -13,6 +13,7 @@ import org.modelmapper.ModelMapper;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
+import java.util.Map;
 import java.util.Set;
 import java.util.stream.Collectors;
 
@@ -53,12 +54,18 @@ public class GiftCertificateServiceImpl implements GiftCertificateService {
 
     @Override
     public boolean updateGiftCertificate(int id, GiftCertificateUpdateDTO giftCertificateUpdateDTO) {
-        return false;
+        Map<String,Object> fields=giftCertificateUpdateDTO.getFields();
+
+        if (fields == null || fields.isEmpty() )
+            throw new IllegalArgumentException("Field list is empty nothing to do!");
+
+        return giftCertDAO.updateGiftCert(id,fields);
     }
 
     @Override
     public boolean deleteGiftCertificateById(int id) {
-        return false;
+        return giftCertDAO.deleteGiftCert(id);
+
     }
 
     @Override

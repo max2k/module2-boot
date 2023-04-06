@@ -7,9 +7,9 @@ import java.util.Map;
 
 public interface GiftCertDAO {
     GiftCertificate createGiftCert(GiftCertificate giftCertificate);
-    void deleteGiftCert(int id);
+    boolean deleteGiftCert(int id);
 
-    void updateGiftCert(int id, Map<String, Object> fieldsToUpdate);
+    boolean updateGiftCert(int id, Map<String, Object> fieldsToUpdate);
     GiftCertificate getGiftCert(int id);
 
     List<GiftCertificate> getAllByParam(Map<String,Object> params, List<String> sorting);

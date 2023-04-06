@@ -56,7 +56,7 @@ public class GigCertDAOImpl implements GiftCertDAO {
 
     private void addLinks2Tags(Set<Tag> tagSet,final int id) {
         if (tagSet!=null && tagSet.size()>0) {
-            tagSet.stream().forEach(
+            tagSet.forEach(
                     tag -> jdbcTemplate.update(
                             "INSERT INTO cert_tag (cert_id,tag_id) VALUES (?,?)"
                             , id
@@ -66,7 +66,7 @@ public class GigCertDAOImpl implements GiftCertDAO {
     }
 
     private static SqlParameterSource createParametersMap(GiftCertificate giftCertificate) {
-        SqlParameterSource parameters = new MapSqlParameterSource()
+        return new MapSqlParameterSource()
                     .addValue("name", giftCertificate.getName())
                     .addValue("description", giftCertificate.getDescription())
                     .addValue("duration",giftCertificate.getDuration())
@@ -76,17 +76,20 @@ public class GigCertDAOImpl implements GiftCertDAO {
                     .addValue("last_update_date",
                             new Timestamp( giftCertificate.getLastUpdateDate().getTime() )
                     );
-        return parameters;
     }
 
     @Override
-    public void deleteGiftCert(int id) {
-        jdbcTemplate.update("DELETE FROM gift_certificate where id=?",id);
+    public boolean deleteGiftCert(int id) {
+        int result=jdbcTemplate.update("DELETE FROM gift_certificate where id=?",id);
         jdbcTemplate.update("DELETE FROM cert_tag WHERE cert_id=?",id);
+        return result==1;
     }
 
     @Override
-    public void updateGiftCert(int id, Map<String,Object> fieldsToUpdate) {
+    public boolean updateGiftCert(int id, Map<String,Object> fieldsToUpdate) {
+        if (fieldsToUpdate == null || fieldsToUpdate.isEmpty() )
+            throw new IllegalArgumentException("Fields map null or empty!");
+
         String fields=fieldsToUpdate
                 .keySet()
                 .stream()
@@ -97,7 +100,9 @@ public class GigCertDAOImpl implements GiftCertDAO {
                 .addValues(fieldsToUpdate)
                 .addValue("id",id);
 
-        namedParameterJdbcTemplate.update("UPDATE gift_certificate SET " + fields +" WHERE id=:id",sqlParameterSource);
+        return namedParameterJdbcTemplate.update
+                 ("UPDATE gift_certificate SET " + fields +" WHERE id=:id",sqlParameterSource)
+               ==1;
     }
 
     @Override
@@ -120,10 +125,10 @@ public class GigCertDAOImpl implements GiftCertDAO {
 
         List<GiftCertificate> giftCertificates=namedParameterJdbcTemplate.query(
                 """
-                      SELECT DISTINCT gift_certificate.* FROM gift_certificate 
+                      SELECT DISTINCT gift_certificate.* FROM gift_certificate
                         LEFT OUTER JOIN  cert_tag ON cert_tag.cert_id=gift_certificate.id
                         LEFT OUTER JOIN tag ON cert_tag.tag_id=tag.id
-                    """+whereStr+" "+sortSubStr, parameterSource,new CertRowMapper());
+                    """ +whereStr+" "+sortSubStr, parameterSource,new CertRowMapper());
 
         giftCertificates.forEach(giftCertificate ->
                 giftCertificate.setTags(tagDAO.getTagsForCertID(giftCertificate.getId()))
@@ -136,13 +141,12 @@ public class GigCertDAOImpl implements GiftCertDAO {
         if (params==null || params.isEmpty() ) return "";
         Set<String> likeFields=Set.of("gift_certificate.name","description");
 
-        return "WHERE "+params.entrySet().stream()
-                .map(stringObjectEntry ->
-                        String.format(
-                                likeFields.contains( stringObjectEntry.getKey() )?
-                                        "%1$s like :%1$s" : "%1$s = :%1$s"
-                                ,stringObjectEntry.getKey()
-                        ))
+        return "WHERE "+params.keySet().stream()
+                .map(o -> String.format(
+                        likeFields.contains(o) ?
+                                "%1$s like :%1$s" : "%1$s = :%1$s"
+                        , o
+                ))
                 .collect(Collectors.joining(" AND "));
     }
 
