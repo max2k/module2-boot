@@ -21,7 +21,6 @@ import org.springframework.test.context.junit.jupiter.SpringExtension;
 import java.math.BigDecimal;
 import java.sql.Timestamp;
 import java.text.ParseException;
-import java.text.SimpleDateFormat;
 import java.util.*;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
@@ -160,8 +159,8 @@ class GigCertDAOImplTest {
         // get tag list from database
         List<Tag> tagList=jdbcTemplate.query(
                 """
-                        select * from 
-                        cert_tag inner join tag on cert_tag.tag_id=tag.id 
+                        select * from
+                        cert_tag inner join tag on cert_tag.tag_id=tag.id
                         where cert_tag.cert_id=?
                         """,new TagRowMapper(),giftCertificate2.getId()
         );
@@ -175,7 +174,7 @@ class GigCertDAOImplTest {
     private static void assertEqualsCerts(GiftCertificate giftCertificate, GiftCertificate giftCertificate2) {
         assertEquals(giftCertificate.getName(), giftCertificate2.getName());
         assertEquals(giftCertificate.getDescription(), giftCertificate2.getDescription());
-        assertTrue(giftCertificate.getPrice().compareTo(giftCertificate2.getPrice())==0);
+        assertEquals(0, giftCertificate.getPrice().compareTo(giftCertificate2.getPrice()));
         assertEquals(giftCertificate.getDuration(), giftCertificate2.getDuration());
         assertEquals(giftCertificate.getCreateDate(), giftCertificate2.getCreateDate());
         assertEquals(giftCertificate.getLastUpdateDate(), giftCertificate2.getLastUpdateDate());
@@ -235,23 +234,6 @@ class GigCertDAOImplTest {
                             .allMatch(giftCertificate -> expected.contains(giftCertificate.getId()))
             );
         }
-    }
-
-    @Test
-    void getAllByParamNullArgs() {
-        assertThrows(IllegalArgumentException.class,() ->
-                giftCertDAO.getAllByParam(null,null)
-        );
-    }
-
-    Set<Tag> getTags(String name,int count){
-        Set<Tag> res=new HashSet<>();
-        for(int i=0;i<count;i++){
-            Tag t1=new Tag();
-            t1.setName(name+i);
-            res.add(t1);
-        }
-        return res;
     }
 
 

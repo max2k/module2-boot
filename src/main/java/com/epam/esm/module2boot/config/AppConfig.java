@@ -1,7 +1,8 @@
 package com.epam.esm.module2boot.config;
 
+import com.epam.esm.module2boot.validator.GiftCertificateQueryDTOValidator;
+import com.epam.esm.module2boot.validator.impl.GiftCertificateQueryDTOValidatorImpl;
 import org.modelmapper.ModelMapper;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.ComponentScan;
 import org.springframework.context.annotation.Configuration;
@@ -31,6 +32,11 @@ public class AppConfig implements WebMvcConfigurer {
     @Bean
     public ModelMapper modelMapper(){
         return new ModelMapper();
+    }
+
+    @Bean
+    GiftCertificateQueryDTOValidator giftCertificateQueryDTOValidator(){
+        return new GiftCertificateQueryDTOValidatorImpl();
     }
 
 }

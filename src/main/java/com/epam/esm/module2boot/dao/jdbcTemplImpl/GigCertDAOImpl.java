@@ -116,7 +116,6 @@ public class GigCertDAOImpl implements GiftCertDAO {
 
     @Override
     public List<GiftCertificate> getAllByParam(Map<String, Object> params, List<String> sortingMap) {
-        if ( params==null || sortingMap==null ) throw new IllegalArgumentException("Input params should be not null");
 
         String sortSubStr=getSortingSubStr(sortingMap);
         String whereStr=getWhereStr(params);
@@ -133,6 +132,9 @@ public class GigCertDAOImpl implements GiftCertDAO {
         giftCertificates.forEach(giftCertificate ->
                 giftCertificate.setTags(tagDAO.getTagsForCertID(giftCertificate.getId()))
         );
+
+        System.out.println("queryStr:"+whereStr);
+        System.out.println("orderStr:"+sortSubStr);
 
         return giftCertificates;
     }

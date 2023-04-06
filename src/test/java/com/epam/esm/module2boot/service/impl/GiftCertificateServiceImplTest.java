@@ -4,6 +4,7 @@ import com.epam.esm.module2boot.Util;
 import com.epam.esm.module2boot.model.GiftCertificate;
 import com.epam.esm.module2boot.model.Tag;
 import com.epam.esm.module2boot.model.dto.GiftCertificateDTO;
+import com.epam.esm.module2boot.model.dto.GiftCertificateQueryDTO;
 import com.epam.esm.module2boot.model.dto.GiftCertificateUpdateDTO;
 import com.epam.esm.module2boot.model.dto.TagDTO;
 import com.epam.esm.module2boot.service.GiftCertificateService;
@@ -33,7 +34,6 @@ class GiftCertificateServiceImplTest {
 
     @Autowired
     GiftCertificateService giftCertificateService;
-
 
 
     @Test
@@ -108,10 +108,60 @@ class GiftCertificateServiceImplTest {
         ).collect(Collectors.toSet());
     }
 
-    @Test
-    void getGiftCertificatesBy() throws ParseException {
+    @ParameterizedTest
+    @MethodSource("emptyQueries")
+    void getGiftCertificatesByEmptyData(Map<String,Object> queryFields
+            ,int[] resultIds,List<String> sorting)  {
+
+        GiftCertificateQueryDTO giftCertQueryDTO=new GiftCertificateQueryDTO();
+        giftCertQueryDTO.setQueryFields(queryFields);
+        giftCertQueryDTO.setSorting(sorting);
+
+        List<GiftCertificate> certs=giftCertificateService.getGiftCertificatesBy(giftCertQueryDTO);
 
 
+        Stream<Integer> idSet=certs.stream().map(GiftCertificate::getId);
+
+        if (sorting!=null && !sorting.isEmpty()) {
+            int[] arr =idSet.mapToInt(Integer::intValue).toArray();
+            System.out.println( Arrays.toString(arr));
+            assertArrayEquals(resultIds, arr);
+        }else{
+            assertEquals(Arrays.stream(resultIds).boxed().collect(Collectors.toSet()),
+                    idSet.collect(Collectors.toSet()));
+        }
+
+
+    }
+
+
+    public static Stream<Arguments> emptyQueries() {
+        return Stream.of(
+                Arguments.of(null,new int[]{1,2,3,4,5,6},null)
+                        ,Arguments.of(new HashMap<>(),new int[]{1,2,3,4,5,6},new LinkedList<>())
+                        ,Arguments.of(Map.of("tag.name","tag1"),new int[]{1,2},null)
+                        ,Arguments.of(
+                                Map.of("description","description2")
+                                ,new int[]{2,4,5,6},null)
+                        ,Arguments.of(
+                        Map.of("description","description2"
+                                        ,"tag.name","tag1")
+                                ,new int[]{2},null)
+                        ,Arguments.of(
+                        Map.of("description","description%"
+                                ,"tag.name","tag1")
+                                ,new int[]{1,2},null)
+                        ,Arguments.of(null,new int[]{1,2,3,4,5,6}
+                            ,List.of("gift_certificate.name"))
+                        ,Arguments.of(null,new int[]{1,2,3,4,5,6}
+                            ,List.of("gift_certificate.name asc"))
+                        ,Arguments.of(null,new int[]{6,5,4,3,2,1}
+                            ,List.of("gift_certificate.name desc"))
+                        ,Arguments.of(null,new int[]{6, 5, 4, 2, 3, 1}
+                            ,List.of("create_date","gift_certificate.name desc"))
+                        ,Arguments.of(Map.of("tag.name","tag1"),new int[]{2,1}
+                        ,List.of("create_date","gift_certificate.name desc"))
+        );
     }
 
     @Test

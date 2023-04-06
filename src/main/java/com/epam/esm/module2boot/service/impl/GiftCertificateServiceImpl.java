@@ -5,10 +5,10 @@ import com.epam.esm.module2boot.model.GiftCertificate;
 import com.epam.esm.module2boot.model.Tag;
 import com.epam.esm.module2boot.model.dto.GiftCertificateDTO;
 import com.epam.esm.module2boot.model.dto.GiftCertificateQueryDTO;
-import com.epam.esm.module2boot.model.dto.GiftCertificateSortingDTO;
 import com.epam.esm.module2boot.model.dto.GiftCertificateUpdateDTO;
 import com.epam.esm.module2boot.service.GiftCertificateService;
 import com.epam.esm.module2boot.service.TagService;
+import com.epam.esm.module2boot.validator.GiftCertificateQueryDTOValidator;
 import org.modelmapper.ModelMapper;
 import org.springframework.stereotype.Service;
 
@@ -25,10 +25,15 @@ public class GiftCertificateServiceImpl implements GiftCertificateService {
 
     private final TagService tagService;
 
-    public GiftCertificateServiceImpl(GiftCertDAO giftCertDAO, ModelMapper modelMapper, TagService tagService) {
+    private final GiftCertificateQueryDTOValidator giftCertificateQueryDTOValidator;
+
+    public GiftCertificateServiceImpl(GiftCertDAO giftCertDAO, ModelMapper modelMapper,
+                                      TagService tagService,
+                                      GiftCertificateQueryDTOValidator giftCertificateQueryDTOValidator) {
         this.giftCertDAO = giftCertDAO;
         this.modelMapper = modelMapper;
         this.tagService = tagService;
+        this.giftCertificateQueryDTOValidator = giftCertificateQueryDTOValidator;
     }
 
     @Override
@@ -48,8 +53,14 @@ public class GiftCertificateServiceImpl implements GiftCertificateService {
     }
 
     @Override
-    public List<GiftCertificate> getGiftCertificatesBy(GiftCertificateQueryDTO giftCertificateQueryDTO, GiftCertificateSortingDTO giftCertificateSortingDTO) {
-        return null;
+    public List<GiftCertificate> getGiftCertificatesBy(GiftCertificateQueryDTO giftCertificateQueryDTO) {
+
+        if (! giftCertificateQueryDTOValidator.isValid(giftCertificateQueryDTO))
+            throw new IllegalArgumentException("Incoming DTO is not Valid");
+
+        Map<String,Object> queryFields=giftCertificateQueryDTO.getQueryFields();
+
+        return giftCertDAO.getAllByParam(queryFields,giftCertificateQueryDTO.getSorting());
     }
 
     @Override
