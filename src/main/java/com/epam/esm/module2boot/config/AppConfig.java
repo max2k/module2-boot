@@ -29,10 +29,7 @@ public class AppConfig implements WebMvcConfigurer {
 
     @Bean
     public ModelMapper modelMapper(){
-
-
         return new ModelMapper();
     }
-
 
 }

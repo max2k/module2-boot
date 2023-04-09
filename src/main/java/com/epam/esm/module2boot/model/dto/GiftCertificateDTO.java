@@ -1,5 +1,6 @@
 package com.epam.esm.module2boot.model.dto;
 
+import com.fasterxml.jackson.annotation.JsonFormat;
 import lombok.Data;
 
 import java.math.BigDecimal;
@@ -15,7 +16,13 @@ public class GiftCertificateDTO {
     BigDecimal price;
     int duration ;
 
+    @JsonFormat
+            (shape = JsonFormat.Shape.STRING, pattern = "dd-MM-yyyy'T'hh:mm:ss.SSS")
     Date createDate;
+
+
+    @JsonFormat
+            (shape = JsonFormat.Shape.STRING, pattern = "dd-MM-yyyy'T'hh:mm:ss.SSS")
     Date lastUpdateDate;
 
     Set<TagDTO> tags;

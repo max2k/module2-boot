@@ -12,7 +12,7 @@ import org.springframework.web.bind.annotation.*;
 import java.util.List;
 
 @RestController
-@RequestMapping("/giftCertificates")
+@RequestMapping("/GiftCertificate")
 public class GiftCertificateController {
 
     private final GiftCertificateService giftCertificateService;
@@ -32,15 +32,15 @@ public class GiftCertificateController {
         return ResponseEntity.status(HttpStatus.CREATED).body(giftCertificateOutDto);
     }
 
-//    @GetMapping("/{id}")
-//    public ResponseEntity<GiftCertificate> getGiftCertificateById(@PathVariable int id) {
-//        GiftCertificate giftCertificate = giftCertificateService.getGiftCertificateById(id);
-//        if (giftCertificate != null) {
-//            return ResponseEntity.ok(giftCertificate);
-//        } else {
-//            return ResponseEntity.notFound().build();
-//        }
-//    }
+    @GetMapping("/{id}")
+    public ResponseEntity<GiftCertificateDTO> getGiftCertificateById(@PathVariable int id) {
+        GiftCertificateDTO giftCertificateDTO = giftCertificateService.getGiftCertificateById(id);
+        if (giftCertificateDTO != null) {
+            return ResponseEntity.ok(giftCertificateDTO);
+        } else {
+            return ResponseEntity.notFound().build();
+        }
+    }
 
 //    @PutMapping("/{id}")
 //    public ResponseEntity<GiftCertificate> updateGiftCertificate(@PathVariable int id, @RequestBody GiftCertificate giftCertificate) {
