@@ -2,7 +2,6 @@ package com.epam.esm.module2boot.service.impl;
 
 import com.epam.esm.module2boot.Util;
 import com.epam.esm.module2boot.model.GiftCertificate;
-import com.epam.esm.module2boot.model.Tag;
 import com.epam.esm.module2boot.model.dto.GiftCertificateDTO;
 import com.epam.esm.module2boot.model.dto.GiftCertificateQueryDTO;
 import com.epam.esm.module2boot.model.dto.GiftCertificateUpdateDTO;
