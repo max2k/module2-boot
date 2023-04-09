@@ -37,7 +37,7 @@ public class GiftCertificateServiceImpl implements GiftCertificateService {
     }
 
     @Override
-    public GiftCertificate createGiftCertificate(GiftCertificateDTO giftCertificateDTO) {
+    public GiftCertificateDTO createGiftCertificate(GiftCertificateDTO giftCertificateDTO) {
         GiftCertificate giftCertificate = modelMapper.map(giftCertificateDTO, GiftCertificate.class);
 
         if ( giftCertificate.getTags() != null && giftCertificate.getTags().size() > 0){
@@ -47,9 +47,9 @@ public class GiftCertificateServiceImpl implements GiftCertificateService {
             giftCertificate.setTags(ensuredTags);
         }
 
-        giftCertDAO.createGiftCert(giftCertificate);
+        GiftCertificate outGiftCertificate=giftCertDAO.createGiftCert(giftCertificate);
 
-        return giftCertDAO.createGiftCert(giftCertificate);
+        return modelMapper.map(outGiftCertificate,GiftCertificateDTO.class);
     }
 
     @Override
@@ -80,7 +80,8 @@ public class GiftCertificateServiceImpl implements GiftCertificateService {
     }
 
     @Override
-    public GiftCertificate getGiftCertificateById(int id) {
-        return giftCertDAO.getGiftCert(id);
+    public GiftCertificateDTO getGiftCertificateById(int id) {
+
+        return modelMapper.map(giftCertDAO.getGiftCert(id),GiftCertificateDTO.class);
     }
 }

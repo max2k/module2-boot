@@ -18,6 +18,6 @@ public class GiftCertificateDTO {
     Date createDate;
     Date lastUpdateDate;
 
-    Set<TagDTO> tagsDTO;
+    Set<TagDTO> tags;
 
 }

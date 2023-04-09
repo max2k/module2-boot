@@ -40,11 +40,11 @@ class GiftCertificateServiceImplTest {
     void createGiftCertificate() throws ParseException {
         GiftCertificateDTO giftCertificateDTO = getTestGiftCertificateDTO();
 
-        giftCertificateDTO.setTagsDTO( genTags("GS tst tag1","GS tst tag2","GS tst tag3","tag1") );
+        giftCertificateDTO.setTags( genTags("GS tst tag1","GS tst tag2","GS tst tag3","tag1") );
 
-        GiftCertificate result=giftCertificateService.createGiftCertificate(giftCertificateDTO);
+        GiftCertificateDTO result=giftCertificateService.createGiftCertificate(giftCertificateDTO);
 
-        GiftCertificate dbResult=giftCertificateService.getGiftCertificateById(result.getId());
+        GiftCertificateDTO dbResult=giftCertificateService.getGiftCertificateById(result.getId());
 
         assertNotEquals(GiftCertificate.INT_NO_VAL,result.getId());
         assertEquals(result.getId(),dbResult.getId());
@@ -53,7 +53,7 @@ class GiftCertificateServiceImplTest {
 
         // all tags have valid id
         assertTrue(
-                dbResult.getTags().stream().noneMatch(Tag::isNoId)
+                dbResult.getTags().stream().noneMatch(tagDTO -> tagDTO.getId()<=0)
         );
 
         // existing tag have valid
@@ -67,9 +67,9 @@ class GiftCertificateServiceImplTest {
     void createGiftCertificateNoTags() throws ParseException {
         GiftCertificateDTO giftCertificateDTO = getTestGiftCertificateDTO();
 
-        GiftCertificate result=giftCertificateService.createGiftCertificate(giftCertificateDTO);
+        GiftCertificateDTO result=giftCertificateService.createGiftCertificate(giftCertificateDTO);
 
-        GiftCertificate dbResult=giftCertificateService.getGiftCertificateById(result.getId());
+        GiftCertificateDTO dbResult=giftCertificateService.getGiftCertificateById(result.getId());
 
         assertNotEquals(GiftCertificate.INT_NO_VAL,result.getId());
         assertEquals(result.getId(),dbResult.getId());
@@ -91,14 +91,14 @@ class GiftCertificateServiceImplTest {
         return giftCertificateDTO;
     }
 
-    private int compareGS(GiftCertificate result, GiftCertificate dbResult) {
+    private int compareGS(GiftCertificateDTO result, GiftCertificateDTO dbResult) {
         return Comparator
-                .comparing(GiftCertificate::getName)
-                .thenComparing(GiftCertificate::getDescription)
-                .thenComparing(GiftCertificate::getDuration)
-                .thenComparing(GiftCertificate::getPrice)
-                .thenComparing(GiftCertificate::getCreateDate)
-                .thenComparing(GiftCertificate::getLastUpdateDate)
+                .comparing(GiftCertificateDTO::getName)
+                .thenComparing(GiftCertificateDTO::getDescription)
+                .thenComparing(GiftCertificateDTO::getDuration)
+                .thenComparing(GiftCertificateDTO::getPrice)
+                .thenComparing(GiftCertificateDTO::getCreateDate)
+                .thenComparing(GiftCertificateDTO::getLastUpdateDate)
                 .compare(result,dbResult);
     }
 
@@ -166,18 +166,18 @@ class GiftCertificateServiceImplTest {
 
     @Test
     void getGifCertificateById() throws ParseException {
-        GiftCertificate giftCertificate=giftCertificateService.getGiftCertificateById(1);
+        GiftCertificateDTO giftCertificateDto=giftCertificateService.getGiftCertificateById(1);
 
-        assertNotNull(giftCertificate);
-        assertEquals(1,giftCertificate.getId());
-        assertEquals("name1",giftCertificate.getName());
-        assertEquals("description1",giftCertificate.getDescription());
-        assertEquals(100,giftCertificate.getDuration());
-        assertEquals(0, new BigDecimal("10.0").compareTo(giftCertificate.getPrice()));
-        assertEquals(Util.parseISO8601("2022-05-01T15:30:00"),giftCertificate.getCreateDate());
-        assertEquals(Util.parseISO8601("2022-04-01T15:30:00"),giftCertificate.getLastUpdateDate());
+        assertNotNull(giftCertificateDto);
+        assertEquals(1,giftCertificateDto.getId());
+        assertEquals("name1",giftCertificateDto.getName());
+        assertEquals("description1",giftCertificateDto.getDescription());
+        assertEquals(100,giftCertificateDto.getDuration());
+        assertEquals(0, new BigDecimal("10.0").compareTo(giftCertificateDto.getPrice()));
+        assertEquals(Util.parseISO8601("2022-05-01T15:30:00"),giftCertificateDto.getCreateDate());
+        assertEquals(Util.parseISO8601("2022-04-01T15:30:00"),giftCertificateDto.getLastUpdateDate());
 
-        assertEquals(3,giftCertificate.getTags().size());
+        assertEquals(3,giftCertificateDto.getTags().size());
 
     }
 
@@ -194,13 +194,13 @@ class GiftCertificateServiceImplTest {
 
         assertTrue(giftCertificateService.updateGiftCertificate(1, updateDTO));
 
-        GiftCertificate giftCertificate=giftCertificateService.getGiftCertificateById(1);
+        GiftCertificateDTO giftCertificateDto=giftCertificateService.getGiftCertificateById(1);
 
-        assertEquals("testname", giftCertificate.getName() );
-        assertEquals("testdescription", giftCertificate.getDescription() );
-        assertEquals(0, giftCertificate.getPrice().compareTo(BigDecimal.valueOf(10)) );
-        assertEquals(11,giftCertificate.getDuration() );
-        assertEquals( Util.parseISO8601("2022-04-01T15:40:00"), giftCertificate.getLastUpdateDate() );
+        assertEquals("testname", giftCertificateDto.getName() );
+        assertEquals("testdescription", giftCertificateDto.getDescription() );
+        assertEquals(0, giftCertificateDto.getPrice().compareTo(BigDecimal.valueOf(10)) );
+        assertEquals(11,giftCertificateDto.getDuration() );
+        assertEquals( Util.parseISO8601("2022-04-01T15:40:00"), giftCertificateDto.getLastUpdateDate() );
     }
 
     @Test
