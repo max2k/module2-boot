@@ -116,10 +116,10 @@ class GiftCertificateServiceImplTest {
         giftCertQueryDTO.setQueryFields(queryFields);
         giftCertQueryDTO.setSorting(sorting);
 
-        List<GiftCertificate> certs=giftCertificateService.getGiftCertificatesBy(giftCertQueryDTO);
+        List<GiftCertificateDTO> certs=giftCertificateService.getGiftCertificatesBy(giftCertQueryDTO);
 
 
-        Stream<Integer> idSet=certs.stream().map(GiftCertificate::getId);
+        Stream<Integer> idSet=certs.stream().map(GiftCertificateDTO::getId);
 
         if (sorting!=null && !sorting.isEmpty()) {
             int[] arr =idSet.mapToInt(Integer::intValue).toArray();

@@ -1,15 +1,19 @@
 package com.epam.esm.module2boot.controller;
 
-import com.epam.esm.module2boot.model.GiftCertificate;
 import com.epam.esm.module2boot.model.dto.GiftCertificateDTO;
+import com.epam.esm.module2boot.model.dto.GiftCertificateQueryDTO;
 import com.epam.esm.module2boot.service.GiftCertificateService;
 import com.epam.esm.module2boot.service.TagService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.util.StringUtils;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
+import java.util.stream.Stream;
 
 @RestController
 @RequestMapping("/GiftCertificate")
@@ -68,17 +72,37 @@ public class GiftCertificateController {
     }
 
     @GetMapping
-    public ResponseEntity<List<GiftCertificate>> getAllGiftCertificates(
+    public ResponseEntity<List<GiftCertificateDTO>> getAllGiftCertificates(
             @RequestParam(name = "tagName", required = false) String tagName,
             @RequestParam(name = "partName", required = false) String partName,
-            @RequestParam(name = "sortBy", required = false, defaultValue = "id") String sortBy,
-            @RequestParam(name = "sortOrder", required = false, defaultValue = "asc") String sortOrder) {
-////        List<GiftCertificate> giftCertificates = giftCertificateService.
-////                getGiftCertificates(tagName, partName, sortBy, sortOrder);
-//        if (!giftCertificates.isEmpty()) {
-//            return ResponseEntity.ok(giftCertificates);
-//        } else {
+            @RequestParam(name = "partDescription", required = false) String partDesc,
+            @RequestParam(name = "sortBy", required = false) String sortOrder1,
+            @RequestParam(name = "thenSortBy", required = false) String sortOrder2) {
+
+        Map<String,Object> queryFields=new HashMap<>();
+        putIfNotEmpty(tagName,queryFields,"tag.name");
+        putIfNotEmpty(partName,queryFields,"gift_certificate.name");
+        putIfNotEmpty(partDesc,queryFields,"description");
+
+
+        List<String> sortFields= Stream.of(sortOrder1,sortOrder2)
+                .filter(StringUtils::hasText).toList();
+
+        GiftCertificateQueryDTO giftCertificateQueryDTO=new GiftCertificateQueryDTO();
+        giftCertificateQueryDTO.setQueryFields(queryFields);
+        giftCertificateQueryDTO.setSorting(sortFields);
+
+        List<GiftCertificateDTO> giftCertificates =
+                giftCertificateService.getGiftCertificatesBy(giftCertificateQueryDTO);
+
+        if (!giftCertificates.isEmpty()) {
+            return ResponseEntity.ok(giftCertificates);
+        } else {
             return ResponseEntity.notFound().build();
-//        }
+         }
        }
+
+    private static void putIfNotEmpty(String value, Map<String, Object> queryFields, String key) {
+        if (StringUtils.hasText(value)) queryFields.put(key, value);
     }
+}

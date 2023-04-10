@@ -53,14 +53,18 @@ public class GiftCertificateServiceImpl implements GiftCertificateService {
     }
 
     @Override
-    public List<GiftCertificate> getGiftCertificatesBy(GiftCertificateQueryDTO giftCertificateQueryDTO) {
+    public List<GiftCertificateDTO> getGiftCertificatesBy(GiftCertificateQueryDTO giftCertificateQueryDTO) {
 
         if (! giftCertificateQueryDTOValidator.isValid(giftCertificateQueryDTO))
             throw new IllegalArgumentException("Incoming DTO is not Valid");
 
         Map<String,Object> queryFields=giftCertificateQueryDTO.getQueryFields();
+        List<GiftCertificate> certList=giftCertDAO.getAllByParam(queryFields,giftCertificateQueryDTO.getSorting());
 
-        return giftCertDAO.getAllByParam(queryFields,giftCertificateQueryDTO.getSorting());
+        return certList.stream()
+                .map(giftCertificate -> modelMapper.map(giftCertificate,GiftCertificateDTO.class))
+                .collect(Collectors.toList());
+
     }
 
     @Override
