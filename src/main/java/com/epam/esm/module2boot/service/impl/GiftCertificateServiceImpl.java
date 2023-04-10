@@ -10,6 +10,7 @@ import com.epam.esm.module2boot.service.GiftCertificateService;
 import com.epam.esm.module2boot.service.TagService;
 import com.epam.esm.module2boot.validator.GiftCertificateQueryDTOValidator;
 import org.modelmapper.ModelMapper;
+import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -85,7 +86,10 @@ public class GiftCertificateServiceImpl implements GiftCertificateService {
 
     @Override
     public GiftCertificateDTO getGiftCertificateById(int id) {
-
-        return modelMapper.map(giftCertDAO.getGiftCert(id),GiftCertificateDTO.class);
+        try {
+            return modelMapper.map(giftCertDAO.getGiftCert(id), GiftCertificateDTO.class);
+        }catch (EmptyResultDataAccessException e){
+            return null;
+        }
     }
 }

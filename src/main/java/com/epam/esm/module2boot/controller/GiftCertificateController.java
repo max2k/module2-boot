@@ -65,7 +65,7 @@ public class GiftCertificateController {
     public ResponseEntity<Void> deleteGiftCertificate(@PathVariable int id) {
         boolean deleted = giftCertificateService.deleteGiftCertificateById(id);
         if (deleted) {
-            return ResponseEntity.noContent().build();
+            return ResponseEntity.ok().build();
         } else {
             return ResponseEntity.notFound().build();
         }

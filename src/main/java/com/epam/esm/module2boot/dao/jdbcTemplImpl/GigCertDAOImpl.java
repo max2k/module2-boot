@@ -5,6 +5,7 @@ import com.epam.esm.module2boot.dao.TagDAO;
 import com.epam.esm.module2boot.model.GiftCertificate;
 import com.epam.esm.module2boot.model.Tag;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.namedparam.MapSqlParameterSource;
 import org.springframework.jdbc.core.namedparam.NamedParameterJdbcTemplate;
@@ -106,7 +107,7 @@ public class GigCertDAOImpl implements GiftCertDAO {
     }
 
     @Override
-    public GiftCertificate getGiftCert(int id) {
+    public GiftCertificate getGiftCert(int id) throws EmptyResultDataAccessException {
         GiftCertificate giftCertificate=
                 jdbcTemplate.queryForObject("select * from gift_certificate where id=?",new CertRowMapper(),id);
         if (giftCertificate!=null)
