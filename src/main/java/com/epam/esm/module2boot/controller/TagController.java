@@ -1,6 +1,7 @@
 package com.epam.esm.module2boot.controller;
 
-import com.epam.esm.module2boot.dao.TagDAO;
+import com.epam.esm.module2boot.exception.BadRequestException;
+import com.epam.esm.module2boot.exception.NotFoundException;
 import com.epam.esm.module2boot.model.Tag;
 import com.epam.esm.module2boot.model.dto.TagDTO;
 import com.epam.esm.module2boot.service.TagService;
@@ -27,23 +28,29 @@ public class TagController {
         if (tag != null) {
             return ResponseEntity.ok(tag);
         } else {
-            return ResponseEntity.notFound().build();
+            throw new NotFoundException("Object with this id not found");
         }
     }
 
     @PostMapping("/new")
     public ResponseEntity<Tag> createTag(@RequestBody TagDTO tagDTO) {
-        Tag createdTag = tagService.createTag(tagDTO.getName());
-        return ResponseEntity.status(HttpStatus.CREATED).body(createdTag);
+        try {
+            Tag createdTag = tagService.createTag(tagDTO.getName());
+            return ResponseEntity.status(HttpStatus.CREATED).body(createdTag);
+        }catch (Exception e){
+            throw new BadRequestException("Tag with this name cannot be created");
+        }
+
+
     }
 
     @DeleteMapping("/delete/{id}")
     public ResponseEntity<Void> deleteTag(@PathVariable Integer id) {
         boolean deleted = tagService.deleteTag(id);
         if (deleted) {
-            return ResponseEntity.noContent().build();
+            return ResponseEntity.ok().build();
         } else {
-            return ResponseEntity.notFound().build();
+            throw new NotFoundException("Object with this id not found");
         }
     }
 

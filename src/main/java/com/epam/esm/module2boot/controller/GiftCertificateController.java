@@ -1,5 +1,6 @@
 package com.epam.esm.module2boot.controller;
 
+import com.epam.esm.module2boot.exception.NotFoundException;
 import com.epam.esm.module2boot.model.dto.GiftCertificateDTO;
 import com.epam.esm.module2boot.model.dto.GiftCertificateQueryDTO;
 import com.epam.esm.module2boot.model.dto.GiftCertificateUpdateDTO;
@@ -42,7 +43,7 @@ public class GiftCertificateController {
         if (giftCertificateDTO != null) {
             return ResponseEntity.ok(giftCertificateDTO);
         } else {
-            return ResponseEntity.notFound().build();
+            throw new NotFoundException("Object with this id not found");
         }
     }
 
@@ -59,7 +60,7 @@ public class GiftCertificateController {
         if ( result ) {
             return ResponseEntity.ok().build();
         } else {
-            return ResponseEntity.notFound().build();
+            throw new NotFoundException("Object with this id not found");
         }
     }
 
@@ -69,7 +70,7 @@ public class GiftCertificateController {
         if (deleted) {
             return ResponseEntity.ok().build();
         } else {
-            return ResponseEntity.notFound().build();
+            throw new NotFoundException("Object with this id not found");
         }
     }
 
@@ -100,7 +101,7 @@ public class GiftCertificateController {
         if (!giftCertificates.isEmpty()) {
             return ResponseEntity.ok(giftCertificates);
         } else {
-            return ResponseEntity.notFound().build();
+            throw new NotFoundException("Objects with this params not found");
          }
        }
 
