@@ -39,7 +39,40 @@ class GiftCertificateControllerTest {
     }
 
     @Test
-    void createGiftCertificate() {
+    void createGiftCertificate() throws Exception {
+        String query= """
+                {
+                   "name" : "test name",
+                   "description" : "test description",
+                   "price" : 11.11,
+                   "duration": 100,
+                   "createDate": "2022-02-02T10:11:12.000",
+                   "lastUpdateDate": "2022-02-02T10:11:12.000",
+                   "tags": [
+                        { "name": "tag2"  },
+                        { "name": "tag33" },
+                        { "name": "tag1"  }
+                    ]
+                }
+                """;
+        MvcResult result=mockMvc.perform(
+                MockMvcRequestBuilders.post("/GiftCertificate")
+                .contentType(MediaType.APPLICATION_JSON)
+                .content(query))
+                .andExpect(status().isCreated())
+                .andExpect(jsonPath("$.name").value("test name"))
+                .andExpect(jsonPath("$.description").value("test description"))
+                .andExpect(jsonPath("$.price").value(11.11))
+                .andExpect(jsonPath("$.duration").value(100))
+                .andExpect(jsonPath("$.createDate").value("2022-02-02T10:11:12.000"))
+                .andExpect(jsonPath("$.lastUpdateDate").value("2022-02-02T10:11:12.000"))
+                .andReturn();
+
+        GiftCertificateDTO giftCertificateDTO= objectMapper
+                .readValue(result.getResponse().getContentAsString(),GiftCertificateDTO.class);
+
+        assertEquals(3, giftCertificateDTO.getTags().size());
+
     }
 
     @Test
@@ -52,8 +85,8 @@ class GiftCertificateControllerTest {
                         .andExpect(jsonPath("$.id").value(1))
                         .andExpect(jsonPath("$.price").value(10))
                         .andExpect(jsonPath("$.duration").value(100))
-                        .andExpect(jsonPath("$.createDate").value("01-05-2022T12:30:00.000"))
-                        .andExpect(jsonPath("$.lastUpdateDate").value("01-04-2022T12:30:00.000"))
+                        .andExpect(jsonPath("$.createDate").value("2022-05-01T12:30:00.000"))
+                        .andExpect(jsonPath("$.lastUpdateDate").value("2022-04-01T12:30:00.000"))
                         .andReturn();
 
         GiftCertificateDTO giftCertificateDTO= objectMapper
@@ -69,7 +102,7 @@ class GiftCertificateControllerTest {
 
     @Test
     void deleteGiftCertificate() throws Exception {
-        MvcResult result=mockMvc.perform(MockMvcRequestBuilders.delete("/GiftCertificate/1")
+        mockMvc.perform(MockMvcRequestBuilders.delete("/GiftCertificate/1")
                 .contentType(MediaType.APPLICATION_JSON))
                 .andExpect(status().isOk())
                 .andReturn();
