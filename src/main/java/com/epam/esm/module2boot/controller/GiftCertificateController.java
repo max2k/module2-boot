@@ -4,7 +4,6 @@ import com.epam.esm.module2boot.model.dto.GiftCertificateDTO;
 import com.epam.esm.module2boot.model.dto.GiftCertificateQueryDTO;
 import com.epam.esm.module2boot.model.dto.GiftCertificateUpdateDTO;
 import com.epam.esm.module2boot.service.GiftCertificateService;
-import com.epam.esm.module2boot.service.TagService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;

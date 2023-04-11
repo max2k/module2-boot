@@ -1,13 +1,13 @@
 package com.epam.esm.module2boot.service.impl;
 
 import com.epam.esm.module2boot.exception.BadRequestException;
-import com.epam.esm.module2boot.service.Util;
 import com.epam.esm.module2boot.model.GiftCertificate;
 import com.epam.esm.module2boot.model.dto.GiftCertificateDTO;
 import com.epam.esm.module2boot.model.dto.GiftCertificateQueryDTO;
 import com.epam.esm.module2boot.model.dto.GiftCertificateUpdateDTO;
 import com.epam.esm.module2boot.model.dto.TagDTO;
 import com.epam.esm.module2boot.service.GiftCertificateService;
+import com.epam.esm.module2boot.service.Util;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.Arguments;
@@ -15,8 +15,6 @@ import org.junit.jupiter.params.provider.MethodSource;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.jdbc.AutoConfigureTestDatabase;
 import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.dao.EmptyResultDataAccessException;
-import org.springframework.jdbc.BadSqlGrammarException;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.math.BigDecimal;
