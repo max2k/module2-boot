@@ -126,7 +126,7 @@ class GigCertDAOImplTest {
                 .build();
         jdbcTemplate = new JdbcTemplate(db);
         tagDAO = new TagDaoImpl(jdbcTemplate);
-        giftCertDAO = new GigCertDAOImpl(jdbcTemplate,tagDAO);
+        giftCertDAO = new GiftCertDAOImpl(jdbcTemplate,tagDAO);
     }
 
     @Test

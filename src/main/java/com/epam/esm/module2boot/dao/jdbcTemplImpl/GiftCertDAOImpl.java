@@ -19,14 +19,14 @@ import java.util.*;
 import java.util.stream.Collectors;
 
 @Repository
-public class GigCertDAOImpl implements GiftCertDAO {
+public class GiftCertDAOImpl implements GiftCertDAO {
 
     private final JdbcTemplate jdbcTemplate;
     private final NamedParameterJdbcTemplate namedParameterJdbcTemplate;
     private final TagDAO tagDAO;
 
     @Autowired
-    public GigCertDAOImpl(JdbcTemplate jdbcTemplate, TagDAO tagDAO) {
+    public GiftCertDAOImpl(JdbcTemplate jdbcTemplate, TagDAO tagDAO) {
         this.jdbcTemplate = jdbcTemplate;
         this.tagDAO = tagDAO;
         this.namedParameterJdbcTemplate = new NamedParameterJdbcTemplate(jdbcTemplate);
