@@ -1,6 +1,7 @@
 package com.epam.esm.module2boot.service.impl;
 
-import com.epam.esm.module2boot.Util;
+import com.epam.esm.module2boot.exception.BadRequestException;
+import com.epam.esm.module2boot.service.Util;
 import com.epam.esm.module2boot.model.GiftCertificate;
 import com.epam.esm.module2boot.model.dto.GiftCertificateDTO;
 import com.epam.esm.module2boot.model.dto.GiftCertificateQueryDTO;
@@ -183,11 +184,11 @@ class GiftCertificateServiceImplTest {
     @Test
     void updateGiftCertificate() throws ParseException {
         GiftCertificateUpdateDTO updateDTO=new GiftCertificateUpdateDTO();
-        updateDTO.setFields(Map.of("name","testname",
+        updateDTO.setFields( Map.of("name","testname",
                                    "description", "testdescription",
-                                   "price", BigDecimal.valueOf(10),
-                                   "duration",11,
-                                   "last_update_date",Util.parseISO8601("2022-04-01T15:40:00")
+                                   "price", "10",
+                                   "duration","11",
+                                   "last_update_date","2022-04-01T15:40:00"
                 )
         );
 
@@ -212,7 +213,7 @@ class GiftCertificateServiceImplTest {
 
     @ParameterizedTest
     @MethodSource("wrongMap")
-    void updateGiftCertificateWrongVal(Map<String,Object> fields, Class<Throwable> exceptionClass) {
+    void updateGiftCertificateWrongVal(Map<String,String> fields, Class<Throwable> exceptionClass) {
         GiftCertificateUpdateDTO updateDTO=new GiftCertificateUpdateDTO();
         updateDTO.setFields(fields);
 
@@ -224,9 +225,9 @@ class GiftCertificateServiceImplTest {
 
     public static Stream<Arguments> wrongMap() {
         return Stream.of(
-                Arguments.of(null,IllegalArgumentException.class),
-                Arguments.of( new HashMap<String,Object>(),IllegalArgumentException.class),
-                Arguments.of(Map.of("WrongName","ingnored"), BadSqlGrammarException.class)
+                Arguments.of(null, BadRequestException.class),
+                Arguments.of( new HashMap<String,Object>(),BadRequestException.class),
+                Arguments.of(Map.of("WrongName","ingnored"), BadRequestException.class)
         );
     }
 
@@ -234,8 +235,6 @@ class GiftCertificateServiceImplTest {
     void deleteGiftCertificateById() {
         assertTrue( giftCertificateService.deleteGiftCertificateById(1));
         assertFalse( giftCertificateService.deleteGiftCertificateById(1));
-        assertThrows(EmptyResultDataAccessException.class,() ->
-            giftCertificateService.getGiftCertificateById(1)
-        );
+        assertNull(  giftCertificateService.getGiftCertificateById(1)  );
     }
 }

@@ -1,6 +1,6 @@
 package com.epam.esm.module2boot.dao.jdbcTemplImpl;
 
-import com.epam.esm.module2boot.Util;
+import com.epam.esm.module2boot.service.Util;
 import com.epam.esm.module2boot.dao.GiftCertDAO;
 import com.epam.esm.module2boot.dao.TagDAO;
 import com.epam.esm.module2boot.model.GiftCertificate;

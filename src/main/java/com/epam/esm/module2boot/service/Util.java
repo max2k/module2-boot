@@ -1,4 +1,4 @@
-package com.epam.esm.module2boot;
+package com.epam.esm.module2boot.service;
 
 import java.text.ParseException;
 import java.text.SimpleDateFormat;

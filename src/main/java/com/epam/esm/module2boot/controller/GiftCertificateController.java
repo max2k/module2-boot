@@ -2,11 +2,13 @@ package com.epam.esm.module2boot.controller;
 
 import com.epam.esm.module2boot.model.dto.GiftCertificateDTO;
 import com.epam.esm.module2boot.model.dto.GiftCertificateQueryDTO;
+import com.epam.esm.module2boot.model.dto.GiftCertificateUpdateDTO;
 import com.epam.esm.module2boot.service.GiftCertificateService;
 import com.epam.esm.module2boot.service.TagService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.util.MultiValueMap;
 import org.springframework.util.StringUtils;
 import org.springframework.web.bind.annotation.*;
 
@@ -20,12 +22,11 @@ import java.util.stream.Stream;
 public class GiftCertificateController {
 
     private final GiftCertificateService giftCertificateService;
-    private final TagService tagService;
 
     @Autowired
-    public GiftCertificateController(GiftCertificateService giftCertificateService, TagService tagService) {
+    public GiftCertificateController(GiftCertificateService giftCertificateService) {
         this.giftCertificateService = giftCertificateService;
-        this.tagService = tagService;
+
     }
 
     @PostMapping
@@ -46,20 +47,22 @@ public class GiftCertificateController {
         }
     }
 
-//    @PutMapping("/{id}")
-//    public ResponseEntity<GiftCertificate> updateGiftCertificate(@PathVariable int id, @RequestBody GiftCertificate giftCertificate) {
-//        Set<Tag> tags = giftCertificate.getTags();
-//        if (tags != null) {
-//            tags = tagService.createTagsIfNotExist(tags);
-//            giftCertificate.setTags(tags);
-//        }
-//        GiftCertificate updatedGiftCertificate = giftCertificateService.updateGiftCertificate(id, giftCertificate);
-//        if (updatedGiftCertificate != null) {
-//            return ResponseEntity.ok(updatedGiftCertificate);
-//        } else {
-//            return ResponseEntity.notFound().build();
-//        }
-//    }
+    @PutMapping("/{id}")
+    public ResponseEntity<GiftCertificateDTO>
+        updateGiftCertificate(@PathVariable int id,
+                              @RequestParam MultiValueMap<String, String> queryParams) {
+
+        GiftCertificateUpdateDTO giftCertificateUpdateDTO=new GiftCertificateUpdateDTO();
+        giftCertificateUpdateDTO.setFields( queryParams.toSingleValueMap() );
+
+        boolean result=giftCertificateService.updateGiftCertificate(id,giftCertificateUpdateDTO);
+
+        if ( result ) {
+            return ResponseEntity.ok().build();
+        } else {
+            return ResponseEntity.notFound().build();
+        }
+    }
 
     @DeleteMapping("/{id}")
     public ResponseEntity<Void> deleteGiftCertificate(@PathVariable int id) {
