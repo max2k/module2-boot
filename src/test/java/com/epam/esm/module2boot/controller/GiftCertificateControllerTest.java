@@ -1,9 +1,14 @@
 package com.epam.esm.module2boot.controller;
 
 import com.epam.esm.module2boot.model.dto.GiftCertificateDTO;
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.Arguments;
+import org.junit.jupiter.params.provider.MethodSource;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.jdbc.AutoConfigureTestDatabase;
 import org.springframework.boot.test.context.SpringBootTest;
@@ -13,7 +18,14 @@ import org.springframework.test.web.servlet.MvcResult;
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
 import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.util.LinkedMultiValueMap;
+import org.springframework.util.MultiValueMap;
 import org.springframework.web.context.WebApplicationContext;
+
+import java.io.UnsupportedEncodingException;
+import java.util.List;
+import java.util.Map;
+import java.util.stream.Stream;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
@@ -31,6 +43,8 @@ class GiftCertificateControllerTest {
 
     @Autowired
     private ObjectMapper objectMapper;
+
+
 
 
     @BeforeEach
@@ -103,18 +117,53 @@ class GiftCertificateControllerTest {
     @Test
     void deleteGiftCertificate() throws Exception {
         mockMvc.perform(MockMvcRequestBuilders.delete("/GiftCertificate/1")
-                .contentType(MediaType.APPLICATION_JSON))
+                    .contentType(MediaType.APPLICATION_JSON) )
                 .andExpect(status().isOk())
                 .andReturn();
 
         mockMvc.perform(MockMvcRequestBuilders.delete("/GiftCertificate/1")
-                        .contentType(MediaType.APPLICATION_JSON))
+                        .contentType(MediaType.APPLICATION_JSON) )
                     .andExpect(status().isNotFound())
                 .andReturn();
 
     }
 
-    @Test
-    void getAllGiftCertificates() {
+    @ParameterizedTest
+    @MethodSource("queryParams")
+    void getAllGiftCertificates(Map<String,String> params,int resultCount) throws Exception {
+
+        MultiValueMap<String,String> httpParam=new LinkedMultiValueMap<>();
+        if (params!=null) httpParam.setAll(params);
+
+        MvcResult result=mockMvc.perform(
+                        MockMvcRequestBuilders.get("/GiftCertificate")
+                                .params(httpParam)
+                        .contentType(MediaType.APPLICATION_JSON)
+                    )
+                .andExpect(status().isOk())
+                .andReturn();
+
+        List<GiftCertificateDTO> giftCertificateDTOList=
+                objectMapper.readValue(result.getResponse().getContentAsString(),
+                        new TypeReference<>() {
+                        });
+
+        assertEquals(resultCount,giftCertificateDTOList.size());
+
+    }
+
+    public static Stream<Arguments> queryParams() {
+        return Stream.of(
+                Arguments.of(
+                        Map.of("partDescription","description2"), 4
+                ),
+                Arguments.of(
+                        Map.of("tagName","tag1"), 2
+                ),
+                Arguments.of(
+                        null, 6
+                )
+
+        );
     }
 }
