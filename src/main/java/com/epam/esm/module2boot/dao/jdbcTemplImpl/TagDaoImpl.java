@@ -3,6 +3,7 @@ package com.epam.esm.module2boot.dao.jdbcTemplImpl;
 import com.epam.esm.module2boot.dao.TagDAO;
 import com.epam.esm.module2boot.model.Tag;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.annotation.Profile;
 import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.namedparam.MapSqlParameterSource;
@@ -10,6 +11,7 @@ import org.springframework.jdbc.core.namedparam.NamedParameterJdbcTemplate;
 import org.springframework.jdbc.core.namedparam.SqlParameterSource;
 import org.springframework.jdbc.support.GeneratedKeyHolder;
 import org.springframework.stereotype.Repository;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.sql.Types;
 import java.util.HashSet;
@@ -18,6 +20,8 @@ import java.util.Objects;
 import java.util.Set;
 
 @Repository
+@Transactional
+@Profile("jdbcTemplate")
 public class TagDaoImpl implements TagDAO {
 
     private final JdbcTemplate jdbcTemplate;

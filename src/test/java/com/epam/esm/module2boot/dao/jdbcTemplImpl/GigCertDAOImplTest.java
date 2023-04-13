@@ -1,22 +1,19 @@
 package com.epam.esm.module2boot.dao.jdbcTemplImpl;
 
-import com.epam.esm.module2boot.service.Util;
-import com.epam.esm.module2boot.dao.GiftCertDAO;
+import com.epam.esm.module2boot.dao.GiftCertificateDAO;
 import com.epam.esm.module2boot.dao.TagDAO;
 import com.epam.esm.module2boot.model.GiftCertificate;
 import com.epam.esm.module2boot.model.Tag;
-import org.junit.jupiter.api.BeforeEach;
+import com.epam.esm.module2boot.service.Util;
 import org.junit.jupiter.api.Test;
-import org.junit.jupiter.api.extension.ExtendWith;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.Arguments;
 import org.junit.jupiter.params.provider.MethodSource;
-import org.springframework.boot.test.autoconfigure.jdbc.JdbcTest;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.test.autoconfigure.jdbc.AutoConfigureTestDatabase;
+import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.dao.EmptyResultDataAccessException;
-import org.springframework.jdbc.core.JdbcTemplate;
-import org.springframework.jdbc.datasource.embedded.EmbeddedDatabase;
-import org.springframework.jdbc.datasource.embedded.EmbeddedDatabaseBuilder;
-import org.springframework.test.context.junit.jupiter.SpringExtension;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.math.BigDecimal;
 import java.sql.Timestamp;
@@ -26,14 +23,17 @@ import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 import static org.junit.jupiter.api.Assertions.*;
-import static org.springframework.jdbc.datasource.embedded.EmbeddedDatabaseType.H2;
 
-@JdbcTest
-@ExtendWith(SpringExtension.class)
+@SpringBootTest
+@AutoConfigureTestDatabase(replace = AutoConfigureTestDatabase.Replace.NONE)
+@Transactional
 class GigCertDAOImplTest {
 
-    private JdbcTemplate jdbcTemplate;
-    private GiftCertDAO giftCertDAO;
+
+    @Autowired
+    private GiftCertificateDAO giftCertificateDAO;
+
+    @Autowired
     private TagDAO tagDAO;
 
 
@@ -115,19 +115,19 @@ class GigCertDAOImplTest {
 
         return args.stream();
     }
-
-    @BeforeEach
-    void setUp() {
-        EmbeddedDatabase db = new EmbeddedDatabaseBuilder()
-                .generateUniqueName(true)
-                .setType(H2)
-                .setScriptEncoding("UTF-8")
-                .addDefaultScripts()
-                .build();
-        jdbcTemplate = new JdbcTemplate(db);
-        tagDAO = new TagDaoImpl(jdbcTemplate);
-        giftCertDAO = new GiftCertDAOImpl(jdbcTemplate,tagDAO);
-    }
+//
+//    @BeforeEach
+//    void setUp() {
+//        EmbeddedDatabase db = new EmbeddedDatabaseBuilder()
+//                .generateUniqueName(true)
+//                .setType(H2)
+//                .setScriptEncoding("UTF-8")
+//                .addDefaultScripts()
+//                .build();
+//        jdbcTemplate = new JdbcTemplate(db);
+//        tagDAO = new TagDaoImpl(jdbcTemplate);
+//        giftCertificateDAO = new GiftCertificateDaoImpl(jdbcTemplate,tagDAO);
+//    }
 
     @Test
     void createGiftCert() throws ParseException {
@@ -148,22 +148,18 @@ class GigCertDAOImplTest {
 
         giftCertificate.setTags(tags);
 
-        giftCertDAO.createGiftCert(giftCertificate);
+        GiftCertificate certificateReturnedFromCreate=giftCertificateDAO.createGiftCert(giftCertificate);
 
-        GiftCertificate giftCertificate2=jdbcTemplate.queryForObject("select * from gift_certificate where name =?"
-                ,new CertRowMapper()
-                ,daoTestName
+        GiftCertificate certificateFromDatabase=giftCertificateDAO.getGiftCert(
+                certificateReturnedFromCreate.getId()
         );
-        assertNotNull(giftCertificate2);
-        assertEqualsCerts(giftCertificate, giftCertificate2);
+
+        assertNotNull(certificateFromDatabase);
+        assertEqualsCerts(giftCertificate, certificateFromDatabase);
         // get tag list from database
-        List<Tag> tagList=jdbcTemplate.query(
-                """
-                        select * from
-                        cert_tag inner join tag on cert_tag.tag_id=tag.id
-                        where cert_tag.cert_id=?
-                        """,new TagRowMapper(),giftCertificate2.getId()
-        );
+
+        Set<Tag> tagList=certificateFromDatabase.getTags();
+
         assertEquals(tags.size(),tagList.size());
 
         // check that recieved tag list have same tag names as input tag set
@@ -182,10 +178,11 @@ class GigCertDAOImplTest {
 
     @Test
     void deleteGiftCert() {
-        giftCertDAO.deleteGiftCert(1);
-        assertThrows(EmptyResultDataAccessException.class, () ->
-            jdbcTemplate.queryForObject("SELECT * FROM gift_certificate where id=?", new CertRowMapper(),1)
-        );
+        giftCertificateDAO.deleteGiftCert(1);
+
+        assertThrows(EmptyResultDataAccessException.class,() ->
+                giftCertificateDAO.getGiftCert(1));
+
     }
 
     @Test
@@ -198,9 +195,9 @@ class GigCertDAOImplTest {
                 Util.parseISO8601("2020-10-10T10:10:10").getTime())
         );
 
-        giftCertDAO.updateGiftCert(1, paramToUpdate);
+        giftCertificateDAO.updateGiftCert(1, paramToUpdate);
 
-        GiftCertificate giftCertificate=giftCertDAO.getGiftCert(1);
+        GiftCertificate giftCertificate= giftCertificateDAO.getGiftCert(1);
 
         assertEquals("New name",giftCertificate.getName() );
         assertEquals("New description",giftCertificate.getDescription() );
@@ -210,7 +207,7 @@ class GigCertDAOImplTest {
     @Test
     void getGiftCert() {
         GiftCertificate giftCertificate=
-                giftCertDAO.getGiftCert(1);
+                giftCertificateDAO.getGiftCert(1);
         assertNotNull(giftCertificate);
         assertEquals("name1",giftCertificate.getName());
     }
@@ -222,7 +219,7 @@ class GigCertDAOImplTest {
                        List<Integer> expected,
                        boolean ordered) {
 
-        List<GiftCertificate> result=giftCertDAO.getAllByParam(params,sorting);
+        List<GiftCertificate> result= giftCertificateDAO.getAllByParam(params,sorting);
 
         assertEquals(expected.size(),result.size());
         if (ordered){

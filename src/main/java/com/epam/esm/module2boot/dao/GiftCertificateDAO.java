@@ -5,7 +5,7 @@ import com.epam.esm.module2boot.model.GiftCertificate;
 import java.util.List;
 import java.util.Map;
 
-public interface GiftCertDAO {
+public interface GiftCertificateDAO {
     GiftCertificate createGiftCert(GiftCertificate giftCertificate);
     boolean deleteGiftCert(int id);
 

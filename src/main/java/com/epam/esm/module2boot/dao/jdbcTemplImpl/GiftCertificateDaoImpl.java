@@ -1,10 +1,11 @@
 package com.epam.esm.module2boot.dao.jdbcTemplImpl;
 
-import com.epam.esm.module2boot.dao.GiftCertDAO;
+import com.epam.esm.module2boot.dao.GiftCertificateDAO;
 import com.epam.esm.module2boot.dao.TagDAO;
 import com.epam.esm.module2boot.model.GiftCertificate;
 import com.epam.esm.module2boot.model.Tag;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.annotation.Profile;
 import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.namedparam.MapSqlParameterSource;
@@ -19,14 +20,16 @@ import java.util.*;
 import java.util.stream.Collectors;
 
 @Repository
-public class GiftCertDAOImpl implements GiftCertDAO {
+@Transactional
+@Profile("jdbcTemplate")
+public class GiftCertificateDaoImpl implements GiftCertificateDAO {
 
     private final JdbcTemplate jdbcTemplate;
     private final NamedParameterJdbcTemplate namedParameterJdbcTemplate;
     private final TagDAO tagDAO;
 
     @Autowired
-    public GiftCertDAOImpl(JdbcTemplate jdbcTemplate, TagDAO tagDAO) {
+    public GiftCertificateDaoImpl(JdbcTemplate jdbcTemplate, TagDAO tagDAO) {
         this.jdbcTemplate = jdbcTemplate;
         this.tagDAO = tagDAO;
         this.namedParameterJdbcTemplate = new NamedParameterJdbcTemplate(jdbcTemplate);
@@ -109,7 +112,7 @@ public class GiftCertDAOImpl implements GiftCertDAO {
     @Override
     public GiftCertificate getGiftCert(int id) throws EmptyResultDataAccessException {
         GiftCertificate giftCertificate=
-                jdbcTemplate.queryForObject("select * from gift_certificate where id=?",new CertRowMapper(),id);
+                jdbcTemplate.queryForObject("select * from gift_certificate where id=?",new CertificateRowMapper(),id);
         if (giftCertificate!=null)
             giftCertificate.setTags( tagDAO.getTagsForCertID(giftCertificate.getId()) );
         return giftCertificate;
@@ -128,7 +131,7 @@ public class GiftCertDAOImpl implements GiftCertDAO {
                       SELECT DISTINCT gift_certificate.* FROM gift_certificate
                         LEFT OUTER JOIN  cert_tag ON cert_tag.cert_id=gift_certificate.id
                         LEFT OUTER JOIN tag ON cert_tag.tag_id=tag.id
-                    """ +whereStr+" "+sortSubStr, parameterSource,new CertRowMapper());
+                    """ +whereStr+" "+sortSubStr, parameterSource,new CertificateRowMapper());
 
         giftCertificates.forEach(giftCertificate ->
                 giftCertificate.setTags(tagDAO.getTagsForCertID(giftCertificate.getId()))

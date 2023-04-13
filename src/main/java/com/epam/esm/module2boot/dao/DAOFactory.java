@@ -1,6 +1,6 @@
 package com.epam.esm.module2boot.dao;
 
 public interface DAOFactory {
-    GiftCertDAO getGiftCertDAO();
+    GiftCertificateDAO getGiftCertDAO();
     TagDAO getTagDAO();
 }

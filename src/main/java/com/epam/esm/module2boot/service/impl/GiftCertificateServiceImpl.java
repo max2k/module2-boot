@@ -1,6 +1,6 @@
 package com.epam.esm.module2boot.service.impl;
 
-import com.epam.esm.module2boot.dao.GiftCertDAO;
+import com.epam.esm.module2boot.dao.GiftCertificateDAO;
 import com.epam.esm.module2boot.exception.BadRequestException;
 import com.epam.esm.module2boot.model.GiftCertificate;
 import com.epam.esm.module2boot.model.Tag;
@@ -24,17 +24,17 @@ import java.util.stream.Collectors;
 @Service
 public class GiftCertificateServiceImpl implements GiftCertificateService {
 
-    private final GiftCertDAO giftCertDAO;
+    private final GiftCertificateDAO giftCertificateDAO;
     private final ModelMapper modelMapper;
 
     private final TagService tagService;
 
     private final GiftCertificateQueryDTOValidator giftCertificateQueryDTOValidator;
 
-    public GiftCertificateServiceImpl(GiftCertDAO giftCertDAO, ModelMapper modelMapper,
+    public GiftCertificateServiceImpl(GiftCertificateDAO giftCertificateDAO, ModelMapper modelMapper,
                                       TagService tagService,
                                       GiftCertificateQueryDTOValidator giftCertificateQueryDTOValidator) {
-        this.giftCertDAO = giftCertDAO;
+        this.giftCertificateDAO = giftCertificateDAO;
         this.modelMapper = modelMapper;
         this.tagService = tagService;
         this.giftCertificateQueryDTOValidator = giftCertificateQueryDTOValidator;
@@ -51,7 +51,7 @@ public class GiftCertificateServiceImpl implements GiftCertificateService {
             giftCertificate.setTags(ensuredTags);
         }
 
-        GiftCertificate outGiftCertificate=giftCertDAO.createGiftCert(giftCertificate);
+        GiftCertificate outGiftCertificate= giftCertificateDAO.createGiftCert(giftCertificate);
 
         return modelMapper.map(outGiftCertificate,GiftCertificateDTO.class);
     }
@@ -63,7 +63,7 @@ public class GiftCertificateServiceImpl implements GiftCertificateService {
             throw new IllegalArgumentException("Incoming DTO is not Valid");
 
         Map<String,Object> queryFields=giftCertificateQueryDTO.getQueryFields();
-        List<GiftCertificate> certList=giftCertDAO.getAllByParam(queryFields,giftCertificateQueryDTO.getSorting());
+        List<GiftCertificate> certList= giftCertificateDAO.getAllByParam(queryFields,giftCertificateQueryDTO.getSorting());
 
         return certList.stream()
                 .map(giftCertificate -> modelMapper.map(giftCertificate,GiftCertificateDTO.class))
@@ -93,7 +93,7 @@ public class GiftCertificateServiceImpl implements GiftCertificateService {
             throw new BadRequestException("Date field format error");
         }
 
-        return giftCertDAO.updateGiftCert(id,convertedFields);
+        return giftCertificateDAO.updateGiftCert(id,convertedFields);
     }
 
     private static void replaceDateField(String name,Map<String,Object> map) throws ParseException {
@@ -103,14 +103,14 @@ public class GiftCertificateServiceImpl implements GiftCertificateService {
 
     @Override
     public boolean deleteGiftCertificateById(int id) {
-        return giftCertDAO.deleteGiftCert(id);
+        return giftCertificateDAO.deleteGiftCert(id);
 
     }
 
     @Override
     public GiftCertificateDTO getGiftCertificateById(int id) {
         try {
-            return modelMapper.map(giftCertDAO.getGiftCert(id), GiftCertificateDTO.class);
+            return modelMapper.map(giftCertificateDAO.getGiftCert(id), GiftCertificateDTO.class);
         }catch (EmptyResultDataAccessException e){
             return null;
         }
