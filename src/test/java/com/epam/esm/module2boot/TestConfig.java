@@ -9,8 +9,5 @@ import javax.sql.DataSource;
 
 @Configuration
 public class TestConfig {
-    @Bean
-    public PlatformTransactionManager transactionManager(DataSource dataSource) {
-        return new DataSourceTransactionManager(dataSource);
-    }
+//
 }

@@ -17,6 +17,7 @@ import org.springframework.jdbc.datasource.embedded.EmbeddedDatabase;
 import org.springframework.jdbc.datasource.embedded.EmbeddedDatabaseBuilder;
 import org.springframework.jdbc.datasource.embedded.EmbeddedDatabaseType;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
+import org.springframework.transaction.annotation.Transactional;
 
 import javax.sql.DataSource;
 
@@ -25,23 +26,24 @@ import static org.springframework.jdbc.datasource.embedded.EmbeddedDatabaseType.
 
 @SpringBootTest
 @AutoConfigureTestDatabase(replace = AutoConfigureTestDatabase.Replace.NONE)
+@Transactional
 class TagDaoImplTest {
 
     @Autowired
     private TagDAO tagDao;
 
-    @Autowired
-    private JdbcTemplate jdbcTemplate;
 
     @Test
     void createTag() {
         String testName="test tag1";
 
-        tagDao.createTag(testName);
+        Tag createdTag=tagDao.createTag(testName);
+        assertNotNull(createdTag);
 
-        Tag tstTag=jdbcTemplate.queryForObject("select * from tag where name=?",new TagRowMapper(),testName);
-        assertNotNull(tstTag);
-        assertEquals(testName,tstTag.getName());
+        Tag tagFromDataBase=tagDao.getTagById(createdTag.getId());
+
+        assertNotNull(tagFromDataBase);
+        assertEquals(testName,tagFromDataBase.getName());
 
 
     }
@@ -57,10 +59,10 @@ class TagDaoImplTest {
     void deleteTag() {
         Tag tstTag=tagDao.createTag("delete test");
 
-        tagDao.deleteTag(tstTag.getId());
-        assertThrows(EmptyResultDataAccessException.class, () ->
-                jdbcTemplate.queryForObject("select * from tag where id=?",new TagRowMapper(),tstTag.getId())
-        );
+        assertTrue( tagDao.deleteTag(tstTag.getId()) );
+
+        assertThrows(EmptyResultDataAccessException.class,() ->  tagDao.getTagById(tstTag.getId()));
+
 
     }
 }
