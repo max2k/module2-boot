@@ -7,6 +7,6 @@ import java.util.Map;
 
 @Data
 public class GiftCertificateQueryDTO {
-    Map<String,Object> queryFields;
+    Map<String, Object> queryFields;
     List<String> sorting;
 }

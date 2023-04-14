@@ -8,6 +8,7 @@ public interface TagDAO {
     Tag createTag(String name);
 
     Tag getTagById(int id);
+
     boolean deleteTag(int id);
 
     Set<Tag> getTagsForCertID(int id);

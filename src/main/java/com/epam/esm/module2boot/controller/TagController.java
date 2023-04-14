@@ -37,7 +37,7 @@ public class TagController {
         try {
             Tag createdTag = tagService.createTag(tagDTO.getName());
             return ResponseEntity.status(HttpStatus.CREATED).body(createdTag);
-        }catch (Exception e){
+        } catch (Exception e) {
             throw new BadRequestException("Tag with this name cannot be created");
         }
 
@@ -53,7 +53,6 @@ public class TagController {
             throw new NotFoundException("Object with this id not found");
         }
     }
-
 
 
 }

@@ -19,17 +19,18 @@ public class TagServiceImpl implements TagService {
     public Tag getTagById(int id) {
         try {
             return tagDAO.getTagById(id);
-        }catch (EmptyResultDataAccessException e){
+        } catch (EmptyResultDataAccessException e) {
             return null;
         }
 
     }
 
     public Tag createTag(String name) {
-         return tagDAO.createTag(name);
+        return tagDAO.createTag(name);
     }
+
     public boolean deleteTag(int id) {
-         return  tagDAO.deleteTag(id);
+        return tagDAO.deleteTag(id);
     }
 
     @Override

@@ -14,7 +14,7 @@ public class GiftCertificateDTO {
     String description;
     String name;
     BigDecimal price;
-    int duration ;
+    int duration;
 
     @JsonFormat
             (shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd'T'hh:mm:ss.SSS")

@@ -40,65 +40,65 @@ public class GiftCertificateServiceImpl implements GiftCertificateService {
         this.giftCertificateQueryDTOValidator = giftCertificateQueryDTOValidator;
     }
 
+    private static void replaceDateField(String name, Map<String, Object> map) throws ParseException {
+        if (map.containsKey(name))
+            map.replace(name, Util.parseISO8601(map.get(name).toString()));
+    }
+
     @Override
     public GiftCertificateDTO createGiftCertificate(GiftCertificateDTO giftCertificateDTO) {
         GiftCertificate giftCertificate = modelMapper.map(giftCertificateDTO, GiftCertificate.class);
 
-        if ( giftCertificate.getTags() != null && giftCertificate.getTags().size() > 0){
+        if (giftCertificate.getTags() != null && giftCertificate.getTags().size() > 0) {
             Set<Tag> ensuredTags = giftCertificate.getTags().stream()
                     .map(tagService::ensureTag)
                     .collect(Collectors.toSet());
             giftCertificate.setTags(ensuredTags);
         }
 
-        GiftCertificate outGiftCertificate= giftCertificateDAO.createGiftCert(giftCertificate);
+        GiftCertificate outGiftCertificate = giftCertificateDAO.createGiftCert(giftCertificate);
 
-        return modelMapper.map(outGiftCertificate,GiftCertificateDTO.class);
+        return modelMapper.map(outGiftCertificate, GiftCertificateDTO.class);
     }
 
     @Override
     public List<GiftCertificateDTO> getGiftCertificatesBy(GiftCertificateQueryDTO giftCertificateQueryDTO) {
 
-        if (! giftCertificateQueryDTOValidator.isValid(giftCertificateQueryDTO))
+        if (!giftCertificateQueryDTOValidator.isValid(giftCertificateQueryDTO))
             throw new IllegalArgumentException("Incoming DTO is not Valid");
 
-        Map<String,Object> queryFields=giftCertificateQueryDTO.getQueryFields();
-        List<GiftCertificate> certList= giftCertificateDAO.getAllByParam(queryFields,giftCertificateQueryDTO.getSorting());
+        Map<String, Object> queryFields = giftCertificateQueryDTO.getQueryFields();
+        List<GiftCertificate> certList = giftCertificateDAO.getAllByParam(queryFields, giftCertificateQueryDTO.getSorting());
 
         return certList.stream()
-                .map(giftCertificate -> modelMapper.map(giftCertificate,GiftCertificateDTO.class))
+                .map(giftCertificate -> modelMapper.map(giftCertificate, GiftCertificateDTO.class))
                 .collect(Collectors.toList());
 
     }
 
     @Override
     public boolean updateGiftCertificate(int id, GiftCertificateUpdateDTO giftCertificateUpdateDTO) {
-        Set<String> allowedFields=Set.of("name","description","price","duration","create_date","last_update_date");
-        Map<String,String> fields=giftCertificateUpdateDTO.getFields();
+        Set<String> allowedFields = Set.of("name", "description", "price", "duration", "create_date", "last_update_date");
+        Map<String, String> fields = giftCertificateUpdateDTO.getFields();
 
-        if (fields == null || fields.isEmpty() )
+        if (fields == null || fields.isEmpty())
             throw new BadRequestException("Field list is empty nothing to do!");
 
-        Map<String,Object> convertedFields = fields.entrySet().stream().collect(
+        Map<String, Object> convertedFields = fields.entrySet().stream().collect(
                 Collectors.toMap(entry -> entry.getKey().toLowerCase(), Map.Entry::getValue)
         );
 
-        if ( !allowedFields.containsAll(fields.keySet()) )
+        if (!allowedFields.containsAll(fields.keySet()))
             throw new BadRequestException("Check field names, some of them not allowed to be changed");
 
         try {
             replaceDateField("create_date", convertedFields);
-            replaceDateField("last_update_date",convertedFields);
-        }catch (ParseException parseException){
+            replaceDateField("last_update_date", convertedFields);
+        } catch (ParseException parseException) {
             throw new BadRequestException("Date field format error");
         }
 
-        return giftCertificateDAO.updateGiftCert(id,convertedFields);
-    }
-
-    private static void replaceDateField(String name,Map<String,Object> map) throws ParseException {
-        if (map.containsKey(name))
-            map.replace(name,Util.parseISO8601(map.get(name).toString()));
+        return giftCertificateDAO.updateGiftCert(id, convertedFields);
     }
 
     @Override
@@ -111,7 +111,7 @@ public class GiftCertificateServiceImpl implements GiftCertificateService {
     public GiftCertificateDTO getGiftCertificateById(int id) {
         try {
             return modelMapper.map(giftCertificateDAO.getGiftCert(id), GiftCertificateDTO.class);
-        }catch (EmptyResultDataAccessException e){
+        } catch (EmptyResultDataAccessException e) {
             return null;
         }
     }

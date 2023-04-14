@@ -8,5 +8,5 @@ import java.util.Map;
 @Data
 @NoArgsConstructor
 public class GiftCertificateUpdateDTO {
-    Map<String,String> fields;
+    Map<String, String> fields;
 }

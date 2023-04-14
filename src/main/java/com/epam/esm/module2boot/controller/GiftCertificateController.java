@@ -29,9 +29,13 @@ public class GiftCertificateController {
 
     }
 
+    private static void putIfNotEmpty(String value, Map<String, Object> queryFields, String key) {
+        if (StringUtils.hasText(value)) queryFields.put(key, value);
+    }
+
     @PostMapping
     public ResponseEntity<GiftCertificateDTO> createGiftCertificate(@RequestBody GiftCertificateDTO giftCertificateInDTO) {
-        GiftCertificateDTO giftCertificateOutDto=
+        GiftCertificateDTO giftCertificateOutDto =
                 giftCertificateService.createGiftCertificate(giftCertificateInDTO);
 
         return ResponseEntity.status(HttpStatus.CREATED).body(giftCertificateOutDto);
@@ -49,15 +53,15 @@ public class GiftCertificateController {
 
     @PutMapping("/{id}")
     public ResponseEntity<GiftCertificateDTO>
-        updateGiftCertificate(@PathVariable int id,
-                              @RequestParam MultiValueMap<String, String> queryParams) {
+    updateGiftCertificate(@PathVariable int id,
+                          @RequestParam MultiValueMap<String, String> queryParams) {
 
-        GiftCertificateUpdateDTO giftCertificateUpdateDTO=new GiftCertificateUpdateDTO();
-        giftCertificateUpdateDTO.setFields( queryParams.toSingleValueMap() );
+        GiftCertificateUpdateDTO giftCertificateUpdateDTO = new GiftCertificateUpdateDTO();
+        giftCertificateUpdateDTO.setFields(queryParams.toSingleValueMap());
 
-        boolean result=giftCertificateService.updateGiftCertificate(id,giftCertificateUpdateDTO);
+        boolean result = giftCertificateService.updateGiftCertificate(id, giftCertificateUpdateDTO);
 
-        if ( result ) {
+        if (result) {
             return ResponseEntity.ok().build();
         } else {
             throw new NotFoundException("Object with this id not found");
@@ -82,16 +86,16 @@ public class GiftCertificateController {
             @RequestParam(name = "sortBy", required = false) String sortOrder1,
             @RequestParam(name = "thenSortBy", required = false) String sortOrder2) {
 
-        Map<String,Object> queryFields=new HashMap<>();
-        putIfNotEmpty(tagName,queryFields,"tag.name");
-        putIfNotEmpty(partName,queryFields,"gift_certificate.name");
-        putIfNotEmpty(partDesc,queryFields,"description");
+        Map<String, Object> queryFields = new HashMap<>();
+        putIfNotEmpty(tagName, queryFields, "tag.name");
+        putIfNotEmpty(partName, queryFields, "gift_certificate.name");
+        putIfNotEmpty(partDesc, queryFields, "description");
 
 
-        List<String> sortFields= Stream.of(sortOrder1,sortOrder2)
+        List<String> sortFields = Stream.of(sortOrder1, sortOrder2)
                 .filter(StringUtils::hasText).toList();
 
-        GiftCertificateQueryDTO giftCertificateQueryDTO=new GiftCertificateQueryDTO();
+        GiftCertificateQueryDTO giftCertificateQueryDTO = new GiftCertificateQueryDTO();
         giftCertificateQueryDTO.setQueryFields(queryFields);
         giftCertificateQueryDTO.setSorting(sortFields);
 
@@ -102,10 +106,6 @@ public class GiftCertificateController {
             return ResponseEntity.ok(giftCertificates);
         } else {
             throw new NotFoundException("Objects with this params not found");
-         }
-       }
-
-    private static void putIfNotEmpty(String value, Map<String, Object> queryFields, String key) {
-        if (StringUtils.hasText(value)) queryFields.put(key, value);
+        }
     }
 }

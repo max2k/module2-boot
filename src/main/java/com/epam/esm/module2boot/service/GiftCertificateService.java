@@ -9,9 +9,11 @@ import java.util.List;
 public interface GiftCertificateService {
 
     GiftCertificateDTO createGiftCertificate(GiftCertificateDTO giftCertificateDTO);
+
     List<GiftCertificateDTO> getGiftCertificatesBy(GiftCertificateQueryDTO giftCertificateQueryDTO);
 
     boolean updateGiftCertificate(int id, GiftCertificateUpdateDTO giftCertificateUpdateDTO);
+
     boolean deleteGiftCertificateById(int id);
 
     GiftCertificateDTO getGiftCertificateById(int id);
