@@ -1,5 +1,6 @@
 package com.epam.esm.module2boot.service;
 
+import com.epam.esm.module2boot.exception.dao.DataBaseConstrainException;
 import com.epam.esm.module2boot.model.dto.GiftCertificateDTO;
 import com.epam.esm.module2boot.model.dto.GiftCertificateQueryDTO;
 import com.epam.esm.module2boot.model.dto.GiftCertificateUpdateDTO;
@@ -8,7 +9,7 @@ import java.util.List;
 
 public interface GiftCertificateService {
 
-    GiftCertificateDTO createGiftCertificate(GiftCertificateDTO giftCertificateDTO);
+    GiftCertificateDTO createGiftCertificate(GiftCertificateDTO giftCertificateDTO) throws DataBaseConstrainException;
 
     List<GiftCertificateDTO> getGiftCertificatesBy(GiftCertificateQueryDTO giftCertificateQueryDTO);
 

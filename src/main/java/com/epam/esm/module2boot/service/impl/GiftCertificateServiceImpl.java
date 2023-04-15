@@ -2,6 +2,7 @@ package com.epam.esm.module2boot.service.impl;
 
 import com.epam.esm.module2boot.dao.GiftCertificateDAO;
 import com.epam.esm.module2boot.exception.BadRequestException;
+import com.epam.esm.module2boot.exception.dao.DataBaseConstrainException;
 import com.epam.esm.module2boot.model.GiftCertificate;
 import com.epam.esm.module2boot.model.Tag;
 import com.epam.esm.module2boot.model.dto.GiftCertificateDTO;
@@ -16,6 +17,7 @@ import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.stereotype.Service;
 
 import java.text.ParseException;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -46,13 +48,16 @@ public class GiftCertificateServiceImpl implements GiftCertificateService {
     }
 
     @Override
-    public GiftCertificateDTO createGiftCertificate(GiftCertificateDTO giftCertificateDTO) {
+    public GiftCertificateDTO createGiftCertificate(GiftCertificateDTO giftCertificateDTO)
+            throws DataBaseConstrainException {
         GiftCertificate giftCertificate = modelMapper.map(giftCertificateDTO, GiftCertificate.class);
 
         if (giftCertificate.getTags() != null && giftCertificate.getTags().size() > 0) {
-            Set<Tag> ensuredTags = giftCertificate.getTags().stream()
-                    .map(tagService::ensureTag)
-                    .collect(Collectors.toSet());
+            Set<Tag> ensuredTags = new HashSet<>();
+            for (Tag tag : giftCertificate.getTags()) {
+                Tag ensureTag = tagService.ensureTag(tag);
+                ensuredTags.add(ensureTag);
+            }
             giftCertificate.setTags(ensuredTags);
         }
 

@@ -19,34 +19,33 @@ class GiftCertificateQueryDTOValidatorImplTest {
 
     private GiftCertificateQueryDTOValidatorImpl giftCertificateQueryDTOValidator;
 
+    public static Stream<Arguments> queryData() {
+        return Stream.of(
+                Arguments.of(null, null, true)
+                , Arguments.of(new HashMap<String, Object>(), new LinkedList<>(), true)
+                , Arguments.of(Map.of("tag.name", ""), null, true)
+                , Arguments.of(Map.of("tag.Name", ""), null, true)
+                , Arguments.of(Map.of("1", ""), null, false)
+                , Arguments.of(null, List.of("ddd desc"), false)
+                , Arguments.of(null, List.of("create_date"), true)
+                , Arguments.of(null, List.of("create_date asc"), true)
+                , Arguments.of(null, List.of("create_date desc"), true)
+        );
+    }
 
     @BeforeEach
     void setUp() {
-        giftCertificateQueryDTOValidator=new GiftCertificateQueryDTOValidatorImpl();
+        giftCertificateQueryDTOValidator = new GiftCertificateQueryDTOValidatorImpl();
     }
 
     @ParameterizedTest
     @MethodSource("queryData")
-    void isValid(Map<String,Object> queryFields, List<String> sorting,boolean result) {
-        GiftCertificateQueryDTO giftCertificateQueryDTO=new GiftCertificateQueryDTO();
+    void isValid(Map<String, Object> queryFields, List<String> sorting, boolean result) {
+        GiftCertificateQueryDTO giftCertificateQueryDTO = new GiftCertificateQueryDTO();
         giftCertificateQueryDTO.setQueryFields(queryFields);
         giftCertificateQueryDTO.setSorting(sorting);
 
-        assertEquals(result,giftCertificateQueryDTOValidator.isValid(giftCertificateQueryDTO));
-    }
-
-    public static Stream<Arguments> queryData() {
-        return Stream.of(
-                        Arguments.of(null,null,true)
-                        ,Arguments.of(new HashMap<String,Object>(),new LinkedList<>(),true)
-                        ,Arguments.of(Map.of("tag.name",""),null,true)
-                        ,Arguments.of(Map.of("tag.Name",""),null,true)
-                        ,Arguments.of(Map.of("1",""),null,false)
-                        ,Arguments.of(null,List.of("ddd desc"),false)
-                        ,Arguments.of(null,List.of("create_date"),true)
-                        ,Arguments.of(null,List.of("create_date asc"),true)
-                        ,Arguments.of(null,List.of("create_date desc"),true)
-        );
+        assertEquals(result, giftCertificateQueryDTOValidator.isValid(giftCertificateQueryDTO));
     }
 
 }

@@ -1,6 +1,7 @@
 package com.epam.esm.module2boot.controller;
 
 import com.epam.esm.module2boot.exception.NotFoundException;
+import com.epam.esm.module2boot.exception.dao.DataBaseConstrainException;
 import com.epam.esm.module2boot.model.dto.GiftCertificateDTO;
 import com.epam.esm.module2boot.model.dto.GiftCertificateQueryDTO;
 import com.epam.esm.module2boot.model.dto.GiftCertificateUpdateDTO;
@@ -34,7 +35,8 @@ public class GiftCertificateController {
     }
 
     @PostMapping
-    public ResponseEntity<GiftCertificateDTO> createGiftCertificate(@RequestBody GiftCertificateDTO giftCertificateInDTO) {
+    public ResponseEntity<GiftCertificateDTO> createGiftCertificate(@RequestBody GiftCertificateDTO giftCertificateInDTO)
+            throws DataBaseConstrainException {
         GiftCertificateDTO giftCertificateOutDto =
                 giftCertificateService.createGiftCertificate(giftCertificateInDTO);
 

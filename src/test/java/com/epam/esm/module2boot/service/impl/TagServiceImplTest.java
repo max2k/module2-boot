@@ -1,5 +1,6 @@
 package com.epam.esm.module2boot.service.impl;
 
+import com.epam.esm.module2boot.exception.dao.DataBaseConstrainException;
 import com.epam.esm.module2boot.model.Tag;
 import com.epam.esm.module2boot.service.TagService;
 import org.junit.jupiter.api.Test;
@@ -10,6 +11,7 @@ import org.springframework.dao.DuplicateKeyException;
 import org.springframework.transaction.annotation.Transactional;
 
 import static org.junit.jupiter.api.Assertions.*;
+
 @SpringBootTest
 @AutoConfigureTestDatabase(replace = AutoConfigureTestDatabase.Replace.NONE)
 @Transactional
@@ -20,20 +22,20 @@ class TagServiceImplTest {
 
     @Test
     void getTagById() {
-        Tag tstTag=tagService.getTagById(1);
+        Tag tstTag = tagService.getTagById(1);
         assertNotNull(tstTag);
-        assertEquals("tag1",tstTag.getName());
+        assertEquals("tag1", tstTag.getName());
     }
 
     @Test
-    void createTag() {
-        String tagName="ServiceTagTest";
-        Tag tstTag=tagService.createTag(tagName);
+    void createTag() throws DataBaseConstrainException {
+        String tagName = "ServiceTagTest";
+        Tag tstTag = tagService.createTag(tagName);
 
-        assertEquals(tagName,tstTag.getName());
+        assertEquals(tagName, tstTag.getName());
         assertFalse(tstTag.isNoId());
 
-        assertThrows(DuplicateKeyException.class,() -> tagService.createTag(tagName) );
+        assertThrows(DataBaseConstrainException.class, () -> tagService.createTag(tagName));
     }
 
     @Test

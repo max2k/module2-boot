@@ -1,12 +1,12 @@
 package com.epam.esm.module2boot.dao.jdbcTemplImpl;
 
 import com.epam.esm.module2boot.dao.TagDAO;
+import com.epam.esm.module2boot.exception.dao.DataBaseConstrainException;
 import com.epam.esm.module2boot.model.Tag;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.jdbc.AutoConfigureTestDatabase;
 import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.transaction.annotation.Transactional;
 
 import static org.junit.jupiter.api.Assertions.*;
@@ -21,35 +21,38 @@ class TagDaoImplTest {
 
 
     @Test
-    void createTag() {
-        String testName="test tag1";
+    void createTag() throws DataBaseConstrainException {
+        String testName = "test tag1";
 
-        Tag createdTag=tagDao.createTag(testName);
+        Tag createdTag = tagDao.createTag(testName);
         assertNotNull(createdTag);
 
-        Tag tagFromDataBase=tagDao.getTagById(createdTag.getId());
+        Tag tagFromDataBase = tagDao.getTagById(createdTag.getId());
 
         assertNotNull(tagFromDataBase);
-        assertEquals(testName,tagFromDataBase.getName());
+        assertEquals(testName, tagFromDataBase.getName());
 
+        // if duplicated name found
+        assertThrows(DataBaseConstrainException.class,() ->  tagDao.createTag("tag1") );
 
     }
 
+
+
     @Test
     void getTagById() {
-        Tag tstTag=tagDao.getTagById(1);
+        Tag tstTag = tagDao.getTagById(1);
         assertNotNull(tstTag);
-        assertEquals("tag1",tstTag.getName());
+        assertEquals("tag1", tstTag.getName());
     }
 
     @Test
     void deleteTag() {
-        Tag tstTag=tagDao.createTag("delete test");
 
-        assertTrue( tagDao.deleteTag(tstTag.getId()) );
+        assertTrue(tagDao.deleteTag(1));
+        assertNull(tagDao.getTagById(1));
 
-        assertThrows(EmptyResultDataAccessException.class,() ->  tagDao.getTagById(tstTag.getId()));
-
+        assertFalse(tagDao.deleteTag(11));
 
     }
 }

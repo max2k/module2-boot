@@ -42,8 +42,20 @@ class GiftCertificateControllerTest {
     @Autowired
     private ObjectMapper objectMapper;
 
+    public static Stream<Arguments> queryParams() {
+        return Stream.of(
+                Arguments.of(
+                        Map.of("partDescription", "description2"), 4
+                ),
+                Arguments.of(
+                        Map.of("tagName", "tag1"), 2
+                ),
+                Arguments.of(
+                        null, 6
+                )
 
-
+        );
+    }
 
     @BeforeEach
     void setUp() {
@@ -52,7 +64,7 @@ class GiftCertificateControllerTest {
 
     @Test
     void createGiftCertificate() throws Exception {
-        String query= """
+        String query = """
                 {
                    "name" : "test name",
                    "description" : "test description",
@@ -67,10 +79,10 @@ class GiftCertificateControllerTest {
                     ]
                 }
                 """;
-        MvcResult result=mockMvc.perform(
-                MockMvcRequestBuilders.post("/GiftCertificate")
-                .contentType(MediaType.APPLICATION_JSON)
-                .content(query))
+        MvcResult result = mockMvc.perform(
+                        MockMvcRequestBuilders.post("/GiftCertificate")
+                                .contentType(MediaType.APPLICATION_JSON)
+                                .content(query))
                 .andExpect(status().isCreated())
                 .andExpect(jsonPath("$.name").value("test name"))
                 .andExpect(jsonPath("$.description").value("test description"))
@@ -80,8 +92,8 @@ class GiftCertificateControllerTest {
                 .andExpect(jsonPath("$.lastUpdateDate").value("2022-02-02T10:11:12.000"))
                 .andReturn();
 
-        GiftCertificateDTO giftCertificateDTO= objectMapper
-                .readValue(result.getResponse().getContentAsString(),GiftCertificateDTO.class);
+        GiftCertificateDTO giftCertificateDTO = objectMapper
+                .readValue(result.getResponse().getContentAsString(), GiftCertificateDTO.class);
 
         assertEquals(3, giftCertificateDTO.getTags().size());
 
@@ -89,20 +101,20 @@ class GiftCertificateControllerTest {
 
     @Test
     void getGiftCertificateById() throws Exception {
-        MvcResult result=mockMvc.perform(MockMvcRequestBuilders.get("/GiftCertificate/1")
+        MvcResult result = mockMvc.perform(MockMvcRequestBuilders.get("/GiftCertificate/1")
                         .contentType(MediaType.APPLICATION_JSON))
-                        .andExpect(status().isOk())
-                        .andExpect(jsonPath("$.name").value("name1"))
-                        .andExpect(jsonPath("$.description").value("description1"))
-                        .andExpect(jsonPath("$.id").value(1))
-                        .andExpect(jsonPath("$.price").value(10))
-                        .andExpect(jsonPath("$.duration").value(100))
-                        .andExpect(jsonPath("$.createDate").value("2022-05-01T12:30:00.000"))
-                        .andExpect(jsonPath("$.lastUpdateDate").value("2022-04-01T12:30:00.000"))
-                        .andReturn();
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.name").value("name1"))
+                .andExpect(jsonPath("$.description").value("description1"))
+                .andExpect(jsonPath("$.id").value(1))
+                .andExpect(jsonPath("$.price").value(10))
+                .andExpect(jsonPath("$.duration").value(100))
+                .andExpect(jsonPath("$.createDate").value("2022-05-01T12:30:00.000"))
+                .andExpect(jsonPath("$.lastUpdateDate").value("2022-04-01T12:30:00.000"))
+                .andReturn();
 
-        GiftCertificateDTO giftCertificateDTO= objectMapper
-                .readValue(result.getResponse().getContentAsString(),GiftCertificateDTO.class);
+        GiftCertificateDTO giftCertificateDTO = objectMapper
+                .readValue(result.getResponse().getContentAsString(), GiftCertificateDTO.class);
 
         assertEquals(3, giftCertificateDTO.getTags().size());
 
@@ -115,53 +127,38 @@ class GiftCertificateControllerTest {
     @Test
     void deleteGiftCertificate() throws Exception {
         mockMvc.perform(MockMvcRequestBuilders.delete("/GiftCertificate/1")
-                    .contentType(MediaType.APPLICATION_JSON) )
+                        .contentType(MediaType.APPLICATION_JSON))
                 .andExpect(status().isOk())
                 .andReturn();
 
         mockMvc.perform(MockMvcRequestBuilders.delete("/GiftCertificate/1")
-                        .contentType(MediaType.APPLICATION_JSON) )
-                    .andExpect(status().isNotFound())
+                        .contentType(MediaType.APPLICATION_JSON))
+                .andExpect(status().isNotFound())
                 .andReturn();
 
     }
 
     @ParameterizedTest
     @MethodSource("queryParams")
-    void getAllGiftCertificates(Map<String,String> params,int resultCount) throws Exception {
+    void getAllGiftCertificates(Map<String, String> params, int resultCount) throws Exception {
 
-        MultiValueMap<String,String> httpParam=new LinkedMultiValueMap<>();
-        if (params!=null) httpParam.setAll(params);
+        MultiValueMap<String, String> httpParam = new LinkedMultiValueMap<>();
+        if (params != null) httpParam.setAll(params);
 
-        MvcResult result=mockMvc.perform(
+        MvcResult result = mockMvc.perform(
                         MockMvcRequestBuilders.get("/GiftCertificate")
                                 .params(httpParam)
-                        .contentType(MediaType.APPLICATION_JSON)
-                    )
+                                .contentType(MediaType.APPLICATION_JSON)
+                )
                 .andExpect(status().isOk())
                 .andReturn();
 
-        List<GiftCertificateDTO> giftCertificateDTOList=
+        List<GiftCertificateDTO> giftCertificateDTOList =
                 objectMapper.readValue(result.getResponse().getContentAsString(),
                         new TypeReference<>() {
                         });
 
-        assertEquals(resultCount,giftCertificateDTOList.size());
+        assertEquals(resultCount, giftCertificateDTOList.size());
 
-    }
-
-    public static Stream<Arguments> queryParams() {
-        return Stream.of(
-                Arguments.of(
-                        Map.of("partDescription","description2"), 4
-                ),
-                Arguments.of(
-                        Map.of("tagName","tag1"), 2
-                ),
-                Arguments.of(
-                        null, 6
-                )
-
-        );
     }
 }

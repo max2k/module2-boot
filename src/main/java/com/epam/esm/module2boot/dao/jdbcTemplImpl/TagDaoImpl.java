@@ -1,9 +1,11 @@
 package com.epam.esm.module2boot.dao.jdbcTemplImpl;
 
 import com.epam.esm.module2boot.dao.TagDAO;
+import com.epam.esm.module2boot.exception.dao.DataBaseConstrainException;
 import com.epam.esm.module2boot.model.Tag;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Profile;
+import org.springframework.dao.DuplicateKeyException;
 import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.namedparam.MapSqlParameterSource;
@@ -32,7 +34,7 @@ public class TagDaoImpl implements TagDAO {
     }
 
     @Override
-    public Tag createTag(String name) {
+    public Tag createTag(String name) throws DataBaseConstrainException {
         NamedParameterJdbcTemplate namedParameterJdbcTemplate = new NamedParameterJdbcTemplate(jdbcTemplate);
 
         GeneratedKeyHolder holder = new GeneratedKeyHolder();
@@ -40,9 +42,13 @@ public class TagDaoImpl implements TagDAO {
         SqlParameterSource parameters = new MapSqlParameterSource()
                 .addValue("name1", name, Types.VARCHAR);
 
-        namedParameterJdbcTemplate.update("INSERT INTO tag (name) VALUES (:name1);"
-                , parameters
-                , holder);
+        try {
+            namedParameterJdbcTemplate.update("INSERT INTO tag (name) VALUES (:name1);"
+                    , parameters
+                    , holder);
+        } catch (DuplicateKeyException inner) {
+            throw new DataBaseConstrainException("Creating tag with name " + name + " failed", inner);
+        }
 
 
         Tag res = new Tag();
@@ -54,7 +60,12 @@ public class TagDaoImpl implements TagDAO {
 
     @Override
     public Tag getTagById(int id) {
-        return jdbcTemplate.queryForObject("SELECT * FROM tag WHERE id=?", new TagRowMapper(), id);
+        try {
+            return jdbcTemplate.queryForObject("SELECT * FROM tag WHERE id=?", new TagRowMapper(), id);
+        } catch (EmptyResultDataAccessException e) {
+            return null;
+        }
+
     }
 
     @Override
@@ -77,7 +88,7 @@ public class TagDaoImpl implements TagDAO {
     }
 
     @Override
-    public Tag ensureTag(Tag tag) {
+    public Tag ensureTag(Tag tag) throws DataBaseConstrainException {
         try {
             return getTagByName(tag.getName());
         } catch (EmptyResultDataAccessException e) {

@@ -1,6 +1,7 @@
 package com.epam.esm.module2boot.service.impl;
 
 import com.epam.esm.module2boot.dao.TagDAO;
+import com.epam.esm.module2boot.exception.dao.DataBaseConstrainException;
 import com.epam.esm.module2boot.model.Tag;
 import com.epam.esm.module2boot.service.TagService;
 import org.springframework.dao.EmptyResultDataAccessException;
@@ -25,7 +26,7 @@ public class TagServiceImpl implements TagService {
 
     }
 
-    public Tag createTag(String name) {
+    public Tag createTag(String name) throws DataBaseConstrainException {
         return tagDAO.createTag(name);
     }
 
@@ -34,7 +35,7 @@ public class TagServiceImpl implements TagService {
     }
 
     @Override
-    public Tag ensureTag(Tag tag) {
+    public Tag ensureTag(Tag tag) throws DataBaseConstrainException {
         return tagDAO.ensureTag(tag);
     }
 
