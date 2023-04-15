@@ -2,6 +2,7 @@ package com.epam.esm.module2boot.dao.jdbcTemplImpl;
 
 import com.epam.esm.module2boot.dao.GiftCertificateDAO;
 import com.epam.esm.module2boot.dao.TagDAO;
+import com.epam.esm.module2boot.exception.NotFoundException;
 import com.epam.esm.module2boot.model.GiftCertificate;
 import com.epam.esm.module2boot.model.Tag;
 import com.epam.esm.module2boot.service.Util;
@@ -179,8 +180,7 @@ class GigCertDAOImplTest {
     void deleteGiftCert() {
         giftCertificateDAO.deleteGiftCert(1);
 
-        assertThrows(EmptyResultDataAccessException.class, () ->
-                giftCertificateDAO.getGiftCert(1));
+        assertThrows(NotFoundException.class, () -> giftCertificateDAO.getGiftCert(1) );
 
     }
 

@@ -1,6 +1,7 @@
 package com.epam.esm.module2boot.service.impl;
 
 import com.epam.esm.module2boot.exception.BadRequestException;
+import com.epam.esm.module2boot.exception.NotFoundException;
 import com.epam.esm.module2boot.exception.dao.DataBaseConstrainException;
 import com.epam.esm.module2boot.model.GiftCertificate;
 import com.epam.esm.module2boot.model.dto.GiftCertificateDTO;
@@ -86,7 +87,7 @@ class GiftCertificateServiceImplTest {
         return Stream.of(
                 Arguments.of(null, BadRequestException.class),
                 Arguments.of(new HashMap<String, Object>(), BadRequestException.class),
-                Arguments.of(Map.of("WrongName", "ingnored"), BadRequestException.class)
+                Arguments.of(Map.of("WrongName", "ignored"), BadRequestException.class)
         );
     }
 
@@ -188,8 +189,8 @@ class GiftCertificateServiceImplTest {
     @Test
     void updateGiftCertificate() throws ParseException {
         GiftCertificateUpdateDTO updateDTO = new GiftCertificateUpdateDTO();
-        updateDTO.setFields(Map.of("name", "testname",
-                        "description", "testdescription",
+        updateDTO.setFields(Map.of("name", "test name",
+                        "description", "test description",
                         "price", "10",
                         "duration", "11",
                         "last_update_date", "2022-04-01T15:40:00"
@@ -200,8 +201,8 @@ class GiftCertificateServiceImplTest {
 
         GiftCertificateDTO giftCertificateDto = giftCertificateService.getGiftCertificateById(1);
 
-        assertEquals("testname", giftCertificateDto.getName());
-        assertEquals("testdescription", giftCertificateDto.getDescription());
+        assertEquals("test name", giftCertificateDto.getName());
+        assertEquals("test description", giftCertificateDto.getDescription());
         assertEquals(0, giftCertificateDto.getPrice().compareTo(BigDecimal.valueOf(10)));
         assertEquals(11, giftCertificateDto.getDuration());
         assertEquals(Util.parseISO8601("2022-04-01T15:40:00"), giftCertificateDto.getLastUpdateDate());
@@ -231,6 +232,6 @@ class GiftCertificateServiceImplTest {
     void deleteGiftCertificateById() {
         assertTrue(giftCertificateService.deleteGiftCertificateById(1));
         assertFalse(giftCertificateService.deleteGiftCertificateById(1));
-        assertNull(giftCertificateService.getGiftCertificateById(1));
+        assertThrows(NotFoundException.class, () -> giftCertificateService.getGiftCertificateById(1));
     }
 }

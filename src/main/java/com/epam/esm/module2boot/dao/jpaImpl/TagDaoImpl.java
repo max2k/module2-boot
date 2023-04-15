@@ -1,6 +1,7 @@
 package com.epam.esm.module2boot.dao.jpaImpl;
 
 import com.epam.esm.module2boot.dao.TagDAO;
+import com.epam.esm.module2boot.exception.NotFoundException;
 import com.epam.esm.module2boot.exception.dao.DataBaseConstrainException;
 import com.epam.esm.module2boot.model.Tag;
 import jakarta.persistence.*;
@@ -35,18 +36,24 @@ public class TagDaoImpl implements TagDAO {
     }
 
     @Override
-    public Tag getTagById(int id) {
-
-        return entityManager.find(Tag.class, id);
+    public Tag getTagById(int id) throws NotFoundException {
+        Tag tag = entityManager.find(Tag.class, id);
+        if ( tag == null ) throw new NotFoundException("Tag not found with id:"+id);
+        return tag;
     }
 
     @Override
-    public boolean deleteTag(int id) {
+    public boolean deleteTag(int id) throws NotFoundException {
 
         Tag tag = entityManager.find(Tag.class, id);
-        if (tag != null) entityManager.remove(tag);
-
-        return tag != null;
+        if (tag != null) {
+            entityManager.remove(tag);
+            entityManager.flush();
+        }
+        else{
+            throw new NotFoundException("Tag not found with id:"+id);
+        }
+        return true;
     }
 
     @Override

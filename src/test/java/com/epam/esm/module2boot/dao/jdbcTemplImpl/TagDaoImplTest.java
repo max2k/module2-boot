@@ -1,12 +1,14 @@
 package com.epam.esm.module2boot.dao.jdbcTemplImpl;
 
 import com.epam.esm.module2boot.dao.TagDAO;
+import com.epam.esm.module2boot.exception.NotFoundException;
 import com.epam.esm.module2boot.exception.dao.DataBaseConstrainException;
 import com.epam.esm.module2boot.model.Tag;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.jdbc.AutoConfigureTestDatabase;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.data.crossstore.ChangeSetPersister;
 import org.springframework.transaction.annotation.Transactional;
 
 import static org.junit.jupiter.api.Assertions.*;
@@ -50,9 +52,9 @@ class TagDaoImplTest {
     void deleteTag() {
 
         assertTrue(tagDao.deleteTag(1));
-        assertNull(tagDao.getTagById(1));
+        assertThrows(NotFoundException.class, () -> tagDao.getTagById(1) );
 
-        assertFalse(tagDao.deleteTag(11));
+        assertThrows(NotFoundException.class, () -> tagDao.deleteTag(11));
 
     }
 }

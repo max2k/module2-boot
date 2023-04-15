@@ -1,5 +1,6 @@
 package com.epam.esm.module2boot.service.impl;
 
+import com.epam.esm.module2boot.exception.NotFoundException;
 import com.epam.esm.module2boot.exception.dao.DataBaseConstrainException;
 import com.epam.esm.module2boot.model.Tag;
 import com.epam.esm.module2boot.service.TagService;
@@ -41,6 +42,6 @@ class TagServiceImplTest {
     @Test
     void deleteTag() {
         assertTrue(tagService.deleteTag(1));
-        assertFalse(tagService.deleteTag(10));
+        assertThrows(NotFoundException.class,()-> tagService.deleteTag(10) );
     }
 }

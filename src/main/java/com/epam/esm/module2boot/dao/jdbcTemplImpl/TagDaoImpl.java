@@ -1,6 +1,7 @@
 package com.epam.esm.module2boot.dao.jdbcTemplImpl;
 
 import com.epam.esm.module2boot.dao.TagDAO;
+import com.epam.esm.module2boot.exception.NotFoundException;
 import com.epam.esm.module2boot.exception.dao.DataBaseConstrainException;
 import com.epam.esm.module2boot.model.Tag;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -59,18 +60,20 @@ public class TagDaoImpl implements TagDAO {
     }
 
     @Override
-    public Tag getTagById(int id) {
+    public Tag getTagById(int id) throws NotFoundException{
         try {
             return jdbcTemplate.queryForObject("SELECT * FROM tag WHERE id=?", new TagRowMapper(), id);
         } catch (EmptyResultDataAccessException e) {
-            return null;
+            throw new NotFoundException("No tag found with id:"+id,e);
         }
 
     }
 
     @Override
     public boolean deleteTag(int id) {
-        return jdbcTemplate.update("DELETE from tag WHERE id=?", id) == 1;
+        int deletedCount= jdbcTemplate.update("DELETE from tag WHERE id=?", id);
+        if (deletedCount==0) throw new NotFoundException("No tag found with id:"+id);
+        return true;
     }
 
     @Override
@@ -91,14 +94,20 @@ public class TagDaoImpl implements TagDAO {
     public Tag ensureTag(Tag tag) throws DataBaseConstrainException {
         try {
             return getTagByName(tag.getName());
-        } catch (EmptyResultDataAccessException e) {
+        } catch (NotFoundException e) {
             return createTag(tag.getName());
         }
 
     }
 
     @Override
-    public Tag getTagByName(String name) {
-        return jdbcTemplate.queryForObject("SELECT * FROM tag WHERE name=?", new TagRowMapper(), name);
+    public Tag getTagByName(String name) throws NotFoundException {
+        try {
+            Tag tag =jdbcTemplate.queryForObject("SELECT * FROM tag WHERE name=?", new TagRowMapper(), name);
+            return tag;
+        }catch (EmptyResultDataAccessException inner){
+            throw new NotFoundException("Not tag found with name:"+name,inner);
+        }
+
     }
 }

@@ -2,6 +2,7 @@ package com.epam.esm.module2boot.dao.jdbcTemplImpl;
 
 import com.epam.esm.module2boot.dao.GiftCertificateDAO;
 import com.epam.esm.module2boot.dao.TagDAO;
+import com.epam.esm.module2boot.exception.NotFoundException;
 import com.epam.esm.module2boot.model.GiftCertificate;
 import com.epam.esm.module2boot.model.Tag;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -134,12 +135,22 @@ public class GiftCertificateDaoImpl implements GiftCertificateDAO {
     }
 
     @Override
-    public GiftCertificate getGiftCert(int id) throws EmptyResultDataAccessException {
-        GiftCertificate giftCertificate =
-                jdbcTemplate.queryForObject("select * from gift_certificate where id=?", new CertificateRowMapper(), id);
-        if (giftCertificate != null)
-            giftCertificate.setTags(tagDAO.getTagsForCertID(giftCertificate.getId()));
-        return giftCertificate;
+    public GiftCertificate getGiftCert(int id) {
+        try {
+
+            GiftCertificate giftCertificate =
+                    jdbcTemplate.queryForObject("select * from gift_certificate where id=?",
+                            new CertificateRowMapper(), id);
+            if (giftCertificate != null)
+                giftCertificate.setTags(tagDAO.getTagsForCertID(giftCertificate.getId()));
+            return giftCertificate;
+
+        } catch (EmptyResultDataAccessException inner) {
+           throw new NotFoundException("Gift certificate with id "+id+" not found",inner);
+        }
+
+
+
     }
 
     @Override
