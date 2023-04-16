@@ -1,9 +1,11 @@
 package com.epam.esm.module2boot.dao.jpaImpl;
 
 import com.epam.esm.module2boot.dao.GiftCertificateDAO;
+import com.epam.esm.module2boot.exception.BadRequestException;
 import com.epam.esm.module2boot.exception.NotFoundException;
 import com.epam.esm.module2boot.model.GiftCertificate;
 import jakarta.persistence.EntityManager;
+import jakarta.persistence.Query;
 import jakarta.persistence.TypedQuery;
 import org.springframework.context.annotation.Profile;
 import org.springframework.stereotype.Repository;
@@ -11,7 +13,6 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 import java.util.Map;
-import java.util.stream.Collectors;
 
 @Repository
 @Transactional
@@ -43,9 +44,22 @@ public class GiftCertificateDaoImpl implements GiftCertificateDAO {
     }
 
     @Override
-    public boolean updateGiftCert(int id, Map<String, Object> fieldsToUpdate) {
-        return false;
+    public boolean updateGiftCert(int id, Map<String, Object> fieldsToUpdate) throws BadRequestException{
+        if (fieldsToUpdate == null || fieldsToUpdate.isEmpty() ) throw new BadRequestException("No fields to update");
+        Map<String,Object> fieldSet=HQLHelper.changeSQlNamesToHQL(fieldsToUpdate);
+        String setStr=HQLHelper.getSetStr(fieldSet);
+
+        Query query= entityManager.createQuery("UPDATE GiftCertificate gc SET "+setStr+
+                                                " WHERE gc.id=:id");
+        query.setParameter("id",id);
+        for (Map.Entry<String, Object> field : fieldSet.entrySet()) {
+            query.setParameter(field.getKey().replace(".","_"),field.getValue());
+        }
+
+        return query.executeUpdate()==1;
     }
+
+
 
     @Override
     public GiftCertificate getGiftCert(int id) throws NotFoundException {
@@ -70,8 +84,9 @@ public class GiftCertificateDaoImpl implements GiftCertificateDAO {
                         """ + whereStr + sortStr
                 , GiftCertificate.class);
 
-        params.forEach((s, o) ->
+        if (params!=null && params.size()>0) params.forEach((s, o) ->
                 query.setParameter(HQLHelper.translateParameter(s), o));
+
 
         return query.getResultList();
     }
