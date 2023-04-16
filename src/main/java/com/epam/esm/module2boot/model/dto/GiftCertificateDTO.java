@@ -9,8 +9,7 @@ import java.util.Set;
 
 @Data
 public class GiftCertificateDTO {
-    int id;
-
+    int id =-1;
     String description;
     String name;
     BigDecimal price;

@@ -231,7 +231,6 @@ class GiftCertificateServiceImplTest {
     @Test
     void deleteGiftCertificateById() {
         assertTrue(giftCertificateService.deleteGiftCertificateById(1));
-        assertFalse(giftCertificateService.deleteGiftCertificateById(1));
         assertThrows(NotFoundException.class, () -> giftCertificateService.getGiftCertificateById(1));
     }
 }

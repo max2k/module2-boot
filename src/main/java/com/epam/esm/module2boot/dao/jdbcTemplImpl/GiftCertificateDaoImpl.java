@@ -52,26 +52,7 @@ public class GiftCertificateDaoImpl implements GiftCertificateDAO {
                 );
     }
 
-    private static String getWhereStr(Map<String, Object> params) {
-        if (params == null || params.isEmpty()) return "";
-        Set<String> likeFields = Set.of("gift_certificate.name", "description");
 
-        return "WHERE " + params.keySet().stream()
-                .map(o -> String.format(
-                        likeFields.contains(o) ?
-                                "%1$s like :%1$s" : "%1$s = :%1$s"
-                        , o
-                ))
-                .collect(Collectors.joining(" AND "));
-    }
-
-    private static String getSortingSubStr(List<String> sortingFieldsList) {
-        String sortString = "";
-        if (sortingFieldsList != null && sortingFieldsList.size() > 0) {
-            sortString = "ORDER BY " + String.join(", ", sortingFieldsList);
-        }
-        return sortString;
-    }
 
     @Override
     @Transactional
@@ -176,5 +157,26 @@ public class GiftCertificateDaoImpl implements GiftCertificateDAO {
         System.out.println("orderStr:" + sortSubStr);
 
         return giftCertificates;
+    }
+
+    private static String getWhereStr(Map<String, Object> params) {
+        if (params == null || params.isEmpty()) return "";
+        Set<String> likeFields = Set.of("gift_certificate.name", "description");
+
+        return "WHERE " + params.keySet().stream()
+                .map(o -> String.format(
+                        likeFields.contains(o) ?
+                                "%1$s like :%1$s" : "%1$s = :%1$s"
+                        , o
+                ))
+                .collect(Collectors.joining(" AND "));
+    }
+
+    private static String getSortingSubStr(List<String> sortingFieldsList) {
+        String sortString = "";
+        if (sortingFieldsList != null && sortingFieldsList.size() > 0) {
+            sortString = "ORDER BY " + String.join(", ", sortingFieldsList);
+        }
+        return sortString;
     }
 }

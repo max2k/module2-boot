@@ -13,7 +13,6 @@ import org.junit.jupiter.params.provider.MethodSource;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.jdbc.AutoConfigureTestDatabase;
 import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.math.BigDecimal;
@@ -28,7 +27,7 @@ import static org.junit.jupiter.api.Assertions.*;
 @SpringBootTest
 @AutoConfigureTestDatabase(replace = AutoConfigureTestDatabase.Replace.NONE)
 @Transactional
-class GigCertDAOImplTest {
+class GiftCertificateDAOImplTest {
 
 
     @Autowired
@@ -45,6 +44,14 @@ class GigCertDAOImplTest {
     public static Stream<Arguments> queryMaps() {
         List<Arguments> args = new LinkedList<>();
         //
+
+        args.add(
+                Arguments.of(
+                        Map.of("description", "description%"),
+                        List.of("create_date desc", "gift_certificate.name asc"),
+                        List.of(1, 3, 2, 4, 5, 6),
+                        false
+                ));
 
         args.add(
                 Arguments.of(
@@ -97,7 +104,7 @@ class GigCertDAOImplTest {
                         Map.of("gift_certificate.name", "%name%",
                                 "description", "description%",
                                 "tag.name", "tag1"),
-                        List.of("name desc"),
+                        List.of("gift_certificate.name desc"),
                         List.of(2, 1),
                         true
                 ));

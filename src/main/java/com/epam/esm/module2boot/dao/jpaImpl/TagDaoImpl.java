@@ -66,20 +66,25 @@ public class TagDaoImpl implements TagDAO {
     }
 
     @Override
-    public Tag ensureTag(Tag tag) {
+    public Tag ensureTag(Tag tag) throws DataBaseConstrainException {
         try {
             return getTagByName(tag.getName());
-        } catch (NoResultException e) {
-            entityManager.persist(tag);
-            return tag;
+        } catch (NotFoundException e) {
+            return createTag(tag.getName());
         }
     }
 
     @Override
-    public Tag getTagByName(String name) {
+    public Tag getTagByName(String name) throws NotFoundException {
         TypedQuery<Tag> query = entityManager.createQuery(
                 "SELECT t FROM Tag t WHERE t.name = :name", Tag.class);
         query.setParameter("name", name);
-        return query.getSingleResult();
+
+        try {
+            return query.getSingleResult();
+        } catch (NoResultException noResultException){
+            throw new NotFoundException("No tag found with name:"+name);
+        }
+
     }
 }
