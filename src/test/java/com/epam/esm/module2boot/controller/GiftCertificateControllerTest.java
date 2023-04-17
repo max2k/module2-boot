@@ -51,7 +51,7 @@ class GiftCertificateControllerTest {
                         Map.of("tagName", "tag1"), 2
                 ),
                 Arguments.of(
-                        null, 6
+                        null, 10006
                 )
 
         );
@@ -118,7 +118,7 @@ class GiftCertificateControllerTest {
 
         assertEquals(3, giftCertificateDTO.getTags().size());
 
-        mockMvc.perform(MockMvcRequestBuilders.get("/GiftCertificate/11")
+        mockMvc.perform(MockMvcRequestBuilders.get("/GiftCertificate/1000011")
                         .contentType(MediaType.APPLICATION_JSON))
                 .andExpect(status().isNotFound())
                 .andReturn();

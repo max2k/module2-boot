@@ -8,7 +8,6 @@ import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.jdbc.AutoConfigureTestDatabase;
 import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.dao.DuplicateKeyException;
 import org.springframework.transaction.annotation.Transactional;
 
 import static org.junit.jupiter.api.Assertions.*;
@@ -42,6 +41,6 @@ class TagServiceImplTest {
     @Test
     void deleteTag() {
         assertTrue(tagService.deleteTag(1));
-        assertThrows(NotFoundException.class,()-> tagService.deleteTag(10) );
+        assertThrows(NotFoundException.class,()-> tagService.deleteTag(10000) );
     }
 }

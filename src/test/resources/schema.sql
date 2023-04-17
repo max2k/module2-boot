@@ -17,8 +17,26 @@ CREATE TABLE gift_certificate
 
 CREATE TABLE cert_tag
 (
-    cert_id INT,
-    tag_id  INT,
+    cert_id INT NOT NULL,
+    tag_id  INT NOT NULL,
     FOREIGN KEY (cert_id) REFERENCES gift_certificate (id) ON DELETE CASCADE,
     FOREIGN KEY (tag_id) REFERENCES tag (id) ON DELETE CASCADE
 );
+
+
+CREATE TABLE `USER` (
+      id   INT AUTO_INCREMENT PRIMARY KEY,
+      first_name VARCHAR(50) NOT NULL,
+      last_name VARCHAR(50) NOT NULL,
+      email VARCHAR(50) NOT NULL
+);
+
+CREATE TABLE ORDER (
+     id   INT AUTO_INCREMENT PRIMARY KEY,
+     int  user_id NOT NULL,
+     int cert_id NOT NULL
+     order_price  DECIMAL(10, 2) NOT NULL,
+     FOREIGN KEY (user_id) REFERENCES `USER` (id) ON DELETE CASCADE,
+     FOREIGN KEY (cert_id) REFERENCES `gift_certificate` (id) ON DELETE CASCADE
+);
+

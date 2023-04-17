@@ -8,7 +8,6 @@ import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.jdbc.AutoConfigureTestDatabase;
 import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.data.crossstore.ChangeSetPersister;
 import org.springframework.transaction.annotation.Transactional;
 
 import static org.junit.jupiter.api.Assertions.*;
@@ -54,7 +53,7 @@ class TagDaoImplTest {
         assertTrue(tagDao.deleteTag(1));
         assertThrows(NotFoundException.class, () -> tagDao.getTagById(1) );
 
-        assertThrows(NotFoundException.class, () -> tagDao.deleteTag(11));
+        assertThrows(NotFoundException.class, () -> tagDao.deleteTag(10000));
 
     }
 }

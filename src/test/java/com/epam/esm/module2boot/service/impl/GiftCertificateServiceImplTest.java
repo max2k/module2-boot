@@ -213,7 +213,7 @@ class GiftCertificateServiceImplTest {
         GiftCertificateUpdateDTO updateDTO = new GiftCertificateUpdateDTO();
         updateDTO.setFields(Map.of("name", "testname"));
 
-        assertFalse(giftCertificateService.updateGiftCertificate(33, updateDTO));
+        assertFalse(giftCertificateService.updateGiftCertificate(100033, updateDTO));
     }
 
     @ParameterizedTest
