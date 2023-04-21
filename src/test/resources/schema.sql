@@ -31,10 +31,10 @@ CREATE TABLE `USER` (
       email VARCHAR(50) NOT NULL
 );
 
-CREATE TABLE ORDER (
+CREATE TABLE `ORDER` (
      id   INT AUTO_INCREMENT PRIMARY KEY,
-     int  user_id NOT NULL,
-     int cert_id NOT NULL
+     user_id INT NOT NULL,
+     cert_id INT NOT NULL,
      order_price  DECIMAL(10, 2) NOT NULL,
      FOREIGN KEY (user_id) REFERENCES `USER` (id) ON DELETE CASCADE,
      FOREIGN KEY (cert_id) REFERENCES `gift_certificate` (id) ON DELETE CASCADE
