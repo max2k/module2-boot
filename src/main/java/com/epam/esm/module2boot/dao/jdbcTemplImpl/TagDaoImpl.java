@@ -60,19 +60,19 @@ public class TagDaoImpl implements TagDAO {
     }
 
     @Override
-    public Tag getTagById(int id) throws NotFoundException{
+    public Tag getTagById(int id) throws NotFoundException {
         try {
             return jdbcTemplate.queryForObject("SELECT * FROM tag WHERE id=?", new TagRowMapper(), id);
         } catch (EmptyResultDataAccessException e) {
-            throw new NotFoundException("No tag found with id:"+id,e);
+            throw new NotFoundException("No tag found with id:" + id, e);
         }
 
     }
 
     @Override
     public boolean deleteTag(int id) {
-        int deletedCount= jdbcTemplate.update("DELETE from tag WHERE id=?", id);
-        if (deletedCount==0) throw new NotFoundException("No tag found with id:"+id);
+        int deletedCount = jdbcTemplate.update("DELETE from tag WHERE id=?", id);
+        if (deletedCount == 0) throw new NotFoundException("No tag found with id:" + id);
         return true;
     }
 
@@ -103,11 +103,15 @@ public class TagDaoImpl implements TagDAO {
     @Override
     public Tag getTagByName(String name) throws NotFoundException {
         try {
-            Tag tag =jdbcTemplate.queryForObject("SELECT * FROM tag WHERE name=?", new TagRowMapper(), name);
-            return tag;
-        }catch (EmptyResultDataAccessException inner){
-            throw new NotFoundException("Not tag found with name:"+name,inner);
+            return jdbcTemplate.queryForObject("SELECT * FROM tag WHERE name=?", new TagRowMapper(), name);
+        } catch (EmptyResultDataAccessException inner) {
+            throw new NotFoundException("Not tag found with name:" + name, inner);
         }
 
+    }
+
+    @Override
+    public Tag getMostUsedTagForUserID(int userID) {
+        return null;
     }
 }

@@ -1,9 +1,11 @@
 package com.epam.esm.module2boot.service;
 
+import com.epam.esm.module2boot.dto.GiftCertificateDTO;
+import com.epam.esm.module2boot.dto.GiftCertificateQueryDTO;
+import com.epam.esm.module2boot.dto.GiftCertificateUpdateDTO;
+import com.epam.esm.module2boot.exception.NotFoundException;
 import com.epam.esm.module2boot.exception.dao.DataBaseConstrainException;
-import com.epam.esm.module2boot.model.dto.GiftCertificateDTO;
-import com.epam.esm.module2boot.model.dto.GiftCertificateQueryDTO;
-import com.epam.esm.module2boot.model.dto.GiftCertificateUpdateDTO;
+import com.epam.esm.module2boot.model.GiftCertificate;
 
 import java.util.List;
 
@@ -17,5 +19,7 @@ public interface GiftCertificateService {
 
     boolean deleteGiftCertificateById(int id);
 
-    GiftCertificateDTO getGiftCertificateById(int id);
+    GiftCertificateDTO getGiftCertificateDTOById(int id) throws NotFoundException;
+
+    GiftCertificate getGiftCertificateById(int id) throws NotFoundException;
 }

@@ -34,10 +34,9 @@ class TagDaoImplTest {
         assertEquals(testName, tagFromDataBase.getName());
 
         // if duplicated name found
-        assertThrows(DataBaseConstrainException.class,() ->  tagDao.createTag("tag1") );
+        assertThrows(DataBaseConstrainException.class, () -> tagDao.createTag("tag1"));
 
     }
-
 
 
     @Test
@@ -51,7 +50,7 @@ class TagDaoImplTest {
     void deleteTag() {
 
         assertTrue(tagDao.deleteTag(1));
-        assertThrows(NotFoundException.class, () -> tagDao.getTagById(1) );
+        assertThrows(NotFoundException.class, () -> tagDao.getTagById(1));
 
         assertThrows(NotFoundException.class, () -> tagDao.deleteTag(10000));
 

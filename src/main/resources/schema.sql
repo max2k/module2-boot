@@ -20,5 +20,25 @@ CREATE TABLE cert_tag
     cert_id INT,
     tag_id  INT,
     FOREIGN KEY (cert_id) REFERENCES gift_certificate (id) ON DELETE CASCADE,
-    FOREIGN KEY (tag_id) REFERENCES tag (id) ON DELETE CASCADE
+    FOREIGN KEY (tag_id) REFERENCES tag (id) ON DELETE CASCADE,
+    unique (cert_id, tag_id)
+);
+
+CREATE TABLE USERTABLE
+(
+    id         INT AUTO_INCREMENT PRIMARY KEY,
+    first_name VARCHAR(50) NOT NULL,
+    last_name  VARCHAR(50) NOT NULL,
+    email      VARCHAR(50) NOT NULL
+);
+
+CREATE TABLE ORDERTABLE
+(
+    id          INT AUTO_INCREMENT PRIMARY KEY,
+    user_id     INT            NOT NULL,
+    cert_id     INT            NOT NULL,
+    order_price DECIMAL(10, 2) NOT NULL,
+    FOREIGN KEY (user_id) REFERENCES USERTABLE (id) ON DELETE CASCADE,
+    FOREIGN KEY (cert_id) REFERENCES `gift_certificate` (id) ON DELETE CASCADE,
+    UNIQUE (user_id, cert_id)
 );

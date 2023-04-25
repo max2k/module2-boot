@@ -1,13 +1,13 @@
 package com.epam.esm.module2boot.service.impl;
 
+import com.epam.esm.module2boot.dto.GiftCertificateDTO;
+import com.epam.esm.module2boot.dto.GiftCertificateQueryDTO;
+import com.epam.esm.module2boot.dto.GiftCertificateUpdateDTO;
+import com.epam.esm.module2boot.dto.TagDTO;
 import com.epam.esm.module2boot.exception.BadRequestException;
 import com.epam.esm.module2boot.exception.NotFoundException;
 import com.epam.esm.module2boot.exception.dao.DataBaseConstrainException;
 import com.epam.esm.module2boot.model.GiftCertificate;
-import com.epam.esm.module2boot.model.dto.GiftCertificateDTO;
-import com.epam.esm.module2boot.model.dto.GiftCertificateQueryDTO;
-import com.epam.esm.module2boot.model.dto.GiftCertificateUpdateDTO;
-import com.epam.esm.module2boot.model.dto.TagDTO;
 import com.epam.esm.module2boot.service.GiftCertificateService;
 import com.epam.esm.module2boot.service.Util;
 import org.junit.jupiter.api.Test;
@@ -99,7 +99,7 @@ class GiftCertificateServiceImplTest {
 
         GiftCertificateDTO result = giftCertificateService.createGiftCertificate(giftCertificateDTO);
 
-        GiftCertificateDTO dbResult = giftCertificateService.getGiftCertificateById(result.getId());
+        GiftCertificateDTO dbResult = giftCertificateService.getGiftCertificateDTOById(result.getId());
 
         assertNotEquals(GiftCertificate.INT_NO_VAL, result.getId());
         assertEquals(result.getId(), dbResult.getId());
@@ -124,7 +124,7 @@ class GiftCertificateServiceImplTest {
 
         GiftCertificateDTO result = giftCertificateService.createGiftCertificate(giftCertificateDTO);
 
-        GiftCertificateDTO dbResult = giftCertificateService.getGiftCertificateById(result.getId());
+        GiftCertificateDTO dbResult = giftCertificateService.getGiftCertificateDTOById(result.getId());
 
         assertNotEquals(GiftCertificate.INT_NO_VAL, result.getId());
         assertEquals(result.getId(), dbResult.getId());
@@ -171,7 +171,7 @@ class GiftCertificateServiceImplTest {
 
     @Test
     void getGifCertificateById() throws ParseException {
-        GiftCertificateDTO giftCertificateDto = giftCertificateService.getGiftCertificateById(1);
+        GiftCertificateDTO giftCertificateDto = giftCertificateService.getGiftCertificateDTOById(1);
 
         assertNotNull(giftCertificateDto);
         assertEquals(1, giftCertificateDto.getId());
@@ -199,7 +199,7 @@ class GiftCertificateServiceImplTest {
 
         assertTrue(giftCertificateService.updateGiftCertificate(1, updateDTO));
 
-        GiftCertificateDTO giftCertificateDto = giftCertificateService.getGiftCertificateById(1);
+        GiftCertificateDTO giftCertificateDto = giftCertificateService.getGiftCertificateDTOById(1);
 
         assertEquals("test name", giftCertificateDto.getName());
         assertEquals("test description", giftCertificateDto.getDescription());
@@ -231,6 +231,6 @@ class GiftCertificateServiceImplTest {
     @Test
     void deleteGiftCertificateById() {
         assertTrue(giftCertificateService.deleteGiftCertificateById(1));
-        assertThrows(NotFoundException.class, () -> giftCertificateService.getGiftCertificateById(1));
+        assertThrows(NotFoundException.class, () -> giftCertificateService.getGiftCertificateDTOById(1));
     }
 }

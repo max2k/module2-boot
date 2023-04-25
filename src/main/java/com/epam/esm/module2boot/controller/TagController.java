@@ -1,9 +1,9 @@
 package com.epam.esm.module2boot.controller;
 
+import com.epam.esm.module2boot.dto.TagDTO;
 import com.epam.esm.module2boot.exception.BadRequestException;
 import com.epam.esm.module2boot.exception.NotFoundException;
 import com.epam.esm.module2boot.model.Tag;
-import com.epam.esm.module2boot.model.dto.TagDTO;
 import com.epam.esm.module2boot.service.TagService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;

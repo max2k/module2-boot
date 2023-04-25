@@ -1,6 +1,6 @@
 package com.epam.esm.module2boot.validator.impl;
 
-import com.epam.esm.module2boot.model.dto.GiftCertificateQueryDTO;
+import com.epam.esm.module2boot.dto.GiftCertificateQueryDTO;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.Arguments;

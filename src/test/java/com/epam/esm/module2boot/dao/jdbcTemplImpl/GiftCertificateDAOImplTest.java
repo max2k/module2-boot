@@ -47,7 +47,7 @@ class GiftCertificateDAOImplTest {
 
         args.add(
                 Arguments.of(
-                        Map.of("description", "description%"),
+                        Map.of("description", "description"),
                         List.of("create_date desc", "gift_certificate.name asc"),
                         List.of(1, 3, 2, 4, 5, 6),
                         false
@@ -187,7 +187,7 @@ class GiftCertificateDAOImplTest {
     void deleteGiftCert() {
         giftCertificateDAO.deleteGiftCert(1);
 
-        assertThrows(NotFoundException.class, () -> giftCertificateDAO.getGiftCert(1) );
+        assertThrows(NotFoundException.class, () -> giftCertificateDAO.getGiftCert(1));
 
     }
 

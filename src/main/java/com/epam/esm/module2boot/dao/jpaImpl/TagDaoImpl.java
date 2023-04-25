@@ -38,7 +38,7 @@ public class TagDaoImpl implements TagDAO {
     @Override
     public Tag getTagById(int id) throws NotFoundException {
         Tag tag = entityManager.find(Tag.class, id);
-        if ( tag == null ) throw new NotFoundException("Tag not found with id:"+id);
+        if (tag == null) throw new NotFoundException("Tag not found with id:" + id);
         return tag;
     }
 
@@ -49,9 +49,8 @@ public class TagDaoImpl implements TagDAO {
         if (tag != null) {
             entityManager.remove(tag);
             entityManager.flush();
-        }
-        else{
-            throw new NotFoundException("Tag not found with id:"+id);
+        } else {
+            throw new NotFoundException("Tag not found with id:" + id);
         }
         return true;
     }
@@ -59,7 +58,7 @@ public class TagDaoImpl implements TagDAO {
     @Override
     public Set<Tag> getTagsForCertID(int id) {
         TypedQuery<Tag> query = entityManager.createQuery(
-                "SELECT tag FROM Tag tag JOIN tag.certificates certificate WHERE certificate.id = :id", Tag.class);
+                "SELECT tag FROM Tag tag JOIN tag.certificate certificate WHERE certificate.id = :id", Tag.class);
         query.setParameter("id", id);
         List<Tag> tagList = query.getResultList();
         return new HashSet<>(tagList);
@@ -82,9 +81,14 @@ public class TagDaoImpl implements TagDAO {
 
         try {
             return query.getSingleResult();
-        } catch (NoResultException noResultException){
-            throw new NotFoundException("No tag found with name:"+name);
+        } catch (NoResultException noResultException) {
+            throw new NotFoundException("No tag found with name:" + name);
         }
 
+    }
+
+    @Override
+    public Tag getMostUsedTagForUserID(int userID) {
+        return null;
     }
 }

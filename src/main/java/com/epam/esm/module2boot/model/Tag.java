@@ -1,16 +1,14 @@
 package com.epam.esm.module2boot.model;
 
-import jakarta.persistence.Entity;
-import jakarta.persistence.GeneratedValue;
-import jakarta.persistence.GenerationType;
-import jakarta.persistence.Id;
+import jakarta.persistence.*;
 import lombok.Data;
+import org.springframework.hateoas.RepresentationModel;
 
 
 @Data
 @Entity
-//@Table(name="tag")
-public class Tag {
+@Table(name = "tag")
+public class Tag extends RepresentationModel<Tag> {
     public static final int NO_ID = -1;
 
     @Id

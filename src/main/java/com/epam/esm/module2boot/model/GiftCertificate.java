@@ -1,5 +1,6 @@
 package com.epam.esm.module2boot.model;
 
+import com.fasterxml.jackson.annotation.JsonFormat;
 import jakarta.persistence.*;
 import lombok.*;
 
@@ -17,26 +18,29 @@ public class GiftCertificate {
 
     public static final int INT_NO_VAL = -1;
 
-    @Builder.Default
+    //@Builder.Default
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    int id = INT_NO_VAL;
+    int id;
 
     String description;
     String name;
     BigDecimal price;
 
-    @Builder.Default
-    int duration = INT_NO_VAL;
+    // @Builder.Default
+    int duration;
 
+    @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd'T'hh:mm:ss.SSS")
     Date createDate;
+
+    @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd'T'hh:mm:ss.SSS")
     Date lastUpdateDate;
 
     @ManyToMany
     @JoinTable(
             name = "cert_tag",
             joinColumns = @JoinColumn(name = "cert_id"),
-            inverseJoinColumns =  @JoinColumn(name = "tag_id")
+            inverseJoinColumns = @JoinColumn(name = "tag_id")
     )
     Set<Tag> tags;
 

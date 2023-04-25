@@ -1,19 +1,19 @@
 package com.epam.esm.module2boot.service.impl;
 
 import com.epam.esm.module2boot.dao.GiftCertificateDAO;
+import com.epam.esm.module2boot.dto.GiftCertificateDTO;
+import com.epam.esm.module2boot.dto.GiftCertificateQueryDTO;
+import com.epam.esm.module2boot.dto.GiftCertificateUpdateDTO;
 import com.epam.esm.module2boot.exception.BadRequestException;
+import com.epam.esm.module2boot.exception.NotFoundException;
 import com.epam.esm.module2boot.exception.dao.DataBaseConstrainException;
 import com.epam.esm.module2boot.model.GiftCertificate;
 import com.epam.esm.module2boot.model.Tag;
-import com.epam.esm.module2boot.model.dto.GiftCertificateDTO;
-import com.epam.esm.module2boot.model.dto.GiftCertificateQueryDTO;
-import com.epam.esm.module2boot.model.dto.GiftCertificateUpdateDTO;
 import com.epam.esm.module2boot.service.GiftCertificateService;
 import com.epam.esm.module2boot.service.TagService;
 import com.epam.esm.module2boot.service.Util;
 import com.epam.esm.module2boot.validator.GiftCertificateQueryDTOValidator;
 import org.modelmapper.ModelMapper;
-import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.stereotype.Service;
 
 import java.text.ParseException;
@@ -113,11 +113,13 @@ public class GiftCertificateServiceImpl implements GiftCertificateService {
     }
 
     @Override
-    public GiftCertificateDTO getGiftCertificateById(int id) {
-        try {
-            return modelMapper.map(giftCertificateDAO.getGiftCert(id), GiftCertificateDTO.class);
-        } catch (EmptyResultDataAccessException e) {
-            return null;
-        }
+    public GiftCertificateDTO getGiftCertificateDTOById(int id) throws NotFoundException {
+        return modelMapper.map(giftCertificateDAO.getGiftCert(id), GiftCertificateDTO.class);
+    }
+
+    @Override
+    public GiftCertificate getGiftCertificateById(int id) throws NotFoundException {
+        return giftCertificateDAO.getGiftCert(id);
+
     }
 }

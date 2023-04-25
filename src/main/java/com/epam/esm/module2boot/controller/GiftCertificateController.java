@@ -1,10 +1,10 @@
 package com.epam.esm.module2boot.controller;
 
+import com.epam.esm.module2boot.dto.GiftCertificateDTO;
+import com.epam.esm.module2boot.dto.GiftCertificateQueryDTO;
+import com.epam.esm.module2boot.dto.GiftCertificateUpdateDTO;
 import com.epam.esm.module2boot.exception.NotFoundException;
 import com.epam.esm.module2boot.exception.dao.DataBaseConstrainException;
-import com.epam.esm.module2boot.model.dto.GiftCertificateDTO;
-import com.epam.esm.module2boot.model.dto.GiftCertificateQueryDTO;
-import com.epam.esm.module2boot.model.dto.GiftCertificateUpdateDTO;
 import com.epam.esm.module2boot.service.GiftCertificateService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -45,7 +45,7 @@ public class GiftCertificateController {
 
     @GetMapping("/{id}")
     public ResponseEntity<GiftCertificateDTO> getGiftCertificateById(@PathVariable int id) {
-        GiftCertificateDTO giftCertificateDTO = giftCertificateService.getGiftCertificateById(id);
+        GiftCertificateDTO giftCertificateDTO = giftCertificateService.getGiftCertificateDTOById(id);
         if (giftCertificateDTO != null) {
             return ResponseEntity.ok(giftCertificateDTO);
         } else {

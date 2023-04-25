@@ -44,4 +44,9 @@ public class TagServiceImpl implements TagService {
         return tagDAO.getTagByName(name);
     }
 
+    @Override
+    public Tag getMostUsedTagForUserID(int userID) {
+        return tagDAO.getMostUsedTagForUserID(userID);
+    }
+
 }

@@ -13,4 +13,6 @@ public interface TagService {
     Tag ensureTag(Tag tag) throws DataBaseConstrainException;
 
     Tag getTagByName(String name);
+
+    Tag getMostUsedTagForUserID(int userID);
 }

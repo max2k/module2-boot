@@ -2,28 +2,27 @@ package com.epam.esm.module2boot.dao.jpaDataImpl;
 
 import com.epam.esm.module2boot.dao.GiftCertificateDAO;
 import com.epam.esm.module2boot.dao.jpaDataImpl.fieldResolver.FieldSetHelper;
+import com.epam.esm.module2boot.dao.jpaDataImpl.jpaRepository.GiftCertificateRepository;
 import com.epam.esm.module2boot.exception.NotFoundException;
 import com.epam.esm.module2boot.model.GiftCertificate;
+import lombok.AllArgsConstructor;
 import org.springframework.context.annotation.Profile;
-import org.springframework.data.domain.Example;
-import org.springframework.data.domain.ExampleMatcher;
 import org.springframework.stereotype.Repository;
 
 import java.util.List;
 import java.util.Map;
-import java.util.Set;
-
-import static org.springframework.data.domain.ExampleMatcher.GenericPropertyMatchers.contains;
-import static org.springframework.data.domain.ExampleMatcher.GenericPropertyMatchers.exact;
 
 @Repository
 @Profile("jpa-data")
+@AllArgsConstructor
 public class GitCertificateDAOImpl implements GiftCertificateDAO {
 
     private final GiftCertificateRepository giftCertificateRepository;
 
-    public GitCertificateDAOImpl(GiftCertificateRepository giftCertificateRepository) {
-        this.giftCertificateRepository = giftCertificateRepository;
+    private static void setDBFieldsToGiftCertificateFields(Map<String, Object> fieldsToUpdate, GiftCertificate giftCertificate) {
+        for (Map.Entry<String, Object> entry : fieldsToUpdate.entrySet()) {
+            FieldSetHelper.setField(giftCertificate, entry.getKey(), entry.getValue());
+        }
     }
 
     @Override
@@ -52,12 +51,6 @@ public class GitCertificateDAOImpl implements GiftCertificateDAO {
         return true;
     }
 
-    private static void setDBFieldsToGiftCertificateFields(Map<String, Object> fieldsToUpdate, GiftCertificate giftCertificate) {
-        for (Map.Entry<String, Object> entry : fieldsToUpdate.entrySet()) {
-            FieldSetHelper.setField(giftCertificate, entry.getKey(), entry.getValue());
-        }
-    }
-
     @Override
     public GiftCertificate getGiftCert(int id) throws NotFoundException {
         return giftCertificateRepository.findById(id)
@@ -67,22 +60,9 @@ public class GitCertificateDAOImpl implements GiftCertificateDAO {
 
     @Override
     public List<GiftCertificate> getAllByParam(Map<String, Object> params, List<String> sorting) {
-        final Set<String> likeFields = Set.of("name", "description");
 
-        GiftCertificate giftCertificate = new GiftCertificate();
-        setDBFieldsToGiftCertificateFields(params, giftCertificate);
-
-        ExampleMatcher matcher = ExampleMatcher.matching();
-
-        for (Map.Entry<String, Object> entry :
-                params.entrySet()) {
-            matcher = matcher.withMatcher(entry.getKey(),
-                    likeFields.contains(entry.getKey()) ? contains() : exact());
-        }
-
-        Example<GiftCertificate> example = Example.of(giftCertificate,matcher);
-
-        return giftCertificateRepository.findAll(example);
+        // TODO:    make returning by params
+        return null;
     }
 
 

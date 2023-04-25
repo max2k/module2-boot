@@ -41,6 +41,6 @@ class TagServiceImplTest {
     @Test
     void deleteTag() {
         assertTrue(tagService.deleteTag(1));
-        assertThrows(NotFoundException.class,()-> tagService.deleteTag(10000) );
+        assertThrows(NotFoundException.class, () -> tagService.deleteTag(10000));
     }
 }

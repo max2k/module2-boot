@@ -18,4 +18,6 @@ public interface TagDAO {
     Tag ensureTag(Tag tag) throws DataBaseConstrainException;
 
     Tag getTagByName(String name) throws NotFoundException;
+
+    Tag getMostUsedTagForUserID(int userID);
 }

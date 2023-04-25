@@ -1,6 +1,6 @@
 package com.epam.esm.module2boot.validator.impl;
 
-import com.epam.esm.module2boot.model.dto.GiftCertificateQueryDTO;
+import com.epam.esm.module2boot.dto.GiftCertificateQueryDTO;
 import com.epam.esm.module2boot.validator.GiftCertificateQueryDTOValidator;
 import org.springframework.stereotype.Component;
 
@@ -35,7 +35,7 @@ public class GiftCertificateQueryDTOValidatorImpl implements GiftCertificateQuer
             Set<String> inSorting = giftCertificateQueryDTO.getSorting().stream()
                     .map(String::toLowerCase).collect(Collectors.toSet());
 
-            if (!allowedSorting.containsAll(inSorting)) return false;
+            return allowedSorting.containsAll(inSorting);
         }
 
         return true;

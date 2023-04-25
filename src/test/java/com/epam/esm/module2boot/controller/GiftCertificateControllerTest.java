@@ -1,6 +1,6 @@
 package com.epam.esm.module2boot.controller;
 
-import com.epam.esm.module2boot.model.dto.GiftCertificateDTO;
+import com.epam.esm.module2boot.dto.GiftCertificateDTO;
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.junit.jupiter.api.BeforeEach;

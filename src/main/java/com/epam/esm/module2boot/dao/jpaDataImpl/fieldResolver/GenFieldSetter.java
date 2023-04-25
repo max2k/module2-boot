@@ -11,7 +11,7 @@ public class GenFieldSetter<T> {
     }
 
 
-    public void setField(Object value) {
-        consumer.accept((T)value);
+    public void setField(Object value) throws ClassCastException {
+        consumer.accept((T) value);
     }
 }

@@ -44,21 +44,20 @@ public class GiftCertificateDaoImpl implements GiftCertificateDAO {
     }
 
     @Override
-    public boolean updateGiftCert(int id, Map<String, Object> fieldsToUpdate) throws BadRequestException{
-        if (fieldsToUpdate == null || fieldsToUpdate.isEmpty() ) throw new BadRequestException("No fields to update");
-        Map<String,Object> fieldSet=HQLHelper.changeSQlNamesToHQL(fieldsToUpdate);
-        String setStr=HQLHelper.getSetStr(fieldSet);
+    public boolean updateGiftCert(int id, Map<String, Object> fieldsToUpdate) throws BadRequestException {
+        if (fieldsToUpdate == null || fieldsToUpdate.isEmpty()) throw new BadRequestException("No fields to update");
+        Map<String, Object> fieldSet = HQLHelper.changeSQlNamesToHQL(fieldsToUpdate);
+        String setStr = HQLHelper.getSetStr(fieldSet);
 
-        Query query= entityManager.createQuery("UPDATE GiftCertificate gc SET "+setStr+
-                                                " WHERE gc.id=:id");
-        query.setParameter("id",id);
+        Query query = entityManager.createQuery("UPDATE GiftCertificate gc SET " + setStr +
+                " WHERE gc.id=:id");
+        query.setParameter("id", id);
         for (Map.Entry<String, Object> field : fieldSet.entrySet()) {
-            query.setParameter(field.getKey().replace(".","_"),field.getValue());
+            query.setParameter(field.getKey().replace(".", "_"), field.getValue());
         }
 
-        return query.executeUpdate()==1;
+        return query.executeUpdate() == 1;
     }
-
 
 
     @Override
@@ -84,7 +83,7 @@ public class GiftCertificateDaoImpl implements GiftCertificateDAO {
                         """ + whereStr + sortStr
                 , GiftCertificate.class);
 
-        if (params!=null && params.size()>0) params.forEach((s, o) ->
+        if (params != null && params.size() > 0) params.forEach((s, o) ->
                 query.setParameter(HQLHelper.translateParameter(s), o));
 
 
