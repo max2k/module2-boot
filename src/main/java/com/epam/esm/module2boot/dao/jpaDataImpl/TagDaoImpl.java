@@ -10,6 +10,7 @@ import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.stereotype.Repository;
 
 import java.util.HashSet;
+import java.util.Objects;
 import java.util.Set;
 
 @Repository
@@ -59,10 +60,7 @@ public class TagDaoImpl implements TagDAO {
     @Override
     public Tag ensureTag(Tag tag) {
         Tag dbTag = tagRepository.findByName(tag.getName());
-        if (dbTag == null)
-            return tagRepository.save(tag);
-        else
-            return dbTag;
+        return Objects.requireNonNullElseGet(dbTag, () -> tagRepository.save(tag));
     }
 
     @Override

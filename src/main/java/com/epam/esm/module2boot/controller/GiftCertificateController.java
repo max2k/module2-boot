@@ -12,10 +12,7 @@ import org.springframework.data.domain.PageRequest;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.util.MultiValueMap;
-import org.springframework.util.StringUtils;
 import org.springframework.web.bind.annotation.*;
-
-import java.util.Map;
 
 @RestController
 @RequestMapping("/GiftCertificate")
@@ -27,10 +24,6 @@ public class GiftCertificateController {
     public GiftCertificateController(GiftCertificateService giftCertificateService) {
         this.giftCertificateService = giftCertificateService;
 
-    }
-
-    private static void putIfNotEmpty(String value, Map<String, Object> queryFields, String key) {
-        if (StringUtils.hasText(value)) queryFields.put(key, value);
     }
 
     @PostMapping
