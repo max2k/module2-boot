@@ -10,7 +10,7 @@ public interface TagService {
 
     boolean deleteTag(int id);
 
-    Tag ensureTag(Tag tag) throws DataBaseConstrainException;
+    Tag ensureTag(Tag tag);
 
     Tag getTagByName(String name);
 

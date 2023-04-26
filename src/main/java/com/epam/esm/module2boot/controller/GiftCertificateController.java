@@ -1,22 +1,21 @@
 package com.epam.esm.module2boot.controller;
 
+import com.epam.esm.module2boot.converter.GetAllCertParamsToQueryMapConverter;
 import com.epam.esm.module2boot.dto.GiftCertificateDTO;
-import com.epam.esm.module2boot.dto.GiftCertificateQueryDTO;
 import com.epam.esm.module2boot.dto.GiftCertificateUpdateDTO;
 import com.epam.esm.module2boot.exception.NotFoundException;
 import com.epam.esm.module2boot.exception.dao.DataBaseConstrainException;
 import com.epam.esm.module2boot.service.GiftCertificateService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.util.MultiValueMap;
 import org.springframework.util.StringUtils;
 import org.springframework.web.bind.annotation.*;
 
-import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
-import java.util.stream.Stream;
 
 @RestController
 @RequestMapping("/GiftCertificate")
@@ -80,29 +79,19 @@ public class GiftCertificateController {
         }
     }
 
+
     @GetMapping
-    public ResponseEntity<List<GiftCertificateDTO>> getAllGiftCertificates(
-            @RequestParam(name = "tagName", required = false) String tagName,
-            @RequestParam(name = "partName", required = false) String partName,
-            @RequestParam(name = "partDescription", required = false) String partDesc,
-            @RequestParam(name = "sortBy", required = false) String sortOrder1,
-            @RequestParam(name = "thenSortBy", required = false) String sortOrder2) {
+    public ResponseEntity<Page<GiftCertificateDTO>> getAllGiftCertificates(
+            @RequestParam MultiValueMap<String, String> queryParams,
+            @RequestParam(name = "page", required = false, defaultValue = "0") int page,
+            @RequestParam(name = "size", required = false, defaultValue = "25") int size) {
 
-        Map<String, Object> queryFields = new HashMap<>();
-        putIfNotEmpty(tagName, queryFields, "tag.name");
-        putIfNotEmpty(partName, queryFields, "gift_certificate.name");
-        putIfNotEmpty(partDesc, queryFields, "description");
+        GetAllCertParamsToQueryMapConverter converter =
+                new GetAllCertParamsToQueryMapConverter(queryParams);
 
-
-        List<String> sortFields = Stream.of(sortOrder1, sortOrder2)
-                .filter(StringUtils::hasText).toList();
-
-        GiftCertificateQueryDTO giftCertificateQueryDTO = new GiftCertificateQueryDTO();
-        giftCertificateQueryDTO.setQueryFields(queryFields);
-        giftCertificateQueryDTO.setSorting(sortFields);
-
-        List<GiftCertificateDTO> giftCertificates =
-                giftCertificateService.getGiftCertificatesBy(giftCertificateQueryDTO);
+        Page<GiftCertificateDTO> giftCertificates =
+                giftCertificateService.getGiftCertificatesBy(converter.getGiftCertQueryMap(),
+                        PageRequest.of(page, size, converter.getSort()));
 
         if (!giftCertificates.isEmpty()) {
             return ResponseEntity.ok(giftCertificates);

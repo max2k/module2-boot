@@ -15,7 +15,7 @@ public interface TagDAO {
 
     Set<Tag> getTagsForCertID(int id);
 
-    Tag ensureTag(Tag tag) throws DataBaseConstrainException;
+    Tag ensureTag(Tag tag);
 
     Tag getTagByName(String name) throws NotFoundException;
 

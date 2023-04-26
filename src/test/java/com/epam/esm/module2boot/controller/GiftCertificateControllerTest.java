@@ -1,7 +1,6 @@
 package com.epam.esm.module2boot.controller;
 
 import com.epam.esm.module2boot.dto.GiftCertificateDTO;
-import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -21,7 +20,6 @@ import org.springframework.util.LinkedMultiValueMap;
 import org.springframework.util.MultiValueMap;
 import org.springframework.web.context.WebApplicationContext;
 
-import java.util.List;
 import java.util.Map;
 import java.util.stream.Stream;
 
@@ -45,13 +43,13 @@ class GiftCertificateControllerTest {
     public static Stream<Arguments> queryParams() {
         return Stream.of(
                 Arguments.of(
-                        Map.of("partDescription", "description2"), 4
+                        Map.of("description", "description2"), 4
                 ),
                 Arguments.of(
-                        Map.of("tagName", "tag1"), 2
+                        Map.of("tags", "tag1"), 2
                 ),
                 Arguments.of(
-                        null, 10006
+                        null, 25
                 )
 
         );
@@ -116,7 +114,7 @@ class GiftCertificateControllerTest {
         GiftCertificateDTO giftCertificateDTO = objectMapper
                 .readValue(result.getResponse().getContentAsString(), GiftCertificateDTO.class);
 
-        assertEquals(3, giftCertificateDTO.getTags().size());
+        assertEquals(4, giftCertificateDTO.getTags().size());
 
         mockMvc.perform(MockMvcRequestBuilders.get("/GiftCertificate/1000011")
                         .contentType(MediaType.APPLICATION_JSON))
@@ -143,6 +141,7 @@ class GiftCertificateControllerTest {
     void getAllGiftCertificates(Map<String, String> params, int resultCount) throws Exception {
 
         MultiValueMap<String, String> httpParam = new LinkedMultiValueMap<>();
+
         if (params != null) httpParam.setAll(params);
 
         MvcResult result = mockMvc.perform(
@@ -150,15 +149,10 @@ class GiftCertificateControllerTest {
                                 .params(httpParam)
                                 .contentType(MediaType.APPLICATION_JSON)
                 )
+                .andExpect(jsonPath("$.content.length()").value(resultCount))
                 .andExpect(status().isOk())
                 .andReturn();
 
-        List<GiftCertificateDTO> giftCertificateDTOList =
-                objectMapper.readValue(result.getResponse().getContentAsString(),
-                        new TypeReference<>() {
-                        });
-
-        assertEquals(resultCount, giftCertificateDTOList.size());
 
     }
 }

@@ -1,8 +1,9 @@
 package com.epam.esm.module2boot.dao;
 
 import com.epam.esm.module2boot.model.GiftCertificate;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 
-import java.util.List;
 import java.util.Map;
 
 public interface GiftCertificateDAO {
@@ -14,5 +15,5 @@ public interface GiftCertificateDAO {
 
     GiftCertificate getGiftCert(int id);
 
-    List<GiftCertificate> getAllByParam(Map<String, Object> params, List<String> sorting);
+    Page<GiftCertificate> getAllByParam(Map<String, Object> params, Pageable pageable);
 }

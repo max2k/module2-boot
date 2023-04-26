@@ -1,19 +1,20 @@
 package com.epam.esm.module2boot.service;
 
 import com.epam.esm.module2boot.dto.GiftCertificateDTO;
-import com.epam.esm.module2boot.dto.GiftCertificateQueryDTO;
 import com.epam.esm.module2boot.dto.GiftCertificateUpdateDTO;
 import com.epam.esm.module2boot.exception.NotFoundException;
 import com.epam.esm.module2boot.exception.dao.DataBaseConstrainException;
 import com.epam.esm.module2boot.model.GiftCertificate;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 
-import java.util.List;
+import java.util.Map;
 
 public interface GiftCertificateService {
 
     GiftCertificateDTO createGiftCertificate(GiftCertificateDTO giftCertificateDTO) throws DataBaseConstrainException;
 
-    List<GiftCertificateDTO> getGiftCertificatesBy(GiftCertificateQueryDTO giftCertificateQueryDTO);
+    Page<GiftCertificateDTO> getGiftCertificatesBy(Map<String, Object> params, Pageable pageable);
 
     boolean updateGiftCertificate(int id, GiftCertificateUpdateDTO giftCertificateUpdateDTO);
 

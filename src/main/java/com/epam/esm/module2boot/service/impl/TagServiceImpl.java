@@ -35,7 +35,7 @@ public class TagServiceImpl implements TagService {
     }
 
     @Override
-    public Tag ensureTag(Tag tag) throws DataBaseConstrainException {
+    public Tag ensureTag(Tag tag) {
         return tagDAO.ensureTag(tag);
     }
 

@@ -2,7 +2,6 @@ package com.epam.esm.module2boot.service.impl;
 
 import com.epam.esm.module2boot.dao.GiftCertificateDAO;
 import com.epam.esm.module2boot.dto.GiftCertificateDTO;
-import com.epam.esm.module2boot.dto.GiftCertificateQueryDTO;
 import com.epam.esm.module2boot.dto.GiftCertificateUpdateDTO;
 import com.epam.esm.module2boot.exception.BadRequestException;
 import com.epam.esm.module2boot.exception.NotFoundException;
@@ -12,18 +11,20 @@ import com.epam.esm.module2boot.model.Tag;
 import com.epam.esm.module2boot.service.GiftCertificateService;
 import com.epam.esm.module2boot.service.TagService;
 import com.epam.esm.module2boot.service.Util;
-import com.epam.esm.module2boot.validator.GiftCertificateQueryDTOValidator;
+import lombok.AllArgsConstructor;
 import org.modelmapper.ModelMapper;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
 import java.text.ParseException;
 import java.util.HashSet;
-import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import java.util.stream.Collectors;
 
 @Service
+@AllArgsConstructor
 public class GiftCertificateServiceImpl implements GiftCertificateService {
 
     private final GiftCertificateDAO giftCertificateDAO;
@@ -31,16 +32,6 @@ public class GiftCertificateServiceImpl implements GiftCertificateService {
 
     private final TagService tagService;
 
-    private final GiftCertificateQueryDTOValidator giftCertificateQueryDTOValidator;
-
-    public GiftCertificateServiceImpl(GiftCertificateDAO giftCertificateDAO, ModelMapper modelMapper,
-                                      TagService tagService,
-                                      GiftCertificateQueryDTOValidator giftCertificateQueryDTOValidator) {
-        this.giftCertificateDAO = giftCertificateDAO;
-        this.modelMapper = modelMapper;
-        this.tagService = tagService;
-        this.giftCertificateQueryDTOValidator = giftCertificateQueryDTOValidator;
-    }
 
     private static void replaceDateField(String name, Map<String, Object> map) throws ParseException {
         if (map.containsKey(name))
@@ -58,7 +49,10 @@ public class GiftCertificateServiceImpl implements GiftCertificateService {
                 Tag ensureTag = tagService.ensureTag(tag);
                 ensuredTags.add(ensureTag);
             }
-            giftCertificate.setTags(ensuredTags);
+            giftCertificate.setTags(giftCertificate.getTags()
+                    .stream()
+                    .map(tagService::ensureTag)
+                    .collect(Collectors.toSet()));
         }
 
         GiftCertificate outGiftCertificate = giftCertificateDAO.createGiftCert(giftCertificate);
@@ -67,17 +61,12 @@ public class GiftCertificateServiceImpl implements GiftCertificateService {
     }
 
     @Override
-    public List<GiftCertificateDTO> getGiftCertificatesBy(GiftCertificateQueryDTO giftCertificateQueryDTO) {
+    public Page<GiftCertificateDTO> getGiftCertificatesBy(Map<String, Object> queryFields, Pageable pageable) {
 
-        if (!giftCertificateQueryDTOValidator.isValid(giftCertificateQueryDTO))
-            throw new IllegalArgumentException("Incoming DTO is not Valid");
+        Page<GiftCertificate> certList =
+                giftCertificateDAO.getAllByParam(queryFields, pageable);
 
-        Map<String, Object> queryFields = giftCertificateQueryDTO.getQueryFields();
-        List<GiftCertificate> certList = giftCertificateDAO.getAllByParam(queryFields, giftCertificateQueryDTO.getSorting());
-
-        return certList.stream()
-                .map(giftCertificate -> modelMapper.map(giftCertificate, GiftCertificateDTO.class))
-                .collect(Collectors.toList());
+        return certList.map(giftCertificate -> modelMapper.map(giftCertificate, GiftCertificateDTO.class));
 
     }
 

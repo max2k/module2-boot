@@ -10,8 +10,10 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 @AllArgsConstructor
 public class TagDTO {
-    private int id;
 
-    //   @NotBlank(message = "name is mandatory")
+    @Builder.Default
+    private int id = -1;
+
+    // @NotBlank(message = "name is mandatory")
     private String name;
 }

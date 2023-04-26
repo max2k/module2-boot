@@ -59,10 +59,9 @@ public class TagDaoImpl implements TagDAO {
     @Override
     public Tag ensureTag(Tag tag) {
         Tag dbTag = tagRepository.findByName(tag.getName());
-        if (dbTag == null) {
-            tagRepository.save(tag);
-            return tag;
-        } else
+        if (dbTag == null)
+            return tagRepository.save(tag);
+        else
             return dbTag;
     }
 

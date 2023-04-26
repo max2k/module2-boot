@@ -7,8 +7,11 @@ import com.epam.esm.module2boot.exception.NotFoundException;
 import com.epam.esm.module2boot.model.GiftCertificate;
 import lombok.AllArgsConstructor;
 import org.springframework.context.annotation.Profile;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Repository;
 
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -19,7 +22,8 @@ public class GitCertificateDAOImpl implements GiftCertificateDAO {
 
     private final GiftCertificateRepository giftCertificateRepository;
 
-    private static void setDBFieldsToGiftCertificateFields(Map<String, Object> fieldsToUpdate, GiftCertificate giftCertificate) {
+    private static void setDBFieldsToGiftCertificateFields(Map<String, Object> fieldsToUpdate,
+                                                           GiftCertificate giftCertificate) {
         for (Map.Entry<String, Object> entry : fieldsToUpdate.entrySet()) {
             FieldSetHelper.setField(giftCertificate, entry.getKey(), entry.getValue());
         }
@@ -59,10 +63,21 @@ public class GitCertificateDAOImpl implements GiftCertificateDAO {
     }
 
     @Override
-    public List<GiftCertificate> getAllByParam(Map<String, Object> params, List<String> sorting) {
+    public Page<GiftCertificate> getAllByParam(Map<String, Object> params, Pageable pageable) {
+        if (params == null) params = new HashMap<>();
 
-        // TODO:    make returning by params
-        return null;
+        if (params.containsKey("tags")) {
+            List<String> tagList = (params.get("tags") instanceof String) ?
+                    List.of((String) params.get("tags")) : (List<String>) params.get("tags");
+
+            return giftCertificateRepository.findByFiltersWithTags(
+                    (String) params.get("name"),
+                    (String) params.get("description"),
+                    tagList, pageable);
+        } else
+            return giftCertificateRepository.findByFilters((String) params.get("name"),
+                    (String) params.get("description"), pageable);
+
     }
 
 

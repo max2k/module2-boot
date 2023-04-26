@@ -1,7 +1,7 @@
 package com.epam.esm.module2boot.service.impl;
 
+import com.epam.esm.module2boot.converter.GetAllCertParamsToQueryMapConverter;
 import com.epam.esm.module2boot.dto.GiftCertificateDTO;
-import com.epam.esm.module2boot.dto.GiftCertificateQueryDTO;
 import com.epam.esm.module2boot.dto.GiftCertificateUpdateDTO;
 import com.epam.esm.module2boot.dto.TagDTO;
 import com.epam.esm.module2boot.exception.BadRequestException;
@@ -17,7 +17,11 @@ import org.junit.jupiter.params.provider.MethodSource;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.jdbc.AutoConfigureTestDatabase;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.util.LinkedMultiValueMap;
+import org.springframework.util.MultiValueMap;
 
 import java.math.BigDecimal;
 import java.text.ParseException;
@@ -58,28 +62,25 @@ class GiftCertificateServiceImplTest {
         return Stream.of(
                 Arguments.of(null, new int[]{1, 2, 3, 4, 5, 6}, null)
                 , Arguments.of(new HashMap<>(), new int[]{1, 2, 3, 4, 5, 6}, new LinkedList<>())
-                , Arguments.of(Map.of("tag.name", "tag1"), new int[]{1, 2}, null)
+                , Arguments.of(Map.of("tags", "tag1"), new int[]{1, 2}, null)
                 , Arguments.of(
                         Map.of("description", "description2")
                         , new int[]{2, 4, 5, 6}, null)
                 , Arguments.of(
                         Map.of("description", "description2"
-                                , "tag.name", "tag1")
+                                , "tags", "tag1")
                         , new int[]{2}, null)
                 , Arguments.of(
                         Map.of("description", "description%"
-                                , "tag.name", "tag1")
+                                , "tags", "tag1")
                         , new int[]{1, 2}, null)
-                , Arguments.of(null, new int[]{1, 2, 3, 4, 5, 6}
-                        , List.of("gift_certificate.name"))
-                , Arguments.of(null, new int[]{1, 2, 3, 4, 5, 6}
-                        , List.of("gift_certificate.name asc"))
+
                 , Arguments.of(null, new int[]{6, 5, 4, 3, 2, 1}
-                        , List.of("gift_certificate.name desc"))
-                , Arguments.of(null, new int[]{6, 5, 4, 2, 3, 1}
-                        , List.of("create_date", "gift_certificate.name desc"))
-                , Arguments.of(Map.of("tag.name", "tag1"), new int[]{2, 1}
-                        , List.of("create_date", "gift_certificate.name desc"))
+                        , List.of("name,desc"))
+                , Arguments.of(null, new int[]{3717, 355, 5206, 5931, 3378, 4451}
+                        , List.of("createDate", "name,desc"))
+                , Arguments.of(Map.of("tags", "tag1"), new int[]{2, 1}
+                        , List.of("createDate", "name,desc"))
         );
     }
 
@@ -148,11 +149,13 @@ class GiftCertificateServiceImplTest {
     void getGiftCertificatesByEmptyData(Map<String, Object> queryFields
             , int[] resultIds, List<String> sorting) {
 
-        GiftCertificateQueryDTO giftCertQueryDTO = new GiftCertificateQueryDTO();
-        giftCertQueryDTO.setQueryFields(queryFields);
-        giftCertQueryDTO.setSorting(sorting);
+        MultiValueMap<String, String> queryMap = new LinkedMultiValueMap<>();
+        if (sorting != null && sorting.size() > 0) sorting.forEach(s -> queryMap.add("sort", s));
 
-        List<GiftCertificateDTO> certs = giftCertificateService.getGiftCertificatesBy(giftCertQueryDTO);
+        GetAllCertParamsToQueryMapConverter converter = new GetAllCertParamsToQueryMapConverter(queryMap);
+
+        Page<GiftCertificateDTO> certs = giftCertificateService.getGiftCertificatesBy(queryFields,
+                PageRequest.of(0, 6, converter.getSort()));
 
 
         Stream<Integer> idSet = certs.stream().map(GiftCertificateDTO::getId);
@@ -182,7 +185,7 @@ class GiftCertificateServiceImplTest {
         assertEquals(Util.parseISO8601("2022-05-01T15:30:00"), giftCertificateDto.getCreateDate());
         assertEquals(Util.parseISO8601("2022-04-01T15:30:00"), giftCertificateDto.getLastUpdateDate());
 
-        assertEquals(3, giftCertificateDto.getTags().size());
+        assertEquals(4, giftCertificateDto.getTags().size());
 
     }
 
@@ -213,7 +216,8 @@ class GiftCertificateServiceImplTest {
         GiftCertificateUpdateDTO updateDTO = new GiftCertificateUpdateDTO();
         updateDTO.setFields(Map.of("name", "testname"));
 
-        assertFalse(giftCertificateService.updateGiftCertificate(100033, updateDTO));
+        assertThrows(NotFoundException.class,
+                () -> giftCertificateService.updateGiftCertificate(100033, updateDTO));
     }
 
     @ParameterizedTest

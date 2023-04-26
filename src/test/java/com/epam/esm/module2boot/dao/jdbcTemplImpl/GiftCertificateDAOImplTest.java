@@ -1,5 +1,6 @@
 package com.epam.esm.module2boot.dao.jdbcTemplImpl;
 
+import com.epam.esm.module2boot.converter.GetAllCertParamsToQueryMapConverter;
 import com.epam.esm.module2boot.dao.GiftCertificateDAO;
 import com.epam.esm.module2boot.dao.TagDAO;
 import com.epam.esm.module2boot.exception.NotFoundException;
@@ -13,7 +14,11 @@ import org.junit.jupiter.params.provider.MethodSource;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.jdbc.AutoConfigureTestDatabase;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.util.LinkedMultiValueMap;
+import org.springframework.util.MultiValueMap;
 
 import java.math.BigDecimal;
 import java.sql.Timestamp;
@@ -47,27 +52,27 @@ class GiftCertificateDAOImplTest {
 
         args.add(
                 Arguments.of(
-                        Map.of("description", "description"),
-                        List.of("create_date desc", "gift_certificate.name asc"),
+                        Map.of("description", "description%"),
+                        List.of("createDate,desc", "name,asc"),
                         List.of(1, 3, 2, 4, 5, 6),
                         false
                 ));
 
         args.add(
                 Arguments.of(
-                        Map.of("gift_certificate.name", "%name%",
+                        Map.of("name", "%name%",
                                 "description", "description%"),
-                        List.of("create_date desc", "gift_certificate.name asc"),
+                        List.of("createDate,desc", "name,asc"),
                         List.of(1, 3, 2, 4, 5, 6),
                         true
                 ));
 
         args.add(
                 Arguments.of(
-                        Map.of("gift_certificate.name", "%name%",
+                        Map.of("name", "%name%",
                                 "description", "description%",
-                                "tag.name", "tag1"),
-                        List.of("create_date desc", "gift_certificate.name asc"),
+                                "tags", "tag1"),
+                        List.of("createDate,desc", "name,asc"),
                         List.of(1, 2),
                         true
                 ));
@@ -77,44 +82,44 @@ class GiftCertificateDAOImplTest {
         // one by full name
 
         args.add(getUnsortedArgs(
-                Map.of("gift_certificate.name", "name1"),
+                Map.of("name", "name1"),
                 List.of(1)
         ));
 
         args.add(getUnsortedArgs(
-                Map.of("gift_certificate.name", "%name%"),
+                Map.of("name", "%name%"),
                 List.of(1, 2, 3, 4, 5, 6)
         ));
 
         args.add(getUnsortedArgs(
-                Map.of("gift_certificate.name", "%name%",
+                Map.of("name", "%name%",
                         "description", "description2"),
                 List.of(2, 4, 5, 6)
         ));
 
         args.add(getUnsortedArgs(
-                Map.of("gift_certificate.name", "%name%",
+                Map.of("name", "%name%",
                         "description", "description%",
-                        "tag.name", "tag1"),
+                        "tags", "tag1"),
                 List.of(1, 2)
         ));
 
         args.add(
                 Arguments.of(
-                        Map.of("gift_certificate.name", "%name%",
+                        Map.of("name", "%name%",
                                 "description", "description%",
-                                "tag.name", "tag1"),
-                        List.of("gift_certificate.name desc"),
+                                "tags", "tag1"),
+                        List.of("name,desc"),
                         List.of(2, 1),
                         true
                 ));
 
         args.add(
                 Arguments.of(
-                        Map.of("gift_certificate.name", "%name%",
+                        Map.of("name", "%name%",
                                 "description", "description%",
-                                "tag.name", "tag1"),
-                        List.of("create_date"),
+                                "tags", "tag1"),
+                        List.of("createDate"),
                         List.of(2, 1),
                         true
                 ));
@@ -122,19 +127,6 @@ class GiftCertificateDAOImplTest {
 
         return args.stream();
     }
-//
-//    @BeforeEach
-//    void setUp() {
-//        EmbeddedDatabase db = new EmbeddedDatabaseBuilder()
-//                .generateUniqueName(true)
-//                .setType(H2)
-//                .setScriptEncoding("UTF-8")
-//                .addDefaultScripts()
-//                .build();
-//        jdbcTemplate = new JdbcTemplate(db);
-//        tagDAO = new TagDaoImpl(jdbcTemplate);
-//        giftCertificateDAO = new GiftCertificateDaoImpl(jdbcTemplate,tagDAO);
-//    }
 
     private static void assertEqualsCerts(GiftCertificate giftCertificate, GiftCertificate giftCertificate2) {
         assertEquals(giftCertificate.getName(), giftCertificate2.getName());
@@ -224,13 +216,19 @@ class GiftCertificateDAOImplTest {
                        List<String> sorting,
                        List<Integer> expected,
                        boolean ordered) {
+        MultiValueMap<String, String> paramsString = new LinkedMultiValueMap<>();
+        sorting.forEach(s -> paramsString.add("sort", s));
 
-        List<GiftCertificate> result = giftCertificateDAO.getAllByParam(params, sorting);
+        GetAllCertParamsToQueryMapConverter converter = new GetAllCertParamsToQueryMapConverter(paramsString);
 
-        assertEquals(expected.size(), result.size());
+
+        Page<GiftCertificate> result = giftCertificateDAO.getAllByParam(params,
+                PageRequest.of(0, 6, converter.getSort()));
+
+        assertEquals(expected.size(), result.getContent().size());
         if (ordered) {
             for (int i = 0; i < expected.size(); i++)
-                assertEquals(expected.get(i), result.get(i).getId());
+                assertEquals(expected.get(i), result.getContent().get(i).getId());
         } else {
             assertTrue(
                     result.stream()
