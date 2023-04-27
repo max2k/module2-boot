@@ -14,6 +14,5 @@ public class TagDTO {
     @Builder.Default
     private int id = -1;
 
-    // @NotBlank(message = "name is mandatory")
     private String name;
 }

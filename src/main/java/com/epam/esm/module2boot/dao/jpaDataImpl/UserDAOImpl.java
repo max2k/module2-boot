@@ -6,6 +6,8 @@ import com.epam.esm.module2boot.exception.dao.DataBaseConstrainException;
 import com.epam.esm.module2boot.model.User;
 import lombok.AllArgsConstructor;
 import org.springframework.context.annotation.Profile;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Component;
 
 @Component
@@ -28,5 +30,10 @@ public class UserDAOImpl implements UserDAO {
     @Override
     public User getUser(Integer id) {
         return userRepository.findById(id).orElse(null);
+    }
+
+    @Override
+    public Page<User> getUserList(Pageable pageable) {
+        return userRepository.findAll(pageable);
     }
 }

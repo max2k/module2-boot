@@ -7,11 +7,11 @@ import com.epam.esm.module2boot.exception.dao.DataBaseConstrainException;
 import com.epam.esm.module2boot.model.Tag;
 import org.springframework.context.annotation.Profile;
 import org.springframework.dao.DataIntegrityViolationException;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Repository;
 
-import java.util.HashSet;
 import java.util.Objects;
-import java.util.Set;
 
 @Repository
 @Profile("jpa-data")
@@ -52,10 +52,6 @@ public class TagDaoImpl implements TagDAO {
         return true;
     }
 
-    @Override
-    public Set<Tag> getTagsForCertID(int id) {
-        return new HashSet<>(tagRepository.findTagsByGiftCertificateId(id));
-    }
 
     @Override
     public Tag ensureTag(Tag tag) {
@@ -64,15 +60,13 @@ public class TagDaoImpl implements TagDAO {
     }
 
     @Override
-    public Tag getTagByName(String name) throws NotFoundException {
-        Tag tag = tagRepository.findByName(name);
-        if (tag == null) throw new NotFoundException("No tag with name:" + name);
-        return tag;
+    public Tag getMostUsedTagForUserID(int userID) {
+        return tagRepository.findMostUsedTagForUserID(userID);
     }
 
     @Override
-    public Tag getMostUsedTagForUserID(int userID) {
-        return tagRepository.findMostUsedTagForUserID(userID);
+    public Page<Tag> findAll(Pageable pageable) {
+        return tagRepository.findAll(pageable);
     }
 
 

@@ -8,5 +8,6 @@ public class UserDTO extends RepresentationModel<UserDTO> {
     Integer id;
     String firstName;
     String lastName;
+
     String email;
 }

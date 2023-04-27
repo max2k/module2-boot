@@ -1,6 +1,8 @@
 package com.epam.esm.module2boot.controller;
 
 import com.epam.esm.module2boot.dto.GiftCertificateDTO;
+import com.epam.esm.module2boot.model.GiftCertificate;
+import com.epam.esm.module2boot.service.GiftCertificateService;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -34,6 +36,9 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 class GiftCertificateControllerTest {
     @Autowired
     private WebApplicationContext webApplicationContext;
+
+    @Autowired
+    private GiftCertificateService giftCertificateService;
 
     private MockMvc mockMvc;
 
@@ -144,7 +149,7 @@ class GiftCertificateControllerTest {
 
         if (params != null) httpParam.setAll(params);
 
-        MvcResult result = mockMvc.perform(
+        mockMvc.perform(
                         MockMvcRequestBuilders.get("/GiftCertificate")
                                 .params(httpParam)
                                 .contentType(MediaType.APPLICATION_JSON)
@@ -154,5 +159,26 @@ class GiftCertificateControllerTest {
                 .andReturn();
 
 
+    }
+
+    @Test
+    void updateGiftCertificate() throws Exception {
+
+        mockMvc.perform(MockMvcRequestBuilders.put("/GiftCertificate/1ff11111111"))
+                .andExpect(status().isBadRequest())
+                .andReturn();
+
+
+        mockMvc.perform(MockMvcRequestBuilders.put("/GiftCertificate/1")
+                        .param("name", "new name")
+                        .param("description", "new description")
+                        .contentType(MediaType.APPLICATION_JSON))
+                .andExpect(status().isOk())
+                .andReturn();
+
+        GiftCertificate giftCertificate=giftCertificateService.getGiftCertificateById(1);
+
+        assertEquals("new name",giftCertificate.getName());
+        assertEquals("new description",giftCertificate.getDescription());
     }
 }

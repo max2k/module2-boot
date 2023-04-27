@@ -3,8 +3,8 @@ package com.epam.esm.module2boot.dao;
 import com.epam.esm.module2boot.exception.NotFoundException;
 import com.epam.esm.module2boot.exception.dao.DataBaseConstrainException;
 import com.epam.esm.module2boot.model.Tag;
-
-import java.util.Set;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 
 public interface TagDAO {
     Tag createTag(String name) throws DataBaseConstrainException;
@@ -13,11 +13,11 @@ public interface TagDAO {
 
     boolean deleteTag(int id) throws NotFoundException;
 
-    Set<Tag> getTagsForCertID(int id);
 
     Tag ensureTag(Tag tag);
 
-    Tag getTagByName(String name) throws NotFoundException;
 
     Tag getMostUsedTagForUserID(int userID);
+
+    Page<Tag> findAll(Pageable pageable);
 }

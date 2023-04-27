@@ -2,9 +2,10 @@ package com.epam.esm.module2boot.controller;
 
 import com.epam.esm.module2boot.dto.UserDTO;
 import com.epam.esm.module2boot.exception.BadRequestException;
-import com.epam.esm.module2boot.service.OrderService;
 import com.epam.esm.module2boot.service.UserService;
 import lombok.AllArgsConstructor;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -21,7 +22,6 @@ import static org.springframework.hateoas.server.mvc.WebMvcLinkBuilder.methodOn;
 public class UserController {
 
     private final UserService userService;
-    private final OrderService orderService;
 
     // add new user entry
     @PostMapping("/new")
@@ -32,6 +32,9 @@ public class UserController {
             createdUserDTO.add(linkTo(methodOn(UserController.class)
                     .getUser(createdUserDTO.getId())).withSelfRel());
 
+            createdUserDTO.add(linkTo(methodOn(OrderController.class)
+                    .getOrdersByUserId(createdUserDTO.getId(), 0, 10)).withRel("orders"));
+
             return ResponseEntity.status(HttpStatus.CREATED).body(createdUserDTO);
         } catch (Exception e) {
             throw new BadRequestException("User with this name cannot be created");
@@ -40,15 +43,28 @@ public class UserController {
 
     @GetMapping("/{id}")
     public ResponseEntity<UserDTO> getUser(@PathVariable Integer id) {
-        try {
-            UserDTO userDTO = userService.getUserDTO(id);
-            userDTO.add(linkTo(methodOn(UserController.class).getUser(id)).withSelfRel());
-            userDTO.add(linkTo(methodOn(OrderController.class)
-                    .getOrdersByUserId(id, 0, 10)).withRel("orders"));
-            return ResponseEntity.status(HttpStatus.OK).body(userDTO);
-        } catch (Exception e) {
-            throw new BadRequestException("User with this id cannot be found");
-        }
+        UserDTO userDTO = userService.getUserDTO(id);
+        userDTO.add(linkTo(methodOn(UserController.class).getUser(id)).withSelfRel());
+        userDTO.add(linkTo(methodOn(OrderController.class)
+                .getOrdersByUserId(id, 0, 10)).withRel("orders"));
+        return ResponseEntity.status(HttpStatus.OK).body(userDTO);
+
+    }
+
+    @GetMapping("/list")
+    public ResponseEntity<Page<UserDTO>> getUsers(
+            @RequestParam(name = "page", required = false, defaultValue = "0") int page,
+            @RequestParam(name = "size", required = false, defaultValue = "25") int size) {
+
+        Page<UserDTO> userDTOList = userService.getUserDTOList(PageRequest.of(page, size));
+
+        userDTOList.forEach(u -> {
+            u.add(linkTo(methodOn(UserController.class).getUser(u.getId())).withSelfRel());
+            u.add(linkTo(methodOn(OrderController.class)
+                    .getOrdersByUserId(u.getId(), 0, 10)).withRel("orders"));
+        });
+
+        return ResponseEntity.status(HttpStatus.OK).body(userDTOList);
     }
 
 }

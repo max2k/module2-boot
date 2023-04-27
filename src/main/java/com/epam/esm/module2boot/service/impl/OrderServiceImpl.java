@@ -2,7 +2,7 @@ package com.epam.esm.module2boot.service.impl;
 
 import com.epam.esm.module2boot.dao.OrderDAO;
 import com.epam.esm.module2boot.dto.OrderDTO;
-import com.epam.esm.module2boot.dto.UserOrderListEntityDTO;
+import com.epam.esm.module2boot.dto.UserOrdersDTO;
 import com.epam.esm.module2boot.exception.BadRequestException;
 import com.epam.esm.module2boot.exception.NotFoundException;
 import com.epam.esm.module2boot.model.Order;
@@ -39,9 +39,10 @@ public class OrderServiceImpl implements OrderService {
     }
 
     @Override
-    public Page<UserOrderListEntityDTO> getOrderListByUserId(int id, int pageNum, int pageSize) throws NotFoundException {
+    public Page<UserOrdersDTO> getOrderListByUserId(int id, int pageNum, int pageSize) throws NotFoundException {
+        userService.getUser(id); // check if user exists
         Page<Order> orderPage = orderDao.getOrderListByUserId(id, pageNum, pageSize);
-        return orderPage.map(order -> modelMapper.map(order, UserOrderListEntityDTO.class));
+        return orderPage.map(order -> modelMapper.map(order, UserOrdersDTO.class));
 
     }
 

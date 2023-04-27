@@ -1,7 +1,7 @@
 package com.epam.esm.module2boot.controller;
 
 import com.epam.esm.module2boot.dto.OrderDTO;
-import com.epam.esm.module2boot.dto.UserOrderListEntityDTO;
+import com.epam.esm.module2boot.dto.UserOrdersDTO;
 import com.epam.esm.module2boot.model.Order;
 import com.epam.esm.module2boot.model.Tag;
 import com.epam.esm.module2boot.service.OrderService;
@@ -31,19 +31,28 @@ public class OrderController {
     }
 
     @GetMapping("/listByUserID/{id}")
-    public ResponseEntity<PagedModel<UserOrderListEntityDTO>> getOrdersByUserId(@PathVariable Integer id,
-                                                                                @RequestParam(required = false, defaultValue = "0") Integer page,
-                                                                                @RequestParam(required = false, defaultValue = "10") Integer size) {
-        Page<UserOrderListEntityDTO> userOrderListEntityDTOPage = orderService.getOrderListByUserId(id, page, size);
+    public ResponseEntity<PagedModel<UserOrdersDTO>>
+    getOrdersByUserId(@PathVariable Integer id,
+                      @RequestParam(required = false, defaultValue = "0") Integer page,
+                      @RequestParam(required = false, defaultValue = "10") Integer size) {
 
-        userOrderListEntityDTOPage.forEach(o -> o.add(linkTo(methodOn(OrderController.class)
-                .getOrder(o.getId())).withRel("GetOrderDetails")));
+        Page<UserOrdersDTO> userOrdersPage = orderService.getOrderListByUserId(id, page, size);
 
-        PagedModel<UserOrderListEntityDTO> userOrderListEntityDTOPagedModel =
-                PagedModel.of(userOrderListEntityDTOPage.toList(),
+        userOrdersPage.forEach(o -> {
+            o.add(linkTo(methodOn(OrderController.class)
+                    .getOrder(o.getId())).withRel("GetOrderDetails"));
+            o.add(linkTo(methodOn(UserController.class).getUser(id))
+                    .withRel("GetUserDetails"));
+        });
+
+        PagedModel<UserOrdersDTO> userOrderListEntityDTOPagedModel =
+                PagedModel.of(
+                        userOrdersPage.toList(),
                         new PagedModel.PageMetadata(size.longValue(),
                                 page.longValue(),
-                                userOrderListEntityDTOPage.getTotalElements()));
+                                userOrdersPage.getTotalElements()
+                        )
+                );
 
         userOrderListEntityDTOPagedModel.add(linkTo(methodOn(OrderController.class)
                 .getOrdersByUserId(id, page, size)).withSelfRel());
@@ -53,6 +62,9 @@ public class OrderController {
 
     @GetMapping("/{id}")
     public ResponseEntity<Order> getOrder(@PathVariable Integer id) {
+        Order order = orderService.getOrder(id);
+        order.add(linkTo(methodOn(OrderController.class)
+                .getOrder(id)).withSelfRel());
         return ResponseEntity.status(HttpStatus.OK).body(orderService.getOrder(id));
     }
 

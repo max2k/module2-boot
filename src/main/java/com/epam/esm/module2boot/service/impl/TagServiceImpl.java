@@ -4,7 +4,8 @@ import com.epam.esm.module2boot.dao.TagDAO;
 import com.epam.esm.module2boot.exception.dao.DataBaseConstrainException;
 import com.epam.esm.module2boot.model.Tag;
 import com.epam.esm.module2boot.service.TagService;
-import org.springframework.dao.EmptyResultDataAccessException;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
 @Service
@@ -18,12 +19,7 @@ public class TagServiceImpl implements TagService {
 
     @Override
     public Tag getTagById(int id) {
-        try {
-            return tagDAO.getTagById(id);
-        } catch (EmptyResultDataAccessException e) {
-            return null;
-        }
-
+        return tagDAO.getTagById(id);
     }
 
     public Tag createTag(String name) throws DataBaseConstrainException {
@@ -39,14 +35,15 @@ public class TagServiceImpl implements TagService {
         return tagDAO.ensureTag(tag);
     }
 
-    @Override
-    public Tag getTagByName(String name) {
-        return tagDAO.getTagByName(name);
-    }
 
     @Override
     public Tag getMostUsedTagForUserID(int userID) {
         return tagDAO.getMostUsedTagForUserID(userID);
+    }
+
+    @Override
+    public Page<Tag> getAllTags(Pageable pageable) {
+        return tagDAO.findAll(pageable);
     }
 
 }

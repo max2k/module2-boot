@@ -20,7 +20,9 @@ import org.springframework.web.context.WebApplicationContext;
 
 import java.util.stream.Stream;
 
+import static org.hamcrest.Matchers.hasSize;
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 @SpringBootTest
@@ -88,7 +90,7 @@ class OrderControllerTest {
     @ParameterizedTest
     @MethodSource("createOrderParams")
     void createOrder(String query, int expected) throws Exception {
-        MvcResult result = mockMvc.perform(
+        mockMvc.perform(
                         MockMvcRequestBuilders.post("/orders/new")
                                 .contentType(MediaType.APPLICATION_JSON)
                                 .content(query))
@@ -107,5 +109,57 @@ class OrderControllerTest {
         Tag tag = objectMapper.readValue(result.getResponse().getContentAsString(), Tag.class);
 
         assertEquals("most valuable tag 1", tag.getName());
+    }
+
+    @Test
+    void getOrdersByUserId() throws Exception {
+
+        mockMvc.perform( MockMvcRequestBuilders.get("/orders/listByUserID/1111323")
+                        .contentType(MediaType.APPLICATION_JSON))
+                .andExpect(status().isNotFound());
+
+        mockMvc.perform( MockMvcRequestBuilders.get("/orders/listByUserID/323")
+                                .contentType(MediaType.APPLICATION_JSON))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$._embedded.UserOrderList").isArray())
+                .andExpect(jsonPath("$._embedded.UserOrderList",hasSize(3)))
+                .andExpect(jsonPath("$._embedded.UserOrderList[0].id").value(311))
+                .andExpect(jsonPath("$._embedded.UserOrderList[0].cost").value(111.96))
+                .andExpect(jsonPath(
+                        "$._embedded.UserOrderList[0]._links.GetOrderDetails.href")
+                        .value("http://localhost/orders/311"));
+
+        mockMvc.perform( MockMvcRequestBuilders.get("/orders/listByUserID/323")
+                        .param("page", "0")
+                        .param("size", "2")
+                        .contentType(MediaType.APPLICATION_JSON))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$._embedded.UserOrderList").isArray())
+                .andExpect(jsonPath("$._embedded.UserOrderList",hasSize(2)))
+                .andExpect(jsonPath("$._embedded.UserOrderList[0].id").value(311))
+                .andExpect(jsonPath("$._embedded.UserOrderList[0].cost").value(111.96))
+                .andExpect(jsonPath(
+                        "$._embedded.UserOrderList[0]._links.GetOrderDetails.href")
+                        .value("http://localhost/orders/311"));
+
+    }
+
+    @Test
+    void getOrder() throws Exception {
+        mockMvc.perform( MockMvcRequestBuilders.get("/orders/311")
+                        .contentType(MediaType.APPLICATION_JSON))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.id").value(311))
+                .andExpect(jsonPath("$.user.id").value(323))
+                .andExpect(jsonPath("$.giftCertificate.id").value(2301))
+                .andExpect(jsonPath("$.giftCertificate.tags[0].id").value(192))
+                .andExpect(jsonPath(
+                        "$._links.self.href")
+                        .value("http://localhost/orders/311"));
+
+        mockMvc.perform( MockMvcRequestBuilders.get("/orders/31333331")
+                        .contentType(MediaType.APPLICATION_JSON))
+                .andExpect(status().isNotFound());
+
     }
 }

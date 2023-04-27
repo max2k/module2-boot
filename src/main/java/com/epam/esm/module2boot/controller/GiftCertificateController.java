@@ -38,11 +38,8 @@ public class GiftCertificateController {
     @GetMapping("/{id}")
     public ResponseEntity<GiftCertificateDTO> getGiftCertificateById(@PathVariable int id) {
         GiftCertificateDTO giftCertificateDTO = giftCertificateService.getGiftCertificateDTOById(id);
-        if (giftCertificateDTO != null) {
-            return ResponseEntity.ok(giftCertificateDTO);
-        } else {
-            throw new NotFoundException("Object with this id not found");
-        }
+        return ResponseEntity.ok(giftCertificateDTO);
+
     }
 
     @PutMapping("/{id}")
@@ -53,23 +50,16 @@ public class GiftCertificateController {
         GiftCertificateUpdateDTO giftCertificateUpdateDTO = new GiftCertificateUpdateDTO();
         giftCertificateUpdateDTO.setFields(queryParams.toSingleValueMap());
 
-        boolean result = giftCertificateService.updateGiftCertificate(id, giftCertificateUpdateDTO);
+        giftCertificateService.updateGiftCertificate(id, giftCertificateUpdateDTO);
 
-        if (result) {
-            return ResponseEntity.ok().build();
-        } else {
-            throw new NotFoundException("Object with this id not found");
-        }
+        return ResponseEntity.ok().build();
+
     }
 
     @DeleteMapping("/{id}")
     public ResponseEntity<Void> deleteGiftCertificate(@PathVariable int id) {
-        boolean deleted = giftCertificateService.deleteGiftCertificateById(id);
-        if (deleted) {
-            return ResponseEntity.ok().build();
-        } else {
-            throw new NotFoundException("Object with this id not found");
-        }
+        giftCertificateService.deleteGiftCertificateById(id);
+        return ResponseEntity.ok().build();
     }
 
 

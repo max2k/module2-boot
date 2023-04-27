@@ -5,6 +5,7 @@ import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+import org.springframework.hateoas.RepresentationModel;
 
 import java.math.BigDecimal;
 
@@ -14,7 +15,7 @@ import java.math.BigDecimal;
 @AllArgsConstructor
 @NoArgsConstructor
 @Table(name = "ORDERTABLE")
-public class Order {
+public class Order extends RepresentationModel<Order> {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private int id;

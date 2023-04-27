@@ -8,6 +8,8 @@ import com.epam.esm.module2boot.model.User;
 import com.epam.esm.module2boot.service.UserService;
 import lombok.AllArgsConstructor;
 import org.modelmapper.ModelMapper;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
 @Service
@@ -21,6 +23,7 @@ public class UserServiceImpl implements UserService {
     public UserDTO createUser(UserDTO userDTO) throws DataBaseConstrainException {
         User user = modelMapper.map(userDTO, User.class);
         try {
+            user.setId(User.NO_ID); // to avoid id from client and prevent field from updating
             User createdUser = userDAO.createUser(user);
             return modelMapper.map(createdUser, UserDTO.class);
         } catch (Exception e) {
@@ -39,5 +42,10 @@ public class UserServiceImpl implements UserService {
         User user = userDAO.getUser(userId);
         if (user == null) throw new NotFoundException("User cannot be found with this id" + userId);
         return user;
+    }
+
+    @Override
+    public Page<UserDTO> getUserDTOList(Pageable pageable) {
+        return userDAO.getUserList(pageable).map(user -> modelMapper.map(user, UserDTO.class));
     }
 }

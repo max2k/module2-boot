@@ -7,9 +7,10 @@ import lombok.Data;
 @Entity
 @Table(name = "usertable")
 public class User {
+    public static final int NO_ID = -1;
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private int id;
+    private int id = NO_ID;
 
     private String firstName;
     private String lastName;
