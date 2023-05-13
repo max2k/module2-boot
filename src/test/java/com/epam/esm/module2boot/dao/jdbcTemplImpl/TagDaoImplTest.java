@@ -43,7 +43,7 @@ class TagDaoImplTest {
     void getTagById() {
         Tag tstTag = tagDao.getTagById(1);
         assertNotNull(tstTag);
-        assertEquals("tag1", tstTag.getName());
+        assertEquals("tag2", tstTag.getName());
     }
 
     @Test

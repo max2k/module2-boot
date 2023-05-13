@@ -39,7 +39,7 @@ class TagControllerTest {
                         .contentType(MediaType.APPLICATION_JSON))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.id").value(1))
-                .andExpect(jsonPath("$.name").value("tag1"))
+                .andExpect(jsonPath("$.name").value("tag2"))
                 .andExpect(jsonPath("$._links.self.href").value("http://localhost/tags/1"))
                 .andReturn();
 

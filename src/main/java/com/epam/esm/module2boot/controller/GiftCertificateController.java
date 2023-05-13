@@ -15,7 +15,7 @@ import org.springframework.util.MultiValueMap;
 import org.springframework.web.bind.annotation.*;
 
 @RestController
-@RequestMapping("/GiftCertificate")
+@RequestMapping("/GiftCertificates")
 public class GiftCertificateController {
 
     private final GiftCertificateService giftCertificateService;

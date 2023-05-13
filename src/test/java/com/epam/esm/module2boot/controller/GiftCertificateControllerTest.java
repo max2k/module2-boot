@@ -30,8 +30,9 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 //@WebMvcTest(controllers = GiftCertificateController.class)
+//@SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
 @SpringBootTest
-@AutoConfigureTestDatabase(replace = AutoConfigureTestDatabase.Replace.NONE)
+@AutoConfigureTestDatabase(replace = AutoConfigureTestDatabase.Replace.ANY)
 @Transactional
 class GiftCertificateControllerTest {
     @Autowired
@@ -44,6 +45,18 @@ class GiftCertificateControllerTest {
 
     @Autowired
     private ObjectMapper objectMapper;
+
+    @Autowired
+    private WebApplicationContext context;
+
+    // uncomment this if you want to test with security
+//    @BeforeEach
+//    public void setup() {
+//        mockMvc = MockMvcBuilders
+//                .webAppContextSetup(context)
+//                .apply(springSecurity())
+//                .build();
+//    }
 
     public static Stream<Arguments> queryParams() {
         return Stream.of(
@@ -83,7 +96,7 @@ class GiftCertificateControllerTest {
                 }
                 """;
         MvcResult result = mockMvc.perform(
-                        MockMvcRequestBuilders.post("/GiftCertificate")
+                        MockMvcRequestBuilders.post("/GiftCertificates")
                                 .contentType(MediaType.APPLICATION_JSON)
                                 .content(query))
                 .andExpect(status().isCreated())
@@ -104,7 +117,7 @@ class GiftCertificateControllerTest {
 
     @Test
     void getGiftCertificateById() throws Exception {
-        MvcResult result = mockMvc.perform(MockMvcRequestBuilders.get("/GiftCertificate/1")
+        MvcResult result = mockMvc.perform(MockMvcRequestBuilders.get("/GiftCertificates/1")
                         .contentType(MediaType.APPLICATION_JSON))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.name").value("name1"))
@@ -121,7 +134,7 @@ class GiftCertificateControllerTest {
 
         assertEquals(4, giftCertificateDTO.getTags().size());
 
-        mockMvc.perform(MockMvcRequestBuilders.get("/GiftCertificate/1000011")
+        mockMvc.perform(MockMvcRequestBuilders.get("/GiftCertificates/1000011")
                         .contentType(MediaType.APPLICATION_JSON))
                 .andExpect(status().isNotFound())
                 .andReturn();
@@ -129,12 +142,12 @@ class GiftCertificateControllerTest {
 
     @Test
     void deleteGiftCertificate() throws Exception {
-        mockMvc.perform(MockMvcRequestBuilders.delete("/GiftCertificate/1")
+        mockMvc.perform(MockMvcRequestBuilders.delete("/GiftCertificates/1")
                         .contentType(MediaType.APPLICATION_JSON))
                 .andExpect(status().isOk())
                 .andReturn();
 
-        mockMvc.perform(MockMvcRequestBuilders.delete("/GiftCertificate/1")
+        mockMvc.perform(MockMvcRequestBuilders.delete("/GiftCertificates/1")
                         .contentType(MediaType.APPLICATION_JSON))
                 .andExpect(status().isNotFound())
                 .andReturn();
@@ -150,7 +163,7 @@ class GiftCertificateControllerTest {
         if (params != null) httpParam.setAll(params);
 
         mockMvc.perform(
-                        MockMvcRequestBuilders.get("/GiftCertificate")
+                        MockMvcRequestBuilders.get("/GiftCertificates")
                                 .params(httpParam)
                                 .contentType(MediaType.APPLICATION_JSON)
                 )
@@ -164,21 +177,21 @@ class GiftCertificateControllerTest {
     @Test
     void updateGiftCertificate() throws Exception {
 
-        mockMvc.perform(MockMvcRequestBuilders.put("/GiftCertificate/1ff11111111"))
+        mockMvc.perform(MockMvcRequestBuilders.put("/GiftCertificates/1ff11111111"))
                 .andExpect(status().isBadRequest())
                 .andReturn();
 
 
-        mockMvc.perform(MockMvcRequestBuilders.put("/GiftCertificate/1")
+        mockMvc.perform(MockMvcRequestBuilders.put("/GiftCertificates/1")
                         .param("name", "new name")
                         .param("description", "new description")
                         .contentType(MediaType.APPLICATION_JSON))
                 .andExpect(status().isOk())
                 .andReturn();
 
-        GiftCertificate giftCertificate=giftCertificateService.getGiftCertificateById(1);
+        GiftCertificate giftCertificate = giftCertificateService.getGiftCertificateById(1);
 
-        assertEquals("new name",giftCertificate.getName());
-        assertEquals("new description",giftCertificate.getDescription());
+        assertEquals("new name", giftCertificate.getName());
+        assertEquals("new description", giftCertificate.getDescription());
     }
 }

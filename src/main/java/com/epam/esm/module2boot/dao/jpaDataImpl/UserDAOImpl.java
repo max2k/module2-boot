@@ -10,6 +10,8 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Component;
 
+import java.util.Optional;
+
 @Component
 @AllArgsConstructor
 @Profile("jpa-data")
@@ -35,5 +37,10 @@ public class UserDAOImpl implements UserDAO {
     @Override
     public Page<User> getUserList(Pageable pageable) {
         return userRepository.findAll(pageable);
+    }
+
+    @Override
+    public Optional<User> getUserByEmail(String email) {
+        return userRepository.findByEmail(email);
     }
 }

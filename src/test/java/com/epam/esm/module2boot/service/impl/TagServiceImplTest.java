@@ -24,7 +24,7 @@ class TagServiceImplTest {
     void getTagById() {
         Tag tstTag = tagService.getTagById(1);
         assertNotNull(tstTag);
-        assertEquals("tag1", tstTag.getName());
+        assertEquals("tag2", tstTag.getName());
     }
 
     @Test

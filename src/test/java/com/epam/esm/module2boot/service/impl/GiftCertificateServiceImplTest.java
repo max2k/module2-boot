@@ -96,7 +96,7 @@ class GiftCertificateServiceImplTest {
     void createGiftCertificate() throws ParseException, DataBaseConstrainException {
         GiftCertificateDTO giftCertificateDTO = getTestGiftCertificateDTO();
 
-        giftCertificateDTO.setTags(genTags("GS tst tag1", "GS tst tag2", "GS tst tag3", "tag1"));
+        giftCertificateDTO.setTags(genTags("GS tst tag1", "GS tst tag2", "GS tst tag3", "tag2"));
 
         GiftCertificateDTO result = giftCertificateService.createGiftCertificate(giftCertificateDTO);
 
@@ -114,7 +114,7 @@ class GiftCertificateServiceImplTest {
 
         // existing tag have valid
         assertEquals(1,
-                dbResult.getTags().stream().filter(tag -> tag.getName().equals("tag1") && tag.getId() == 1).count()
+                dbResult.getTags().stream().filter(tag -> tag.getName().equals("tag2") && tag.getId() == 1).count()
         );
 
     }

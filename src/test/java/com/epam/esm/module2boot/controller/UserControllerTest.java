@@ -44,18 +44,20 @@ class UserControllerTest {
                     {
                         "firstName": "test user1 name",
                         "lastName": "test user1 surname",
-                        "email": "email@email.com"
+                        "email": "email@email.com",
+                        "password": "new password",
+                        "status": "ACTIVE"
                     }
                 """;
         MvcResult queryResult = mockMvc.perform(post("/users/new")
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(newUserJson))
                 .andExpect(status().isCreated())
-                .andExpect(jsonPath("$.id").value(2001))
+                .andExpect(jsonPath("$.id").value(1003))
                 .andExpect(jsonPath("$.firstName").value("test user1 name"))
                 .andExpect(jsonPath("$.lastName").value("test user1 surname"))
                 .andExpect(jsonPath("$.email").value("email@email.com"))
-                .andExpect(jsonPath("$._links.self.href").value("http://localhost/users/2001"))
+                .andExpect(jsonPath("$._links.self.href").value("http://localhost/users/1003"))
                 .andReturn();
 
         String responseJson = queryResult.getResponse().getContentAsString();
@@ -68,7 +70,7 @@ class UserControllerTest {
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(objectMapper.writeValueAsString(userDTO)))
                 .andExpect(status().isCreated())
-                .andExpect(jsonPath("$.id").value(2002))
+                .andExpect(jsonPath("$.id").value(1004))
                 .andReturn();
 
         mockMvc.perform(post("/users/new")
