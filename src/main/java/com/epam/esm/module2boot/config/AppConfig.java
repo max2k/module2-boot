@@ -13,7 +13,7 @@ import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
 
 @Configuration
 @EnableWebMvc
-@ComponentScan(basePackages = "com.epam.esm")
+@ComponentScan(basePackages = "com.epam.esm.module2boot")
 @EnableTransactionManagement
 @EnableHypermediaSupport(type = EnableHypermediaSupport.HypermediaType.HAL)
 public class AppConfig implements WebMvcConfigurer {

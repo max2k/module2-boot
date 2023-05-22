@@ -114,28 +114,28 @@ class OrderControllerTest {
     @Test
     void getOrdersByUserId() throws Exception {
 
-        mockMvc.perform( MockMvcRequestBuilders.get("/orders/listByUserID/1111323")
+        mockMvc.perform(MockMvcRequestBuilders.get("/orders/listByUserID/1111323")
                         .contentType(MediaType.APPLICATION_JSON))
                 .andExpect(status().isNotFound());
 
-        mockMvc.perform( MockMvcRequestBuilders.get("/orders/listByUserID/323")
-                                .contentType(MediaType.APPLICATION_JSON))
+        mockMvc.perform(MockMvcRequestBuilders.get("/orders/listByUserID/323")
+                        .contentType(MediaType.APPLICATION_JSON))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$._embedded.UserOrderList").isArray())
-                .andExpect(jsonPath("$._embedded.UserOrderList",hasSize(3)))
+                .andExpect(jsonPath("$._embedded.UserOrderList", hasSize(3)))
                 .andExpect(jsonPath("$._embedded.UserOrderList[0].id").value(311))
                 .andExpect(jsonPath("$._embedded.UserOrderList[0].cost").value(111.96))
                 .andExpect(jsonPath(
                         "$._embedded.UserOrderList[0]._links.GetOrderDetails.href")
                         .value("http://localhost/orders/311"));
 
-        mockMvc.perform( MockMvcRequestBuilders.get("/orders/listByUserID/323")
+        mockMvc.perform(MockMvcRequestBuilders.get("/orders/listByUserID/323")
                         .param("page", "0")
                         .param("size", "2")
                         .contentType(MediaType.APPLICATION_JSON))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$._embedded.UserOrderList").isArray())
-                .andExpect(jsonPath("$._embedded.UserOrderList",hasSize(2)))
+                .andExpect(jsonPath("$._embedded.UserOrderList", hasSize(2)))
                 .andExpect(jsonPath("$._embedded.UserOrderList[0].id").value(311))
                 .andExpect(jsonPath("$._embedded.UserOrderList[0].cost").value(111.96))
                 .andExpect(jsonPath(
@@ -146,7 +146,7 @@ class OrderControllerTest {
 
     @Test
     void getOrder() throws Exception {
-        mockMvc.perform( MockMvcRequestBuilders.get("/orders/311")
+        mockMvc.perform(MockMvcRequestBuilders.get("/orders/311")
                         .contentType(MediaType.APPLICATION_JSON))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.id").value(311))
@@ -157,7 +157,7 @@ class OrderControllerTest {
                         "$._links.self.href")
                         .value("http://localhost/orders/311"));
 
-        mockMvc.perform( MockMvcRequestBuilders.get("/orders/31333331")
+        mockMvc.perform(MockMvcRequestBuilders.get("/orders/31333331")
                         .contentType(MediaType.APPLICATION_JSON))
                 .andExpect(status().isNotFound());
 

@@ -8,7 +8,7 @@ import org.springframework.hateoas.RepresentationModel;
 
 @Data
 @Entity
-@Table(name = "tag")
+@Table(name = "TAG")
 public class Tag extends RepresentationModel<Tag> {
     public static final int NO_ID = -1;
 

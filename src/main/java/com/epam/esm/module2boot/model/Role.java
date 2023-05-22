@@ -6,7 +6,7 @@ import net.minidev.json.annotate.JsonIgnore;
 
 @Data
 @Entity
-@Table(name = "roles")
+@Table(name = "ROLES")
 public class Role {
     public static final int NO_ID = -1;
 

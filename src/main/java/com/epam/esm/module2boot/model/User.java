@@ -8,7 +8,7 @@ import java.util.Set;
 
 @Data
 @Entity
-@Table(name = "usertable")
+@Table(name = "USERTABLE")
 public class User {
     public static final int NO_ID = -1;
     @Id
