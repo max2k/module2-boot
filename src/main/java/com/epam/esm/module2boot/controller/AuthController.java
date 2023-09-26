@@ -6,10 +6,7 @@ import com.epam.esm.module2boot.dto.UserDTO;
 import com.epam.esm.module2boot.service.AuthService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 @RestController
 @RequestMapping("/auth")
@@ -18,6 +15,7 @@ public class AuthController {
 
     private final AuthService authService;
 
+    @CrossOrigin(origins = "http://localhost:3000")
     @PostMapping("/login")
     public ResponseEntity<LoginResponseDTO> login(@RequestBody LoginRequestDTO loginRequest) {
         return ResponseEntity.ok(authService.login(loginRequest));
@@ -27,4 +25,6 @@ public class AuthController {
     public ResponseEntity<LoginResponseDTO> register(@RequestBody UserDTO loginRequest) {
         return ResponseEntity.ok(authService.register(loginRequest));
     }
+
+
 }

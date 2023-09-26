@@ -78,9 +78,9 @@ class GiftCertificateServiceImplTest {
                 , Arguments.of(null, new int[]{6, 5, 4, 3, 2, 1}
                         , List.of("name,desc"))
                 , Arguments.of(null, new int[]{3717, 355, 5206, 5931, 3378, 4451}
-                        , List.of("createDate", "name,desc"))
+                        , List.of("createDate", "name, desc"))
                 , Arguments.of(Map.of("tags", "tag1"), new int[]{2, 1}
-                        , List.of("createDate", "name,desc"))
+                        , List.of("createDate", "name, desc"))
         );
     }
 

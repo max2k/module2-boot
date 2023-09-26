@@ -37,7 +37,9 @@ public class GetAllCertParamsToQueryMapConverter {
         inParams.forEach((key, value) -> {
             String keyLowerCase = key.toLowerCase();
             if (value != null && !value.isEmpty()) {
-                convertedMap.put(keyLowerCase, paramConverters.get(keyLowerCase).apply(value));
+                final Function<List<String>, Object> converter=paramConverters.get(keyLowerCase);
+                if (converter!=null)
+                    convertedMap.put(keyLowerCase, converter.apply(value));
             }
         });
         return convertedMap;

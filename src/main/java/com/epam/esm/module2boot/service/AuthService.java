@@ -20,13 +20,16 @@ public class AuthService {
 
 
     public LoginResponseDTO login(LoginRequestDTO loginRequest) {
+        final String userLogin = loginRequest.getUsername();
         authenticationManager.authenticate(
-                new UsernamePasswordAuthenticationToken(loginRequest.getUsername(), loginRequest.getPassword())
+                new UsernamePasswordAuthenticationToken( userLogin , loginRequest.getPassword())
         );
 
-        val user = userService.getUserByEmail(loginRequest.getUsername());
+        val user = userService.getUserByEmail( userLogin );
         val jwtToken = jwtService.generateToken(user);
         return LoginResponseDTO.builder()
+                .userLogin(userLogin)
+                .fullName(user.getFirstName() + " " +user.getLastName() )
                 .accessToken(jwtToken)
                 .build();
 

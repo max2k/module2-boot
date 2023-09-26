@@ -16,6 +16,7 @@ import org.springframework.web.bind.annotation.*;
 
 @RestController
 @RequestMapping("/GiftCertificates")
+@CrossOrigin(origins = "http://localhost:3000")
 public class GiftCertificateController {
 
     private final GiftCertificateService giftCertificateService;
@@ -68,6 +69,9 @@ public class GiftCertificateController {
             @RequestParam MultiValueMap<String, String> queryParams,
             @RequestParam(name = "page", required = false, defaultValue = "0") int page,
             @RequestParam(name = "size", required = false, defaultValue = "25") int size) {
+
+        if ( page<0 ) page = 0;
+        if ( size<=0 ) size = 25;
 
         GetAllCertParamsToQueryMapConverter converter =
                 new GetAllCertParamsToQueryMapConverter(queryParams);
