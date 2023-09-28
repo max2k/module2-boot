@@ -32,5 +32,20 @@ public interface GiftCertificateRepository extends JpaRepository<GiftCertificate
     Page<GiftCertificate> findByFilters(@Param("name") String name
             , @Param("desc") String description, Pageable pageable);
 
+//    @Query("SELECT gc FROM GiftCertificate gc  " +
+//            "LEFT JOIN gc.tags t " +
+//            "WHERE ( t.name in :tags OR :useTags=\"true\") and " +
+//            "(gc.name LIKE %:subStr% OR gc.description LIKE %:subStr%) ")
+//    Page<GiftCertificate> findByFiltersWithSubStr(@Param("useTags") String useTags, @Param("subStr") String subStr
+//            ,@Param("tags") List<String> tagName, Pageable pageable);
+
+    @Query("SELECT gc FROM GiftCertificate gc  " +
+            "LEFT JOIN gc.tags t " +
+            "WHERE  ( t.name in :tags OR :useTags='true') AND " +
+            "(gc.name LIKE %:subStr% OR gc.description LIKE %:subStr%) ")
+    Page<GiftCertificate> findByFiltersWithSubStr(@Param("subStr") String subStr, @Param("useTags") String useTags,
+            @Param("tags") List<String> tagName, Pageable pageable);
+
+
 
 }

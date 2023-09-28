@@ -62,9 +62,39 @@ public class GitCertificateDAOImpl implements GiftCertificateDAO {
 
     }
 
+//    @Override
+    public Page<GiftCertificate> getAllByParam2(Map<String, Object> params, Pageable pageable) {
+        if (params == null) params = new HashMap<>();
+
+        if (params.containsKey("tags")) {
+            List<String> tagList = (params.get("tags") instanceof String) ?
+                    List.of((String) params.get("tags")) : (List<String>) params.get("tags");
+
+            return giftCertificateRepository.findByFiltersWithTags(
+                    (String) params.get("name"),
+                    (String) params.get("description"),
+                    tagList, pageable);
+        } else
+            return giftCertificateRepository.findByFilters((String) params.get("name"),
+                    (String) params.get("description"), pageable);
+
+    }
+
     @Override
     public Page<GiftCertificate> getAllByParam(Map<String, Object> params, Pageable pageable) {
         if (params == null) params = new HashMap<>();
+
+        if ( params.containsKey("substr") ){
+            List<String> tagList = (params.get("tags") instanceof String) ?
+                    List.of((String) params.get("tags")) : (List<String>) params.get("tags");
+
+            return  giftCertificateRepository.findByFiltersWithSubStr(
+                    (String) params.get("substr"),
+                    tagList==null? "true":"false",
+                    tagList,
+                    pageable
+            );
+        }
 
         if (params.containsKey("tags")) {
             List<String> tagList = (params.get("tags") instanceof String) ?

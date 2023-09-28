@@ -3,6 +3,7 @@ package com.epam.esm.module2boot.converter;
 import org.springframework.data.domain.Sort;
 import org.springframework.util.MultiValueMap;
 
+import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -17,6 +18,7 @@ public class GetAllCertParamsToQueryMapConverter {
     private final Map<String, Function<List<String>, Object>> paramConverters =
             Map.of("name", GetAllCertParamsToQueryMapConverter::getString,
                     "description", GetAllCertParamsToQueryMapConverter::getString,
+                    "substr",GetAllCertParamsToQueryMapConverter::getString,
                     "tags", GetAllCertParamsToQueryMapConverter::getStringList);
 
     public GetAllCertParamsToQueryMapConverter(MultiValueMap<String, String> params) {
@@ -47,19 +49,23 @@ public class GetAllCertParamsToQueryMapConverter {
 
     public Sort getSort() {
 
+
         List<String> strOrderList = inParams.get("sort");
         if (strOrderList == null || strOrderList.isEmpty()) return Sort.unsorted();
 
+        final String[] allowedSortFields= {"createDate","description","name","price"};
+
+
         return Sort.by(strOrderList.stream()
-                .map(s -> {
-                    String[] sortParams = s.split(",");
-                    Sort.Direction direction = Sort.Direction.ASC;
-                    if (sortParams.length > 1) {
-                        direction = Sort.Direction.fromString(sortParams[1]);
-                    }
-                    return Sort.Order.by(sortParams[0]).with(direction);
-                })
-                .collect(Collectors.toList())
+                        .map(param -> param.split(","))
+                        .filter(paramStrings -> Arrays.binarySearch(allowedSortFields,paramStrings[0])>=0)
+                        .map(paramStrings -> {
+                            Sort.Direction direction =
+                                    paramStrings.length >1 && "desc".equalsIgnoreCase(paramStrings[1]) ?
+                                    Sort.Direction.DESC : Sort.Direction.ASC;
+                            return Sort.Order.by(paramStrings[0]).with(direction);
+                        })
+                        .collect(Collectors.toList())
         );
 
     }

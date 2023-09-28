@@ -61,6 +61,28 @@ class GiftCertificateControllerTest {
     public static Stream<Arguments> queryParams() {
         return Stream.of(
                 Arguments.of(
+                        Map.of("subStr","name"), 10
+
+                ),
+
+                Arguments.of(
+                        Map.of("sort","create_d"), 25
+
+                ),
+                Arguments.of(
+                        Map.of("sort","createDate,nodesc"), 25
+
+                ),
+                Arguments.of(
+                        Map.of("sort","createDate,desc"), 25
+
+                ),
+                Arguments.of(
+                        Map.of("sort","createDate,asc"), 25
+
+                ),
+
+                Arguments.of(
                         Map.of("page","0","size","25"), 25
 
                 ),
