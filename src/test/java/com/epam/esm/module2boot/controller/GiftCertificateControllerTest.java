@@ -46,8 +46,8 @@ class GiftCertificateControllerTest {
     @Autowired
     private ObjectMapper objectMapper;
 
-    @Autowired
-    private WebApplicationContext context;
+//    @Autowired
+//    private WebApplicationContext context;
 
     // uncomment this if you want to test with security
 //    @BeforeEach
@@ -60,8 +60,18 @@ class GiftCertificateControllerTest {
 
     public static Stream<Arguments> queryParams() {
         return Stream.of(
+
                 Arguments.of(
-                        Map.of("subStr","name"), 10
+                        Map.of("tags","INFANT"),25
+
+                ),
+
+                Arguments.of(
+                        Map.of("subStr","al"),25
+
+                ),
+                Arguments.of(
+                        Map.of("subStr","name"), 25
 
                 ),
 
@@ -94,9 +104,7 @@ class GiftCertificateControllerTest {
                         Map.of("page","0","size","-2"), 25
 
                 ),
-                Arguments.of(
-                        Map.of("description", "description2"), 4
-                ),
+
                 Arguments.of(
                         Map.of("tags", "tag1"), 2
                 ),

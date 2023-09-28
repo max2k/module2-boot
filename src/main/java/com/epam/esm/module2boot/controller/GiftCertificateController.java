@@ -3,7 +3,6 @@ package com.epam.esm.module2boot.controller;
 import com.epam.esm.module2boot.converter.GetAllCertParamsToQueryMapConverter;
 import com.epam.esm.module2boot.dto.GiftCertificateDTO;
 import com.epam.esm.module2boot.dto.GiftCertificateUpdateDTO;
-import com.epam.esm.module2boot.exception.NotFoundException;
 import com.epam.esm.module2boot.exception.dao.DataBaseConstrainException;
 import com.epam.esm.module2boot.service.GiftCertificateService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -80,10 +79,10 @@ public class GiftCertificateController {
                 giftCertificateService.getGiftCertificatesBy(converter.getGiftCertQueryMap(),
                         PageRequest.of(page, size, converter.getSort()));
 
-        if (!giftCertificates.isEmpty()) {
+     //   if (!giftCertificates.isEmpty()) {
             return ResponseEntity.ok(giftCertificates);
-        } else {
-            throw new NotFoundException("Objects with this params not found");
-        }
+        //} else {
+//            throw new NotFoundException("Objects with this params not found");
+//        }
     }
 }

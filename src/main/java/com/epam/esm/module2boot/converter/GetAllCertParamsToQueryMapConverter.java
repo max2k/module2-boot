@@ -16,9 +16,7 @@ public class GetAllCertParamsToQueryMapConverter {
     private final MultiValueMap<String, String> inParams;
 
     private final Map<String, Function<List<String>, Object>> paramConverters =
-            Map.of("name", GetAllCertParamsToQueryMapConverter::getString,
-                    "description", GetAllCertParamsToQueryMapConverter::getString,
-                    "substr",GetAllCertParamsToQueryMapConverter::getString,
+            Map.of("substr",GetAllCertParamsToQueryMapConverter::getString,
                     "tags", GetAllCertParamsToQueryMapConverter::getStringList);
 
     public GetAllCertParamsToQueryMapConverter(MultiValueMap<String, String> params) {
