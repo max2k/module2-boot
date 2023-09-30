@@ -29,7 +29,9 @@ public class JwtService {
 //    private long refreshExpiration;
 
     public String generateToken(User user) {
-        return buildToken(Map.of("roles", user.getRoles()), user, jwtExpiration);
+
+        return buildToken(Map.of("roles", user.getRoles()),
+                user, jwtExpiration);
     }
 
     private String buildToken(

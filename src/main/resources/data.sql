@@ -43,7 +43,7 @@ insert into CERT_TAG
 VALUES (2, 4);
 
 -- 2 Roles
-insert into ROLES (NAME) VALUES ('ADMIN'), ('USER');
+insert into ROLES (NAME) VALUES ('USER'), ('ADMIN');
 
 --- curl "https://api.mockaroo.com/api/81873d70?count=1000&key=afe37040" > "ORDER.sql"
 

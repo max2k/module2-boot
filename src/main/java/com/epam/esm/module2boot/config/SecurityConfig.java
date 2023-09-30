@@ -53,11 +53,13 @@ public class SecurityConfig {
         http.authorizeHttpRequests()
                 .requestMatchers(HttpMethod.GET, "/GiftCertificates/**")
                 .permitAll()
+                .requestMatchers(HttpMethod.OPTIONS, "/GiftCertificates/**")
+                .permitAll()
                 .requestMatchers(HttpMethod.POST, "/auth/**")
+                .permitAll()
+                .requestMatchers(HttpMethod.OPTIONS, "/auth/**")
                 .permitAll();
 
-        http.authorizeHttpRequests().requestMatchers(HttpMethod.OPTIONS,"/**")
-                .permitAll();
         http.authorizeHttpRequests().requestMatchers(HttpMethod.GET, "/**").hasRole("USER");
 
         http.authorizeHttpRequests().requestMatchers("/**").hasRole("ADMIN");

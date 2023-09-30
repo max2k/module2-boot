@@ -56,10 +56,14 @@ public class GiftCertificateController {
 
     }
 
+
+
+
     @DeleteMapping("/{id}")
-    public ResponseEntity<Void> deleteGiftCertificate(@PathVariable int id) {
+    public ResponseEntity<String> deleteGiftCertificate(@PathVariable int id) {
         giftCertificateService.deleteGiftCertificateById(id);
-        return ResponseEntity.ok().build();
+        return ResponseEntity.ok("Ok");
+
     }
 
 
@@ -85,4 +89,6 @@ public class GiftCertificateController {
 //            throw new NotFoundException("Objects with this params not found");
 //        }
     }
+
+
 }

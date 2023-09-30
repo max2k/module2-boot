@@ -40,6 +40,7 @@ public class GitCertificateDAOImpl implements GiftCertificateDAO {
         giftCertificateRepository.findById(id)
                 .orElseThrow(() -> new NotFoundException("Gift certificate not found with id:" + id));
         giftCertificateRepository.deleteById(id);
+        giftCertificateRepository.flush();
         return true;
     }
 
