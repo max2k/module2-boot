@@ -18,6 +18,7 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
 import java.text.ParseException;
+import java.util.Date;
 import java.util.Map;
 import java.util.Set;
 import java.util.stream.Collectors;
@@ -62,6 +63,11 @@ public class GiftCertificateServiceImpl implements GiftCertificateService {
              {
         GiftCertificate giftCertificate = modelMapper.map(giftCertificateDTO, GiftCertificate.class);
 
+        if (giftCertificate.getCreateDate() == null)
+              giftCertificate.setCreateDate(new Date());
+
+        giftCertificate.setLastUpdateDate(new Date());
+
         if (giftCertificate.getTags() != null)
             giftCertificate.getTags().stream()
                     .filter(Tag::isNoId)
@@ -100,6 +106,7 @@ public class GiftCertificateServiceImpl implements GiftCertificateService {
         GiftCertificate giftCertificate = giftCertificateDAO.getGiftCert(id);
 
         setDBFieldsToGiftCertificateFields(convertedFields, giftCertificate);
+        giftCertificate.setLastUpdateDate(new Date());
 
         return giftCertificateDAO.updateGiftCert(giftCertificate);
     }
