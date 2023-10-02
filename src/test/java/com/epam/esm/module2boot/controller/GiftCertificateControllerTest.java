@@ -26,6 +26,7 @@ import java.util.Map;
 import java.util.stream.Stream;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
@@ -227,6 +228,7 @@ class GiftCertificateControllerTest {
         mockMvc.perform(MockMvcRequestBuilders.put("/GiftCertificates/1")
                         .param("name", "new name")
                         .param("description", "new description")
+                        .param("tags", "tag1,name11,tag2")
                         .contentType(MediaType.APPLICATION_JSON))
                 .andExpect(status().isOk())
                 .andReturn();
@@ -235,5 +237,15 @@ class GiftCertificateControllerTest {
 
         assertEquals("new name", giftCertificate.getName());
         assertEquals("new description", giftCertificate.getDescription());
+        assertEquals(3, giftCertificate.getTags().size());
+        final Map<Integer, String> expectedTags = Map.of(1, "tag2", 2, "tag1", 1006, "name11");
+        assertTrue(giftCertificate
+                .getTags()
+                .stream()
+                .allMatch(tag ->
+                        expectedTags.get(tag.getId()).equals(tag.getName())
+                )
+        );
+
     }
 }

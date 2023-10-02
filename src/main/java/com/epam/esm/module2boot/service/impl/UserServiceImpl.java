@@ -27,7 +27,7 @@ public class UserServiceImpl implements UserService {
     private final UserDAO userDAO;
     private final ModelMapper modelMapper;
     private final RoleService roleService;
-    private PasswordEncoder passwordEncoder;
+    private final PasswordEncoder passwordEncoder;
 
     @Override
     public UserDTO createUser(UserDTO userDTO) throws DataBaseConstrainException {

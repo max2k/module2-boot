@@ -45,7 +45,7 @@ public class GiftCertificateController {
     @PutMapping("/{id}")
     public ResponseEntity<GiftCertificateDTO>
     updateGiftCertificate(@PathVariable int id,
-                          @RequestParam MultiValueMap<String, String> queryParams) {
+                          @RequestParam MultiValueMap<String, String> queryParams) throws DataBaseConstrainException {
 
         GiftCertificateUpdateDTO giftCertificateUpdateDTO = new GiftCertificateUpdateDTO();
         giftCertificateUpdateDTO.setFields(queryParams.toSingleValueMap());

@@ -16,7 +16,7 @@ public interface GiftCertificateService {
 
     Page<GiftCertificateDTO> getGiftCertificatesBy(Map<String, Object> params, Pageable pageable);
 
-    boolean updateGiftCertificate(int id, GiftCertificateUpdateDTO giftCertificateUpdateDTO);
+    boolean updateGiftCertificate(int id, GiftCertificateUpdateDTO giftCertificateUpdateDTO) throws DataBaseConstrainException;
 
     boolean deleteGiftCertificateById(int id);
 

@@ -30,13 +30,7 @@ public class TagServiceImpl implements TagService {
         return tagDAO.deleteTag(id);
     }
 
-    @Override
-    public Tag ensureTag(Tag tag) {
-        return tagDAO.ensureTag(tag);
-    }
-
-
-    @Override
+      @Override
     public Tag getMostUsedTagForUserID(int userID) {
         return tagDAO.getMostUsedTagForUserID(userID);
     }
@@ -44,6 +38,13 @@ public class TagServiceImpl implements TagService {
     @Override
     public Page<Tag> getAllTags(Pageable pageable) {
         return tagDAO.findAll(pageable);
+    }
+
+
+    @Override
+    public Integer getTagIdByName(String s) {
+        Tag t = tagDAO.getTagByName(s);
+        return t == null ? Tag.NO_ID : t.getId();
     }
 
 }

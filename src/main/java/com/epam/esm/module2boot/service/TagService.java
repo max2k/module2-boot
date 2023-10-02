@@ -12,10 +12,9 @@ public interface TagService {
 
     boolean deleteTag(int id);
 
-    Tag ensureTag(Tag tag);
-
-
     Tag getMostUsedTagForUserID(int userID);
 
     Page<Tag> getAllTags(Pageable pageable);
+
+    Integer getTagIdByName(String s);
 }

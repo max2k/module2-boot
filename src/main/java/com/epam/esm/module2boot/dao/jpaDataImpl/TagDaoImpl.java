@@ -5,23 +5,19 @@ import com.epam.esm.module2boot.dao.jpaDataImpl.jpaRepository.TagRepository;
 import com.epam.esm.module2boot.exception.NotFoundException;
 import com.epam.esm.module2boot.exception.dao.DataBaseConstrainException;
 import com.epam.esm.module2boot.model.Tag;
+import lombok.AllArgsConstructor;
 import org.springframework.context.annotation.Profile;
 import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Repository;
 
-import java.util.Objects;
-
 @Repository
+@AllArgsConstructor
 @Profile("jpa-data")
 public class TagDaoImpl implements TagDAO {
 
     private final TagRepository tagRepository;
-
-    public TagDaoImpl(TagRepository tagRepository) {
-        this.tagRepository = tagRepository;
-    }
 
     @Override
     public Tag createTag(String name) throws DataBaseConstrainException {
@@ -52,13 +48,6 @@ public class TagDaoImpl implements TagDAO {
         return true;
     }
 
-
-    @Override
-    public Tag ensureTag(Tag tag) {
-        Tag dbTag = tagRepository.findByName(tag.getName());
-        return Objects.requireNonNullElseGet(dbTag, () -> tagRepository.save(tag));
-    }
-
     @Override
     public Tag getMostUsedTagForUserID(int userID) {
         return tagRepository.findMostUsedTagForUserID(userID);
@@ -69,5 +58,9 @@ public class TagDaoImpl implements TagDAO {
         return tagRepository.findAll(pageable);
     }
 
+    @Override
+    public Tag getTagByName(String name) {
+        return tagRepository.findByName(name);
+    }
 
 }

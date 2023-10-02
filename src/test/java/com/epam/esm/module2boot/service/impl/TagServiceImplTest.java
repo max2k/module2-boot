@@ -6,7 +6,6 @@ import com.epam.esm.module2boot.model.Tag;
 import com.epam.esm.module2boot.service.TagService;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.autoconfigure.jdbc.AutoConfigureTestDatabase;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -19,6 +18,7 @@ class TagServiceImplTest {
 
     @Autowired
     private TagService tagService;
+
 
     @Test
     void getTagById() {
@@ -43,4 +43,6 @@ class TagServiceImplTest {
         assertTrue(tagService.deleteTag(1));
         assertThrows(NotFoundException.class, () -> tagService.deleteTag(10000));
     }
+
+
 }

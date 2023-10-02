@@ -11,7 +11,7 @@ public interface GiftCertificateDAO {
 
     boolean deleteGiftCert(int id);
 
-    boolean updateGiftCert(int id, Map<String, Object> fieldsToUpdate);
+    boolean updateGiftCert(GiftCertificate giftCertificate);
 
     GiftCertificate getGiftCert(int id);
 

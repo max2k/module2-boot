@@ -21,7 +21,6 @@ import org.springframework.util.LinkedMultiValueMap;
 import org.springframework.util.MultiValueMap;
 
 import java.math.BigDecimal;
-import java.sql.Timestamp;
 import java.text.ParseException;
 import java.util.*;
 import java.util.stream.Collectors;
@@ -181,25 +180,6 @@ class GiftCertificateDAOImplTest {
 
         assertThrows(NotFoundException.class, () -> giftCertificateDAO.getGiftCert(1));
 
-    }
-
-    @Test
-    void updateGiftCert() throws ParseException {
-
-        Map<String, Object> paramToUpdate = new HashMap<>();
-        paramToUpdate.put("name", "New name");
-        paramToUpdate.put("description", "New description");
-        paramToUpdate.put("create_date", new Timestamp(
-                Util.parseISO8601("2020-10-10T10:10:10").getTime())
-        );
-
-        giftCertificateDAO.updateGiftCert(1, paramToUpdate);
-
-        GiftCertificate giftCertificate = giftCertificateDAO.getGiftCert(1);
-
-        assertEquals("New name", giftCertificate.getName());
-        assertEquals("New description", giftCertificate.getDescription());
-        assertEquals(Util.parseISO8601("2020-10-10T10:10:10"), giftCertificate.getCreateDate());
     }
 
     @Test

@@ -31,6 +31,7 @@ import java.util.stream.Stream;
 
 import static org.junit.jupiter.api.Assertions.*;
 
+
 @SpringBootTest
 @AutoConfigureTestDatabase(replace = AutoConfigureTestDatabase.Replace.NONE)
 @Transactional
@@ -150,7 +151,7 @@ class GiftCertificateServiceImplTest {
             , int[] resultIds, List<String> sorting) {
 
         MultiValueMap<String, String> queryMap = new LinkedMultiValueMap<>();
-        if (sorting != null && sorting.size() > 0) sorting.forEach(s -> queryMap.add("sort", s));
+        if (sorting != null ) sorting.forEach(s -> queryMap.add("sort", s));
 
         GetAllCertParamsToQueryMapConverter converter = new GetAllCertParamsToQueryMapConverter(queryMap);
 
@@ -190,13 +191,14 @@ class GiftCertificateServiceImplTest {
     }
 
     @Test
-    void updateGiftCertificate() throws ParseException {
+    void updateGiftCertificate() throws ParseException, DataBaseConstrainException {
         GiftCertificateUpdateDTO updateDTO = new GiftCertificateUpdateDTO();
         updateDTO.setFields(Map.of("name", "test name",
                         "description", "test description",
                         "price", "10",
                         "duration", "11",
-                        "last_update_date", "2022-04-01T15:40:00"
+                "last_update_date", "2022-04-01T15:40:00",
+                "tags", "tag1,test11,tag2"
                 )
         );
 
@@ -209,6 +211,12 @@ class GiftCertificateServiceImplTest {
         assertEquals(0, giftCertificateDto.getPrice().compareTo(BigDecimal.valueOf(10)));
         assertEquals(11, giftCertificateDto.getDuration());
         assertEquals(Util.parseISO8601("2022-04-01T15:40:00"), giftCertificateDto.getLastUpdateDate());
+        assertEquals(3, giftCertificateDto.getTags().size());
+        assertTrue(giftCertificateDto.getTags()
+                .stream().map(TagDTO::getName)
+                .collect(Collectors.toSet())
+                .containsAll(Set.of("tag1", "test11", "tag2"))
+        );
     }
 
     @Test

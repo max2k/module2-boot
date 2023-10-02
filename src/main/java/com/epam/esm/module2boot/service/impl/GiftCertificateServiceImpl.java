@@ -1,11 +1,13 @@
 package com.epam.esm.module2boot.service.impl;
 
 import com.epam.esm.module2boot.dao.GiftCertificateDAO;
+import com.epam.esm.module2boot.dao.jpaDataImpl.fieldResolver.FieldSetHelper;
 import com.epam.esm.module2boot.dto.GiftCertificateDTO;
 import com.epam.esm.module2boot.dto.GiftCertificateUpdateDTO;
 import com.epam.esm.module2boot.exception.BadRequestException;
 import com.epam.esm.module2boot.exception.NotFoundException;
 import com.epam.esm.module2boot.model.GiftCertificate;
+import com.epam.esm.module2boot.model.Tag;
 import com.epam.esm.module2boot.service.GiftCertificateService;
 import com.epam.esm.module2boot.service.TagService;
 import com.epam.esm.module2boot.service.Util;
@@ -26,7 +28,7 @@ public class GiftCertificateServiceImpl implements GiftCertificateService {
 
     private final GiftCertificateDAO giftCertificateDAO;
     private final ModelMapper modelMapper;
-
+    private final FieldSetHelper fieldSetHelper;
     private final TagService tagService;
 
 
@@ -35,22 +37,15 @@ public class GiftCertificateServiceImpl implements GiftCertificateService {
             map.replace(name, Util.parseISO8601(map.get(name).toString()));
     }
 
-    @Override
-    public GiftCertificateDTO createGiftCertificate(GiftCertificateDTO giftCertificateDTO) {
-        GiftCertificate giftCertificate = modelMapper.map(giftCertificateDTO, GiftCertificate.class);
-
-        if (giftCertificate.getTags() != null && giftCertificate.getTags().size() > 0) {
-
-            giftCertificate.setTags(giftCertificate.getTags()
-                    .stream()
-                    .map(tagService::ensureTag)
-                    .collect(Collectors.toSet()));
+    private static void replaceFieldNames(Map<String, Object> convertedFields) {
+        try {
+            replaceDateField("create_date", convertedFields);
+            replaceDateField("last_update_date", convertedFields);
+        } catch (ParseException parseException) {
+            throw new BadRequestException("Date field format error");
         }
-
-        GiftCertificate outGiftCertificate = giftCertificateDAO.createGiftCert(giftCertificate);
-
-        return modelMapper.map(outGiftCertificate, GiftCertificateDTO.class);
     }
+
 
     @Override
     public Page<GiftCertificateDTO> getGiftCertificatesBy(Map<String, Object> queryFields, Pageable pageable) {
@@ -63,8 +58,31 @@ public class GiftCertificateServiceImpl implements GiftCertificateService {
     }
 
     @Override
-    public boolean updateGiftCertificate(int id, GiftCertificateUpdateDTO giftCertificateUpdateDTO) {
-        Set<String> allowedFields = Set.of("name", "description", "price", "duration", "create_date", "last_update_date");
+    public GiftCertificateDTO createGiftCertificate(GiftCertificateDTO giftCertificateDTO)
+             {
+        GiftCertificate giftCertificate = modelMapper.map(giftCertificateDTO, GiftCertificate.class);
+
+        if (giftCertificate.getTags() != null)
+            giftCertificate.getTags().stream()
+                    .filter(Tag::isNoId)
+                    .forEach(tag -> tag.setId(tagService.getTagIdByName(tag.getName())));
+
+
+
+        GiftCertificate outGiftCertificate = giftCertificateDAO.createGiftCert(giftCertificate);
+
+        return modelMapper.map(outGiftCertificate, GiftCertificateDTO.class);
+    }
+
+    @Override
+    public boolean updateGiftCertificate(int id, GiftCertificateUpdateDTO giftCertificateUpdateDTO)  {
+        Set<String> allowedFields = Set.of("name",
+                "description",
+                "price",
+                "duration",
+                "create_date",
+                "last_update_date",
+                "tags");
         Map<String, String> fields = giftCertificateUpdateDTO.getFields();
 
         if (fields == null || fields.isEmpty())
@@ -77,14 +95,20 @@ public class GiftCertificateServiceImpl implements GiftCertificateService {
         if (!allowedFields.containsAll(fields.keySet()))
             throw new BadRequestException("Check field names, some of them not allowed to be changed");
 
-        try {
-            replaceDateField("create_date", convertedFields);
-            replaceDateField("last_update_date", convertedFields);
-        } catch (ParseException parseException) {
-            throw new BadRequestException("Date field format error");
-        }
+        replaceFieldNames(convertedFields);
 
-        return giftCertificateDAO.updateGiftCert(id, convertedFields);
+        GiftCertificate giftCertificate = giftCertificateDAO.getGiftCert(id);
+
+        setDBFieldsToGiftCertificateFields(convertedFields, giftCertificate);
+
+        return giftCertificateDAO.updateGiftCert(giftCertificate);
+    }
+
+    private void setDBFieldsToGiftCertificateFields(Map<String, Object> fieldsToUpdate,
+                                                    GiftCertificate giftCertificate) {
+        for (Map.Entry<String, Object> entry : fieldsToUpdate.entrySet()) {
+            fieldSetHelper.setField(giftCertificate, entry.getKey(), entry.getValue());
+        }
     }
 
     @Override

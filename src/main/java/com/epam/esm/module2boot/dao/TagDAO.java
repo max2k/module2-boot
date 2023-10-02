@@ -13,11 +13,9 @@ public interface TagDAO {
 
     boolean deleteTag(int id) throws NotFoundException;
 
-
-    Tag ensureTag(Tag tag);
-
-
     Tag getMostUsedTagForUserID(int userID);
 
     Page<Tag> findAll(Pageable pageable);
+
+    Tag getTagByName(String name);
 }

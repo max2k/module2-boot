@@ -36,7 +36,11 @@ public class GiftCertificate {
     @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd'T'hh:mm:ss.SSS")
     Date lastUpdateDate;
 
-    @ManyToMany
+    @ManyToMany(cascade = {
+            CascadeType.PERSIST,
+            CascadeType.MERGE
+    })
+//    @ManyToMany
     @JoinTable(
             name = "cert_tag",
             joinColumns = @JoinColumn(name = "cert_id"),
