@@ -6,7 +6,6 @@ import com.epam.esm.module2boot.model.Status;
 import com.epam.esm.module2boot.model.User;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.autoconfigure.jdbc.AutoConfigureTestDatabase;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -14,7 +13,6 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 
 @SpringBootTest
-@AutoConfigureTestDatabase(replace = AutoConfigureTestDatabase.Replace.NONE)
 @Transactional
 class UserDAOImplTest {
 
@@ -36,7 +34,5 @@ class UserDAOImplTest {
         assertEquals(user.getFirstName(), createdUser.getFirstName());
         assertEquals(user.getLastName(), createdUser.getLastName());
         assertEquals(user.getEmail(), createdUser.getEmail());
-
-
     }
 }

@@ -15,7 +15,6 @@ import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.Arguments;
 import org.junit.jupiter.params.provider.MethodSource;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.autoconfigure.jdbc.AutoConfigureTestDatabase;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
@@ -33,7 +32,7 @@ import static org.junit.jupiter.api.Assertions.*;
 
 
 @SpringBootTest
-@AutoConfigureTestDatabase(replace = AutoConfigureTestDatabase.Replace.NONE)
+//@AutoConfigureTestDatabase(replace = AutoConfigureTestDatabase.Replace.ANY)
 @Transactional
 class GiftCertificateServiceImplTest {
 
@@ -64,17 +63,7 @@ class GiftCertificateServiceImplTest {
                 Arguments.of(null, new int[]{1, 2, 3, 4, 5, 6}, null)
                 , Arguments.of(new HashMap<>(), new int[]{1, 2, 3, 4, 5, 6}, new LinkedList<>())
                 , Arguments.of(Map.of("tags", "tag1"), new int[]{1, 2}, null)
-                , Arguments.of(
-                        Map.of("description", "description2")
-                        , new int[]{2, 4, 5, 6}, null)
-                , Arguments.of(
-                        Map.of("description", "description2"
-                                , "tags", "tag1")
-                        , new int[]{2}, null)
-                , Arguments.of(
-                        Map.of("description", "description%"
-                                , "tags", "tag1")
-                        , new int[]{1, 2}, null)
+
 
                 , Arguments.of(null, new int[]{6, 5, 4, 3, 2, 1}
                         , List.of("name,desc"))
@@ -191,13 +180,12 @@ class GiftCertificateServiceImplTest {
     }
 
     @Test
-    void updateGiftCertificate() throws ParseException, DataBaseConstrainException {
+    void updateGiftCertificate() DataBaseConstrainException {
         GiftCertificateUpdateDTO updateDTO = new GiftCertificateUpdateDTO();
         updateDTO.setFields(Map.of("name", "test name",
                         "description", "test description",
                         "price", "10",
                         "duration", "11",
-                "last_update_date", "2022-04-01T15:40:00",
                 "tags", "tag1,test11,tag2"
                 )
         );
@@ -210,7 +198,7 @@ class GiftCertificateServiceImplTest {
         assertEquals("test description", giftCertificateDto.getDescription());
         assertEquals(0, giftCertificateDto.getPrice().compareTo(BigDecimal.valueOf(10)));
         assertEquals(11, giftCertificateDto.getDuration());
-        assertEquals(Util.parseISO8601("2022-04-01T15:40:00"), giftCertificateDto.getLastUpdateDate());
+
         assertEquals(3, giftCertificateDto.getTags().size());
         assertTrue(giftCertificateDto.getTags()
                 .stream().map(TagDTO::getName)

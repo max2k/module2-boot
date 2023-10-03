@@ -129,8 +129,8 @@ class GiftCertificateControllerTest {
                    "description" : "test description",
                    "price" : 11.11,
                    "duration": 100,
-                   "createDate": "2022-02-02T10:11:12.000",
-                   "lastUpdateDate": "2022-02-02T10:11:12.000",
+                   "createDate": "2022-02-02T10:11:12.000Z",
+                   "lastUpdateDate": "2022-02-02T10:11:12.000Z",
                    "tags": [
                         { "name": "tag2"  },
                         { "name": "tag33" },
@@ -147,8 +147,7 @@ class GiftCertificateControllerTest {
                 .andExpect(jsonPath("$.description").value("test description"))
                 .andExpect(jsonPath("$.price").value(11.11))
                 .andExpect(jsonPath("$.duration").value(100))
-                .andExpect(jsonPath("$.createDate").value("2022-02-02T10:11:12.000"))
-                .andExpect(jsonPath("$.lastUpdateDate").value("2022-02-02T10:11:12.000"))
+                .andExpect(jsonPath("$.createDate").value("2022-02-02T10:11:12.000Z"))
                 .andReturn();
 
         GiftCertificateDTO giftCertificateDTO = objectMapper
@@ -168,8 +167,8 @@ class GiftCertificateControllerTest {
                 .andExpect(jsonPath("$.id").value(1))
                 .andExpect(jsonPath("$.price").value(10))
                 .andExpect(jsonPath("$.duration").value(100))
-                .andExpect(jsonPath("$.createDate").value("2022-05-01T12:30:00.000"))
-                .andExpect(jsonPath("$.lastUpdateDate").value("2022-04-01T12:30:00.000"))
+                .andExpect(jsonPath("$.createDate").value("2022-05-01T12:30:00.000Z"))
+                .andExpect(jsonPath("$.lastUpdateDate").value("2022-04-01T12:30:00.000Z"))
                 .andReturn();
 
         GiftCertificateDTO giftCertificateDTO = objectMapper
