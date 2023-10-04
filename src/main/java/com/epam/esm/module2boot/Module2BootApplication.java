@@ -9,7 +9,7 @@ public class Module2BootApplication {
 
     public static void main(String[] args) {
 
-      //  SpringApplication.run(Module2BootApplication.class, args);
+        //  SpringApplication.run(Module2BootApplication.class, args);
 
         SpringApplication app = new SpringApplication(Module2BootApplication.class);
         Environment env = app.run(args).getEnvironment();

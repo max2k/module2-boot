@@ -1,24 +1,21 @@
 package com.epam.esm.module2boot.controller;
 
-import com.epam.esm.module2boot.exception.NotFoundException;
-import com.epam.esm.module2boot.model.dto.GiftCertificateDTO;
-import com.epam.esm.module2boot.model.dto.GiftCertificateQueryDTO;
-import com.epam.esm.module2boot.model.dto.GiftCertificateUpdateDTO;
+import com.epam.esm.module2boot.converter.GetAllCertParamsToQueryMapConverter;
+import com.epam.esm.module2boot.dto.GiftCertificateDTO;
+import com.epam.esm.module2boot.dto.GiftCertificateUpdateDTO;
+import com.epam.esm.module2boot.exception.dao.DataBaseConstrainException;
 import com.epam.esm.module2boot.service.GiftCertificateService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.util.MultiValueMap;
-import org.springframework.util.StringUtils;
 import org.springframework.web.bind.annotation.*;
 
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.stream.Stream;
-
 @RestController
-@RequestMapping("/GiftCertificate")
+@RequestMapping("/GiftCertificates")
+@CrossOrigin(origins = "http://localhost:3000")
 public class GiftCertificateController {
 
     private final GiftCertificateService giftCertificateService;
@@ -30,8 +27,9 @@ public class GiftCertificateController {
     }
 
     @PostMapping
-    public ResponseEntity<GiftCertificateDTO> createGiftCertificate(@RequestBody GiftCertificateDTO giftCertificateInDTO) {
-        GiftCertificateDTO giftCertificateOutDto=
+    public ResponseEntity<GiftCertificateDTO> createGiftCertificate(@RequestBody GiftCertificateDTO giftCertificateInDTO)
+            throws DataBaseConstrainException {
+        GiftCertificateDTO giftCertificateOutDto =
                 giftCertificateService.createGiftCertificate(giftCertificateInDTO);
 
         return ResponseEntity.status(HttpStatus.CREATED).body(giftCertificateOutDto);
@@ -39,73 +37,58 @@ public class GiftCertificateController {
 
     @GetMapping("/{id}")
     public ResponseEntity<GiftCertificateDTO> getGiftCertificateById(@PathVariable int id) {
-        GiftCertificateDTO giftCertificateDTO = giftCertificateService.getGiftCertificateById(id);
-        if (giftCertificateDTO != null) {
-            return ResponseEntity.ok(giftCertificateDTO);
-        } else {
-            throw new NotFoundException("Object with this id not found");
-        }
+        GiftCertificateDTO giftCertificateDTO = giftCertificateService.getGiftCertificateDTOById(id);
+        return ResponseEntity.ok(giftCertificateDTO);
+
     }
 
     @PutMapping("/{id}")
     public ResponseEntity<GiftCertificateDTO>
-        updateGiftCertificate(@PathVariable int id,
-                              @RequestParam MultiValueMap<String, String> queryParams) {
+    updateGiftCertificate(@PathVariable int id,
+                          @RequestParam MultiValueMap<String, String> queryParams) throws DataBaseConstrainException {
 
-        GiftCertificateUpdateDTO giftCertificateUpdateDTO=new GiftCertificateUpdateDTO();
-        giftCertificateUpdateDTO.setFields( queryParams.toSingleValueMap() );
+        GiftCertificateUpdateDTO giftCertificateUpdateDTO = new GiftCertificateUpdateDTO();
+        giftCertificateUpdateDTO.setFields(queryParams.toSingleValueMap());
 
-        boolean result=giftCertificateService.updateGiftCertificate(id,giftCertificateUpdateDTO);
+        giftCertificateService.updateGiftCertificate(id, giftCertificateUpdateDTO);
 
-        if ( result ) {
-            return ResponseEntity.ok().build();
-        } else {
-            throw new NotFoundException("Object with this id not found");
-        }
+        return ResponseEntity.ok().build();
+
     }
+
+
+
 
     @DeleteMapping("/{id}")
-    public ResponseEntity<Void> deleteGiftCertificate(@PathVariable int id) {
-        boolean deleted = giftCertificateService.deleteGiftCertificateById(id);
-        if (deleted) {
-            return ResponseEntity.ok().build();
-        } else {
-            throw new NotFoundException("Object with this id not found");
-        }
+    public ResponseEntity<String> deleteGiftCertificate(@PathVariable int id) {
+        giftCertificateService.deleteGiftCertificateById(id);
+        return ResponseEntity.ok("Ok");
+
     }
+
 
     @GetMapping
-    public ResponseEntity<List<GiftCertificateDTO>> getAllGiftCertificates(
-            @RequestParam(name = "tagName", required = false) String tagName,
-            @RequestParam(name = "partName", required = false) String partName,
-            @RequestParam(name = "partDescription", required = false) String partDesc,
-            @RequestParam(name = "sortBy", required = false) String sortOrder1,
-            @RequestParam(name = "thenSortBy", required = false) String sortOrder2) {
+    public ResponseEntity<Page<GiftCertificateDTO>> getAllGiftCertificates(
+            @RequestParam MultiValueMap<String, String> queryParams,
+            @RequestParam(name = "page", required = false, defaultValue = "0") int page,
+            @RequestParam(name = "size", required = false, defaultValue = "25") int size) {
 
-        Map<String,Object> queryFields=new HashMap<>();
-        putIfNotEmpty(tagName,queryFields,"tag.name");
-        putIfNotEmpty(partName,queryFields,"gift_certificate.name");
-        putIfNotEmpty(partDesc,queryFields,"description");
+        if ( page<0 ) page = 0;
+        if ( size<=0 ) size = 25;
 
+        GetAllCertParamsToQueryMapConverter converter =
+                new GetAllCertParamsToQueryMapConverter(queryParams);
 
-        List<String> sortFields= Stream.of(sortOrder1,sortOrder2)
-                .filter(StringUtils::hasText).toList();
+        Page<GiftCertificateDTO> giftCertificates =
+                giftCertificateService.getGiftCertificatesBy(converter.getGiftCertQueryMap(),
+                        PageRequest.of(page, size, converter.getSort()));
 
-        GiftCertificateQueryDTO giftCertificateQueryDTO=new GiftCertificateQueryDTO();
-        giftCertificateQueryDTO.setQueryFields(queryFields);
-        giftCertificateQueryDTO.setSorting(sortFields);
-
-        List<GiftCertificateDTO> giftCertificates =
-                giftCertificateService.getGiftCertificatesBy(giftCertificateQueryDTO);
-
-        if (!giftCertificates.isEmpty()) {
+     //   if (!giftCertificates.isEmpty()) {
             return ResponseEntity.ok(giftCertificates);
-        } else {
-            throw new NotFoundException("Objects with this params not found");
-         }
-       }
-
-    private static void putIfNotEmpty(String value, Map<String, Object> queryFields, String key) {
-        if (StringUtils.hasText(value)) queryFields.put(key, value);
+        //} else {
+//            throw new NotFoundException("Objects with this params not found");
+//        }
     }
+
+
 }

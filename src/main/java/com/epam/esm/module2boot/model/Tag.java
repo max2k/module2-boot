@@ -1,18 +1,25 @@
 package com.epam.esm.module2boot.model;
 
-import lombok.EqualsAndHashCode;
-import lombok.Getter;
-import lombok.Setter;
+import jakarta.persistence.*;
+import lombok.Data;
+import net.minidev.json.annotate.JsonIgnore;
+import org.springframework.hateoas.RepresentationModel;
 
-@Getter
-@Setter
-@EqualsAndHashCode
-public class Tag {
-    public static final int NO_ID=-1;
+
+@Data
+@Entity
+@Table(name = "TAG")
+public class Tag extends RepresentationModel<Tag> {
+    public static final int NO_ID = -1;
+
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     int id = NO_ID;
+
     String name;
 
-    public boolean isNoId(){
-        return id==NO_ID;
+    @JsonIgnore
+    public boolean isNoId() {
+        return id == NO_ID;
     }
 }

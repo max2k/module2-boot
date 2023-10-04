@@ -1,18 +1,21 @@
 package com.epam.esm.module2boot.dao;
 
+import com.epam.esm.module2boot.exception.NotFoundException;
+import com.epam.esm.module2boot.exception.dao.DataBaseConstrainException;
 import com.epam.esm.module2boot.model.Tag;
-
-import java.util.Set;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 
 public interface TagDAO {
-    Tag createTag(String name);
+    Tag createTag(String name) throws DataBaseConstrainException;
 
-    Tag getTagById(int id);
-    boolean deleteTag(int id);
+    Tag getTagById(int id) throws NotFoundException;
 
-    Set<Tag> getTagsForCertID(int id);
+    boolean deleteTag(int id) throws NotFoundException;
 
-    Tag ensureTag(Tag tag);
+    Tag getMostUsedTagForUserID(int userID);
+
+    Page<Tag> findAll(Pageable pageable);
 
     Tag getTagByName(String name);
 }
